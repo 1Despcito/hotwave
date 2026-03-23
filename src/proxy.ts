@@ -19,7 +19,7 @@ const authMiddleware = withAuth(
   }
 );
 
-export default function middleware(req: NextRequest) {
+export default function proxy(req: NextRequest) {
   // Check if the route is an admin route (e.g., /ar/admin or /en/admin)
   const isAdminPath = RegExp(
     `^(/(${routing.locales.join("|")}))?/admin`,
