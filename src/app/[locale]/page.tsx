@@ -12,7 +12,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   // Parallel fetching for performance
   const [settings, dbServices, dbTestimonials] = await Promise.all([
     prisma.siteSettings.findFirst(),
-    prisma.service.findMany({ orderBy: { createdAt: 'asc' } }),
+    prisma.service.findMany({ orderBy: { createdAt: 'asc' }, include: { types: { orderBy: { createdAt: 'asc' } } } }),
     prisma.testimonial.findMany({ orderBy: { createdAt: 'desc' } })
   ]);
 
@@ -29,8 +29,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <About />
       <Services initialServices={dbServices} locale={locale} />
       <Testimonials initialTestimonials={dbTestimonials} locale={locale} />
-      <Footer />
-      <AIChatWidget />
+      <Footer locale={locale} />
+      <AIChatWidget locale={locale} />
     </main>
   );
 }

@@ -5,8 +5,10 @@ import { useChat } from "@ai-sdk/react";
 import { MessageCircle, X, Send, Sparkles } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 
-export default function AIChatWidget() {
+export default function AIChatWidget({ locale = 'ar' }: { locale?: string }) {
+  const t = useTranslations('Chat');
   const [isOpen, setIsOpen] = useState(false);
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: "/api/chat",
@@ -96,9 +98,9 @@ export default function AIChatWidget() {
               <div className="relative z-10">
                 <div className="flex items-center gap-2">
                   <Sparkles size={18} className="text-cyan-200" />
-                  <h3 className="font-bold text-lg tracking-tight">مساعد Hot Wave</h3>
+                  <h3 className="font-bold text-lg tracking-tight">{t('title')}</h3>
                 </div>
-                <p className="text-blue-100 text-xs mt-1 font-medium bg-black/10 inline-block px-2 py-0.5 rounded-full">نسعد دائماً بخدمتك!</p>
+                <p className="text-blue-100 text-xs mt-1 font-medium bg-black/10 inline-block px-2 py-0.5 rounded-full">{t('subtitle')}</p>
               </div>
               <button 
                 onClick={() => setIsOpen(false)} 
@@ -120,7 +122,7 @@ export default function AIChatWidget() {
                     <MessageCircle size={32} />
                   </div>
                   <p className="text-slate-500 text-sm max-w-[200px] leading-relaxed">
-                    مرحباً بك! 👋<br />كيف يمكنني مساعدتك اليوم في التخطيط لرحلتك القادمة؟
+                    {t('welcome')}<br />{t('welcome_sub')}
                   </p>
                 </motion.div>
               )}
@@ -156,7 +158,7 @@ export default function AIChatWidget() {
                 <input
                   value={input || ""}
                   onChange={handleInputChange || (() => {})}
-                  placeholder="اكتب استفسارك هنا..."
+                  placeholder={t('placeholder')}
                   className="w-full bg-slate-100/80 border border-slate-200/60 rounded-full pl-12 pr-5 py-3.5 text-sm text-slate-700 focus:bg-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all shadow-inner"
                 />
                 <button

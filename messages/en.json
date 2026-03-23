@@ -45,5 +45,30 @@
     "submit": "Login",
     "loading": "Loading...",
     "wrong_cred": "Invalid Username or Password"
+  },
+  "Footer": {
+    "brand_desc": "Your premier partner for unforgettable tourism experiences in Hurghada, Egypt.",
+    "quick_links": "Quick Links",
+    "link_home": "Home",
+    "link_services": "Our Services",
+    "link_about": "About Us",
+    "link_contact": "Contact",
+    "adventures": "Adventures",
+    "adv_sea": "Sea Trips",
+    "adv_safari": "Desert Safari",
+    "adv_horse": "Horseback Riding",
+    "adv_city": "City Tours",
+    "contact_us": "Contact Us",
+    "address": "Sheraton Road, Hurghada, Red Sea Governorate, Egypt",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "Chat": {
+    "title": "Hot Wave Assistant",
+    "subtitle": "We're always happy to help!",
+    "welcome": "Welcome! 👋",
+    "welcome_sub": "How can I help you plan your next adventure today?",
+    "placeholder": "Type your question here..."
   }
 }

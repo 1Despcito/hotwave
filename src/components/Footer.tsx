@@ -1,6 +1,11 @@
+'use client';
+
 import { Facebook, Instagram, Twitter, MapPin, Phone, Mail } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function Footer() {
+  const t = useTranslations('Footer');
+
   return (
     <footer className="bg-brand-navy border-t border-gray-800 pt-16 pb-8">
       <div className="container px-4 mx-auto">
@@ -12,7 +17,7 @@ export default function Footer() {
               HOT <span className="text-brand-orange">WAVE</span>
             </h3>
             <p className="text-gray-400 font-sans leading-relaxed mb-6">
-              Your premier partner for unforgettable tourism experiences in Hurghada, Egypt.
+              {t('brand_desc')}
             </p>
             <div className="flex gap-4">
               <a href="#" className="w-10 h-10 rounded-full bg-brand-navy-light text-gray-400 flex items-center justify-center hover:bg-brand-orange hover:text-white transition-colors border border-gray-800">
@@ -29,33 +34,33 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-white font-semibold mb-6">Quick Links</h4>
+            <h4 className="text-white font-semibold mb-6">{t('quick_links')}</h4>
             <ul className="space-y-3 font-sans text-gray-400">
-              <li><a href="#" className="hover:text-brand-cyan transition-colors">Home</a></li>
-              <li><a href="#services" className="hover:text-brand-cyan transition-colors">Our Services</a></li>
-              <li><a href="#" className="hover:text-brand-cyan transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-brand-cyan transition-colors">Contact</a></li>
+              <li><a href="#" className="hover:text-brand-cyan transition-colors">{t('link_home')}</a></li>
+              <li><a href="#services" className="hover:text-brand-cyan transition-colors">{t('link_services')}</a></li>
+              <li><a href="#" className="hover:text-brand-cyan transition-colors">{t('link_about')}</a></li>
+              <li><a href="#" className="hover:text-brand-cyan transition-colors">{t('link_contact')}</a></li>
             </ul>
           </div>
 
-          {/* Services */}
+          {/* Adventures */}
           <div>
-            <h4 className="text-white font-semibold mb-6">Adventures</h4>
+            <h4 className="text-white font-semibold mb-6">{t('adventures')}</h4>
             <ul className="space-y-3 font-sans text-gray-400">
-              <li><a href="#" className="hover:text-brand-orange transition-colors">Sea Trips</a></li>
-              <li><a href="#" className="hover:text-brand-orange transition-colors">Desert Safari</a></li>
-              <li><a href="#" className="hover:text-brand-orange transition-colors">Horseback Riding</a></li>
-              <li><a href="#" className="hover:text-brand-orange transition-colors">City Tours</a></li>
+              <li><a href="#" className="hover:text-brand-orange transition-colors">{t('adv_sea')}</a></li>
+              <li><a href="#" className="hover:text-brand-orange transition-colors">{t('adv_safari')}</a></li>
+              <li><a href="#" className="hover:text-brand-orange transition-colors">{t('adv_horse')}</a></li>
+              <li><a href="#" className="hover:text-brand-orange transition-colors">{t('adv_city')}</a></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="text-white font-semibold mb-6">Contact Us</h4>
+            <h4 className="text-white font-semibold mb-6">{t('contact_us')}</h4>
             <ul className="space-y-4 font-sans text-gray-400">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-brand-cyan shrink-0 mt-0.5" />
-                <span>Sheraton Road, Hurghada, Red Sea Governorate, Egypt</span>
+                <span>{t('address')}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-brand-cyan shrink-0" />
@@ -71,10 +76,10 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 pt-8 mt-8 flex flex-col md:flex-row items-center justify-between text-gray-500 font-sans text-sm">
-          <p>&copy; {new Date().getFullYear()} Hot Wave Tourism. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Hot Wave Tourism. {t('rights')}</p>
           <div className="flex gap-4 mt-4 md:mt-0">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+            <a href="#" className="hover:text-white transition-colors">{t('privacy')}</a>
+            <a href="#" className="hover:text-white transition-colors">{t('terms')}</a>
           </div>
         </div>
       </div>
