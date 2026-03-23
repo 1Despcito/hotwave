@@ -10,9 +10,12 @@ import { useTranslations } from "next-intl";
 export default function AIChatWidget({ locale = 'ar' }: { locale?: string }) {
   const t = useTranslations('Chat');
   const [isOpen, setIsOpen] = useState(false);
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, sendMessage, status, error } = useChat({
     api: "/api/chat",
   });
+  const [localInput, setLocalInput] = useState("");
+  const isLoading = status === "submitted" || status === "streaming";
+
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -138,15 +141,20 @@ export default function AIChatWidget({ locale = 'ar' }: { locale?: string }) {
                       : "bg-white border border-slate-100 text-slate-700 self-start rounded-bl-sm"
                   }`}
                 >
-                  {m.content}
+                  {m.content || (m.parts ? m.parts.map((p: any) => p.text || '').join('') : '') || '...'}
                 </motion.div>
               ))}
               
-              {isLoading && (
+              {isLoading && !error && (
                 <div className="bg-white border border-slate-100 text-slate-500 self-start rounded-2xl rounded-bl-sm shadow-sm p-4 text-sm flex gap-1.5 items-center">
                   <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6 }} className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                   <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.1 }} className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                   <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                </div>
+              )}
+              {error && (
+                <div className="bg-red-50 border border-red-100 text-red-600 self-start rounded-2xl p-4 text-xs font-mono shadow-sm max-w-[85%] break-words">
+                  خطأ في الخادم: {error?.message || String(error)}
                 </div>
               )}
               <div ref={messagesEndRef} />
@@ -154,16 +162,23 @@ export default function AIChatWidget({ locale = 'ar' }: { locale?: string }) {
 
             {/* Input Area */}
             <div className="p-4 bg-white/90 backdrop-blur-md border-t border-slate-100/80 shrink-0">
-              <form onSubmit={handleSubmit} className="relative flex items-center">
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                if (!localInput.trim() || isLoading) return;
+                const content = localInput;
+                setLocalInput("");
+                await sendMessage({ role: "user", content });
+              }} className="relative flex items-center">
                 <input
-                  value={input || ""}
-                  onChange={handleInputChange || (() => {})}
+                  name="prompt"
+                  value={localInput}
+                  onChange={(e) => setLocalInput(e.target.value)}
                   placeholder={t('placeholder')}
                   className="w-full bg-slate-100/80 border border-slate-200/60 rounded-full pl-12 pr-5 py-3.5 text-sm text-slate-700 focus:bg-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all shadow-inner"
                 />
                 <button
                   type="submit"
-                  disabled={isLoading || !input?.trim()}
+                  disabled={isLoading || !localInput.trim()}
                   className="absolute left-1.5 p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-md active:scale-95"
                 >
                   <Send size={18} className="rtl:rotate-180 -ml-0.5" />

@@ -1,9 +1,9 @@
 'use client';
 
-import { Facebook, Instagram, Twitter, MapPin, Phone, Mail } from 'lucide-react';
+import { Facebook, Instagram, MapPin, Phone, Mail, MessageCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-export default function Footer() {
+export default function Footer({ settings }: { settings?: any }) {
   const t = useTranslations('Footer');
 
   return (
@@ -20,14 +20,17 @@ export default function Footer() {
               {t('brand_desc')}
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-brand-navy-light text-gray-400 flex items-center justify-center hover:bg-brand-orange hover:text-white transition-colors border border-gray-800">
+              <a href={(settings as any)?.facebookUrl || "#"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-brand-navy-light text-gray-400 flex items-center justify-center hover:bg-brand-orange hover:text-white transition-colors border border-gray-800">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-brand-navy-light text-gray-400 flex items-center justify-center hover:bg-brand-orange hover:text-white transition-colors border border-gray-800">
+              <a href={(settings as any)?.instagramUrl || "#"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-brand-navy-light text-gray-400 flex items-center justify-center hover:bg-brand-orange hover:text-white transition-colors border border-gray-800">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-brand-navy-light text-gray-400 flex items-center justify-center hover:bg-brand-orange hover:text-white transition-colors border border-gray-800">
-                <Twitter className="w-5 h-5" />
+              <a href={(settings as any)?.tiktokUrl || "#"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-brand-navy-light text-gray-400 flex items-center justify-center hover:bg-brand-orange hover:text-white transition-colors border border-gray-800">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 15.68a6.34 6.34 0 006.27 6.36 6.33 6.33 0 006.25-6.36V7.94a8.09 8.09 0 005.66 2.13V6.62a5.44 5.44 0 01-3.59-1.93z" /></svg>
+              </a>
+              <a href={`https://wa.me/${(settings as any)?.whatsappNumber || "201110626484"}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-brand-navy-light text-gray-400 flex items-center justify-center hover:bg-green-500 hover:text-white transition-colors border border-gray-800" aria-label="WhatsApp">
+                <MessageCircle className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -64,11 +67,15 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-brand-cyan shrink-0" />
-                <span>+20 123 456 7890</span>
+                <a href={`tel:${(settings as any)?.whatsappNumber || "201110626484"}`} className="hover:text-brand-cyan transition-colors" dir="ltr">
+                  {(settings as any)?.whatsappNumber ? `+${(settings as any).whatsappNumber}` : "+201110626484"}
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-brand-cyan shrink-0" />
-                <span>info@hotwave-eg.com</span>
+                <a href={`mailto:${(settings as any)?.contactEmail || "info@hotwave-eg.com"}`} className="hover:text-brand-cyan transition-colors">
+                  {(settings as any)?.contactEmail || "info@hotwave-eg.com"}
+                </a>
               </li>
             </ul>
           </div>

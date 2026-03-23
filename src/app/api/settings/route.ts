@@ -15,24 +15,22 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const data = await req.json();
-    const { heroTitle, heroSubtitle, heroImageUrl, heroTitleEn, heroSubtitleEn } = data;
 
-    const existing = await prisma.siteSettings.findFirst();
+    let settings = await prisma.siteSettings.findFirst();
 
-    let settings;
-    if (existing) {
+    if (settings) {
       settings = await prisma.siteSettings.update({
-        where: { id: existing.id },
-        data: { heroTitle, heroSubtitle, heroImageUrl, heroTitleEn, heroSubtitleEn },
+        where: { id: settings.id },
+        data,
       });
     } else {
       settings = await prisma.siteSettings.create({
-        data: { heroTitle, heroSubtitle, heroImageUrl, heroTitleEn, heroSubtitleEn },
+        data,
       });
     }
 

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, LogOut, MessageSquare, Settings, Star, Briefcase } from "lucide-react";
+import { LayoutDashboard, LogOut, MessageSquare, Settings, Star, Briefcase, CalendarCheck } from "lucide-react";
+import { Toaster } from "react-hot-toast";
 
 export default function AdminLayout({
   children,
@@ -14,10 +15,11 @@ export default function AdminLayout({
 
   const navItems = [
     { name: "الرئيسية", href: "/admin", icon: LayoutDashboard },
-    { name: "الترحيب (Hero)", href: "/admin/hero", icon: Settings },
+    { name: "الحجوزات (Leads)", href: "/admin/bookings", icon: CalendarCheck },
     { name: "الخدمات", href: "/admin/services", icon: Briefcase },
     { name: "آراء العملاء", href: "/admin/testimonials", icon: Star },
     { name: "الرسائل", href: "/admin/messages", icon: MessageSquare },
+    { name: "إعدادات الموقع", href: "/admin/settings", icon: Settings },
   ];
 
   return (
@@ -56,8 +58,16 @@ export default function AdminLayout({
         </nav>
       </aside>
       
+      
       <main className="flex-1 p-8 overflow-y-auto bg-[#0a0a0a]">
         {children}
+        <Toaster 
+          position="bottom-left" 
+          toastOptions={{
+            style: { background: '#333', color: '#fff' },
+            success: { iconTheme: { primary: '#10B981', secondary: '#fff' } }
+          }} 
+        />
       </main>
     </div>
   );

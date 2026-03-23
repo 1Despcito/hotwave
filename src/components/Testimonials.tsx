@@ -75,9 +75,9 @@ export default function Testimonials({ initialTestimonials = [], locale = 'en' }
               viewport={{ once: true }}
               transition={{ delay: index * 0.2, duration: 0.5 }}
               whileHover={{ y: -5 }}
-              className="bg-brand-navy border border-gray-800 p-8 rounded-3xl relative group hover:border-brand-cyan/50 transition-colors shadow-lg rtl:text-right flex flex-col h-full"
+              className="bg-brand-navy/60 backdrop-blur-xl border border-gray-800/80 p-8 rounded-[2rem] relative group hover:border-brand-cyan/40 transition-all duration-500 shadow-2xl hover:shadow-[0_20px_50px_rgba(0,186,255,0.1)] rtl:text-right flex flex-col h-full"
             >
-              <Quote className={`absolute top-6 ${locale === 'ar' ? 'left-6' : 'right-6'} w-12 h-12 text-gray-800/50 group-hover:text-brand-cyan/10 transition-colors ${locale === 'ar' ? 'rotate-180' : ''}`} />
+              <Quote className={`absolute top-6 ${locale === 'ar' ? 'left-6' : 'right-6'} w-12 h-12 text-gray-800/40 group-hover:text-brand-cyan/20 group-hover:-translate-y-1 transition-all duration-500 ${locale === 'ar' ? 'rotate-180' : ''}`} />
               
               <div className="flex gap-1 mb-6">
                 {[...Array(testimonial.rating)].map((_, i) => (
@@ -85,7 +85,7 @@ export default function Testimonials({ initialTestimonials = [], locale = 'en' }
                 ))}
               </div>
               
-              <p className="text-gray-300 font-sans leading-relaxed mb-8 relative z-10 flex-grow">
+              <p className="text-gray-300 font-sans leading-relaxed mb-8 relative z-10 flex-grow group-hover:text-white transition-colors duration-300 text-lg">
                 &quot;{testimonial.text}&quot;
               </p>
               
@@ -99,8 +99,8 @@ export default function Testimonials({ initialTestimonials = [], locale = 'en' }
                   />
                 </div>
                 <div>
-                  <h4 className="text-white font-bold font-heading text-sm">{testimonial.name}</h4>
-                  <span className="text-brand-cyan text-xs font-sans tracking-wide uppercase">{testimonial.location}</span>
+                  <h4 className="text-white font-bold font-heading text-base group-hover:text-brand-cyan transition-colors">{testimonial.name}</h4>
+                  <span className="text-gray-400 text-xs font-sans tracking-wide uppercase">{testimonial.location}</span>
                 </div>
               </div>
             </motion.div>

@@ -27,9 +27,9 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         imageUrl={settings?.heroImageUrl || undefined} 
       />
       <About />
-      <Services initialServices={dbServices} locale={locale} />
+      <Services initialServices={dbServices} locale={locale} settings={settings} />
       <Testimonials initialTestimonials={dbTestimonials} locale={locale} />
-      <Footer />
+      <Footer settings={settings} />
       <AIChatWidget />
     </main>
   );

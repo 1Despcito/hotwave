@@ -100,7 +100,7 @@ export default function About() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 rtl:text-right">
               {features.map((feature, index) => (
                 <div key={index} className="flex gap-4 items-start group rtl:flex-row">
-                  <div className="w-12 h-12 rounded-2xl bg-brand-navy-light flex items-center justify-center shrink-0 border border-gray-800 group-hover:border-gray-600 transition-colors">
+                  <div className="w-14 h-14 rounded-2xl bg-brand-navy-light/80 backdrop-blur flex items-center justify-center shrink-0 border border-gray-800 group-hover:border-brand-cyan/50 group-hover:bg-brand-cyan/10 transition-all shadow-inner">
                     {feature.icon}
                   </div>
                   <div className="rtl:pr-2">
@@ -111,13 +111,15 @@ export default function About() {
               ))}
             </div>
 
-            <motion.button
+            <motion.a
+              href="#services"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="mt-12 px-8 py-4 bg-brand-navy-light text-white font-semibold rounded-full border border-gray-700 hover:border-brand-orange transition-colors inline-block"
+              className="mt-12 px-8 py-4 bg-brand-navy-light/50 backdrop-blur-md text-white font-bold rounded-2xl border border-gray-700 hover:border-brand-orange hover:bg-brand-orange/10 hover:shadow-[0_0_30px_rgba(255,94,0,0.2)] transition-all flex items-center gap-3 w-fit group"
             >
               {t('learn_more')}
-            </motion.button>
+              <Compass className="w-5 h-5 group-hover:rotate-45 transition-transform duration-500 text-brand-orange" />
+            </motion.a>
           </motion.div>
 
         </div>

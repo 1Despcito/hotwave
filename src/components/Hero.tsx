@@ -63,7 +63,10 @@ export default function Hero({ title, subtitle, imageUrl }: HeroProps) {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-16">
-              <motion.button
+              <motion.a
+                href="https://wa.me/201110626484"
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 bg-gradient-to-r from-brand-orange to-[#ff3300] text-white font-bold rounded-full flex items-center justify-center gap-2 group shadow-[0_0_30px_rgba(255,94,0,0.5)] hover:shadow-[0_0_40px_rgba(255,94,0,0.7)] transition-all"
@@ -71,7 +74,7 @@ export default function Hero({ title, subtitle, imageUrl }: HeroProps) {
                 {t('book')}
                 <ArrowRight className="w-5 h-5 rtl:hidden group-hover:translate-x-1 transition-transform" />
                 <ArrowRight className="w-5 h-5 hidden rtl:block rotate-180 group-hover:-translate-x-1 transition-transform" />
-              </motion.button>
+              </motion.a>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

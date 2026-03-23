@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import ImageUpload from "@/components/ImageUpload";
 import { ChevronDown, ChevronUp, Plus, Trash2, X } from "lucide-react";
+import toast from "react-hot-toast";
 
 type ServiceType = {
   id: string;
@@ -12,6 +13,10 @@ type ServiceType = {
   descriptionEn: string;
   price: number | null;
   imageUrl: string | null;
+  duration?: string | null;
+  durationEn?: string | null;
+  includes?: string | null;
+  includesEn?: string | null;
 };
 
 type Service = {
@@ -24,7 +29,7 @@ type Service = {
   types: ServiceType[];
 };
 
-const emptyTypeForm = { name: "", nameEn: "", description: "", descriptionEn: "", price: "", imageUrl: "" };
+const emptyTypeForm = { name: "", nameEn: "", description: "", descriptionEn: "", price: "", imageUrl: "", duration: "", durationEn: "", includes: "", includesEn: "" };
 
 export default function ServicesAdminPage() {
   const [services, setServices] = useState<Service[]>([]);
@@ -53,7 +58,10 @@ export default function ServicesAdminPage() {
     });
     if (res.ok) {
       setFormData({ title: "", titleEn: "", description: "", descriptionEn: "", imageUrl: "" });
+      toast.success("تمت إضافة الخدمة بنجاح");
       fetchServices();
+    } else {
+      toast.error("حدث خطأ أثناء الإضافة");
     }
     setIsAdding(false);
   };
@@ -61,7 +69,12 @@ export default function ServicesAdminPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("هل أنت متأكد من حذف هذه الخدمة؟")) return;
     const res = await fetch(`/api/services/${id}`, { method: "DELETE" });
-    if (res.ok) fetchServices();
+    if (res.ok) {
+      toast.success("تم حذف الخدمة");
+      fetchServices();
+    } else {
+      toast.error("فشل الحذف");
+    }
   };
 
   const handleAddType = async (serviceId: string) => {
@@ -75,7 +88,10 @@ export default function ServicesAdminPage() {
     });
     if (res.ok) {
       setTypeForm(prev => ({ ...prev, [serviceId]: { ...emptyTypeForm } }));
+      toast.success("تمت إضافة القسم للباقة بنجاح");
       fetchServices();
+    } else {
+      toast.error("فشل الإضافة");
     }
     setAddingTypeFor(null);
   };
@@ -83,7 +99,12 @@ export default function ServicesAdminPage() {
   const handleDeleteType = async (serviceId: string, typeId: string) => {
     if (!confirm("هل أنت متأكد من حذف هذا القسم؟")) return;
     const res = await fetch(`/api/services/${serviceId}/types/${typeId}`, { method: "DELETE" });
-    if (res.ok) fetchServices();
+    if (res.ok) {
+      toast.success("تم حذف القسم");
+      fetchServices();
+    } else {
+      toast.error("فشل الحذف");
+    }
   };
 
   const getTypeForm = (id: string) => typeForm[id] || { ...emptyTypeForm };
@@ -184,6 +205,12 @@ export default function ServicesAdminPage() {
                           {type.price && (
                             <p className="text-brand-orange text-xs mt-1 font-semibold">{type.price} ج.م</p>
                           )}
+                          {(type.duration || type.includes) && (
+                            <p className="text-brand-cyan text-xs mt-1">
+                                {type.duration && <span>⏱️ {type.duration} | </span>}
+                                {type.includes && <span className="text-gray-400">{type.includes}</span>}
+                            </p>
+                          )}
                         </div>
                         <button onClick={() => handleDeleteType(service.id, type.id)} className="text-red-500 hover:text-red-400 transition-colors flex-shrink-0 mt-0.5">
                           <X className="w-4 h-4" />
@@ -231,6 +258,30 @@ export default function ServicesAdminPage() {
                       type="text" placeholder="رابط الصورة (اختياري)" dir="ltr"
                       value={getTypeForm(service.id).imageUrl}
                       onChange={e => setTypeFormFor(service.id, "imageUrl", e.target.value)}
+                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
+                    />
+                    <input
+                      type="text" placeholder="المدة - مثلاً: 8 ساعات (اختياري)" dir="rtl"
+                      value={getTypeForm(service.id).duration}
+                      onChange={e => setTypeFormFor(service.id, "duration", e.target.value)}
+                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
+                    />
+                    <input
+                      type="text" placeholder="المدة (إنجليزي) - e.g. 8 Hours" dir="ltr"
+                      value={getTypeForm(service.id).durationEn}
+                      onChange={e => setTypeFormFor(service.id, "durationEn", e.target.value)}
+                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
+                    />
+                    <textarea
+                      placeholder="تشمل (كلمات يفصلها فاصلة) - مثلاً: غداء, مشروبات" dir="rtl" rows={2}
+                      value={getTypeForm(service.id).includes}
+                      onChange={e => setTypeFormFor(service.id, "includes", e.target.value)}
+                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
+                    />
+                    <textarea
+                      placeholder="Includes (Comma separated) - e.g. Lunch, Drinks" dir="ltr" rows={2}
+                      value={getTypeForm(service.id).includesEn}
+                      onChange={e => setTypeFormFor(service.id, "includesEn", e.target.value)}
                       className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
                     />
                   </div>

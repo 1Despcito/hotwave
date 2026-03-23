@@ -67,13 +67,16 @@ export default function Navbar() {
           
           <LanguageSwitcher />
 
-          <motion.button
+          <motion.a
+            href="https://wa.me/201110626484"
+            target="_blank"
+            rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="px-5 py-2.5 bg-brand-orange text-white font-semibold rounded-full text-sm shadow-[0_0_15px_rgba(255,94,0,0.3)] hover:shadow-[0_0_20px_rgba(255,94,0,0.5)] transition-shadow"
           >
             {tHero('book')}
-          </motion.button>
+          </motion.a>
         </nav>
 
         {/* Mobile Menu Toggle & Language */}
@@ -108,12 +111,15 @@ export default function Navbar() {
                   {link.name}
                 </a>
               ))}
-              <button 
+              <a 
+                href="https://wa.me/201110626484"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="mt-4 px-6 py-3 bg-brand-orange text-white font-semibold rounded-full w-full text-center shadow-lg"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {tHero('book')}
-              </button>
+              </a>
             </nav>
           </motion.div>
         )}

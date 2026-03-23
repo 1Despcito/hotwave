@@ -91,6 +91,10 @@ model ServiceType {
   descriptionEn String   @default("")
   price         Float?
   imageUrl      String?
+  duration      String?
+  durationEn    String?
+  includes      String?
+  includesEn    String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -114,5 +118,22 @@ model SiteSettings {
   heroSubtitle   String
   heroSubtitleEn String   @default("")
   heroImageUrl   String?
+  whatsappNumber String?  @default("201110626484")
+  facebookUrl    String?
+  instagramUrl   String?
+  tiktokUrl      String?
+  contactEmail   String?
   updatedAt      DateTime @updatedAt
+}
+
+model Booking {
+  id            String   @id @default(cuid())
+  customerName  String?
+  phoneNumber   String?
+  serviceName   String
+  packageName   String?
+  status        String   @default("PENDING") // PENDING, CONTACTED, BOOKED, CANCELLED
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
