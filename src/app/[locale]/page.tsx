@@ -29,8 +29,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <About />
       <Services initialServices={dbServices} locale={locale} />
       <Testimonials initialTestimonials={dbTestimonials} locale={locale} />
-      <Footer locale={locale} />
-      <AIChatWidget locale={locale} />
+      <Footer />
+      <AIChatWidget />
     </main>
   );
 }
