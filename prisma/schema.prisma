@@ -69,28 +69,50 @@ model Message {
 }
 
 model Service {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  icon        String?
-  imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String        @id @default(cuid())
+  title         String
+  titleEn       String        @default("")
+  description   String
+  descriptionEn String        @default("")
+  icon          String?
+  imageUrl      String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  types         ServiceType[]
+}
+
+model ServiceType {
+  id            String   @id @default(cuid())
+  serviceId     String
+  service       Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  name          String
+  nameEn        String   @default("")
+  description   String   @default("")
+  descriptionEn String   @default("")
+  price         Float?
+  imageUrl      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Testimonial {
   id        String   @id @default(cuid())
   name      String
+  nameEn    String   @default("")
   role      String
+  roleEn    String   @default("")
   content   String
+  contentEn String   @default("")
   avatarUrl String?
   createdAt DateTime @default(now())
 }
 
 model SiteSettings {
-  id           String   @id @default(cuid())
-  heroTitle    String
-  heroSubtitle String
-  heroImageUrl String?
-  updatedAt    DateTime @updatedAt
+  id             String   @id @default(cuid())
+  heroTitle      String
+  heroTitleEn    String   @default("")
+  heroSubtitle   String
+  heroSubtitleEn String   @default("")
+  heroImageUrl   String?
+  updatedAt      DateTime @updatedAt
 }

@@ -3,8 +3,9 @@
 import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
-const testimonials = [
+const defaultTestimonials = [
   {
     name: 'Sarah Jenkins',
     location: 'United Kingdom',
@@ -28,7 +29,17 @@ const testimonials = [
   },
 ];
 
-export default function Testimonials() {
+export default function Testimonials({ initialTestimonials = [], locale = 'en' }: { initialTestimonials?: any[], locale?: string }) {
+  const t = useTranslations('Testimonials');
+
+  const displayTestimonials = initialTestimonials.length > 0 ? initialTestimonials.map((testm: any, idx) => ({
+    name: locale === 'ar' ? (testm.name || testm.nameEn || '') : (testm.nameEn || testm.name || ''),
+    location: locale === 'ar' ? (testm.role || testm.roleEn || '') : (testm.roleEn || testm.role || ''),
+    text: locale === 'ar' ? (testm.content || testm.contentEn || '') : (testm.contentEn || testm.content || ''),
+    image: testm.avatarUrl || defaultTestimonials[idx % defaultTestimonials.length].image,
+    rating: 5, // currently DB doesn't have rating maybe? Assuming 5 for now
+  })) : defaultTestimonials;
+
   return (
     <section className="py-24 bg-brand-navy-light relative overflow-hidden" id="testimonials">
       {/* Decorative gradient */}
@@ -42,7 +53,7 @@ export default function Testimonials() {
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-bold font-heading mb-4 text-white"
           >
-            Traveler <span className="text-gradient">Stories</span>
+            {t('title')} <span className="text-gradient">{t('title_gradient')}</span>
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -51,12 +62,12 @@ export default function Testimonials() {
             transition={{ delay: 0.1 }}
             className="text-gray-400 max-w-2xl mx-auto font-sans text-lg"
           >
-            Don&apos;t just take our word for it. Here is what our guests have to say about their Hot Wave experience.
+            {t('subtitle')}
           </motion.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {testimonials.map((testimonial, index) => (
+          {displayTestimonials.map((testimonial, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
@@ -64,9 +75,9 @@ export default function Testimonials() {
               viewport={{ once: true }}
               transition={{ delay: index * 0.2, duration: 0.5 }}
               whileHover={{ y: -5 }}
-              className="bg-brand-navy border border-gray-800 p-8 rounded-3xl relative group hover:border-brand-cyan/50 transition-colors shadow-lg"
+              className="bg-brand-navy border border-gray-800 p-8 rounded-3xl relative group hover:border-brand-cyan/50 transition-colors shadow-lg rtl:text-right flex flex-col h-full"
             >
-              <Quote className="absolute top-6 right-6 w-12 h-12 text-gray-800/50 group-hover:text-brand-cyan/10 transition-colors" />
+              <Quote className={`absolute top-6 ${locale === 'ar' ? 'left-6' : 'right-6'} w-12 h-12 text-gray-800/50 group-hover:text-brand-cyan/10 transition-colors ${locale === 'ar' ? 'rotate-180' : ''}`} />
               
               <div className="flex gap-1 mb-6">
                 {[...Array(testimonial.rating)].map((_, i) => (
@@ -74,12 +85,12 @@ export default function Testimonials() {
                 ))}
               </div>
               
-              <p className="text-gray-300 font-sans leading-relaxed mb-8 relative z-10">
+              <p className="text-gray-300 font-sans leading-relaxed mb-8 relative z-10 flex-grow">
                 &quot;{testimonial.text}&quot;
               </p>
               
               <div className="flex items-center gap-4 mt-auto border-t border-gray-800 pt-6">
-                <div className="w-12 h-12 rounded-full overflow-hidden relative border-2 border-brand-navy-light">
+                <div className="w-12 h-12 rounded-full overflow-hidden relative border-2 border-brand-navy-light shrink-0">
                   <Image 
                     src={testimonial.image} 
                     alt={testimonial.name}

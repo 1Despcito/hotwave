@@ -1,0 +1,49 @@
+{
+  "Nav": {
+    "home": "Home",
+    "about": "About Us",
+    "services": "Services",
+    "testimonials": "Testimonials",
+    "chat": "Chat with Us"
+  },
+  "Hero": {
+    "book": "Book Adventure",
+    "explore": "Explore Services"
+  },
+  "About": {
+    "title": "Why",
+    "subtitle": "Hot Wave?",
+    "desc": "Based in the heart of Hurghada, Hot wave isn't just another tourism company. We are a family of ocean lovers and adventure seekers dedicated to showing you the authentic beauty of the Red Sea coast.",
+    "years_exp": "Years of Adventures",
+    "years_exp_desc": "Crafting perfect memories for thousands of happy travelers.",
+    "learn_more": "Learn More About Us",
+    "f1_title": "Expert Guides",
+    "f1_desc": "Local professionals who know every hidden gem in the Red Sea and desert.",
+    "f2_title": "Top Safety Standards",
+    "f2_desc": "We prioritize your well-being with well-maintained equipment and protocols.",
+    "f3_title": "Small Groups",
+    "f3_desc": "Intimate groups ensuring you get a personalized and uncrowded experience.",
+    "f4_title": "Memorable Moments",
+    "f4_desc": "We capture the best moments so focused only on enjoying the ride."
+  },
+  "Services": {
+    "title": "Our Prime",
+    "title_gradient": "Adventures",
+    "subtitle": "Curated experiences to make your stay in Hurghada unforgettable. Choose your next thrill.",
+    "discover": "Discover More"
+  },
+  "Testimonials": {
+    "title": "Traveler",
+    "title_gradient": "Stories",
+    "subtitle": "Don't just take our word for it. Here is what our guests have to say about their Hot Wave experience."
+  },
+  "Auth": {
+    "login_title": "Login",
+    "login_sub": "Login to your account",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Login",
+    "loading": "Loading...",
+    "wrong_cred": "Invalid Username or Password"
+  }
+}
