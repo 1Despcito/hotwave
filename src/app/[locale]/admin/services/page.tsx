@@ -115,11 +115,11 @@ export default function ServicesAdminPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">إدارة الخدمات</h1>
+      <h1 className="text-3xl font-bold text-white mb-6 font-heading">إدارة البرامج السياحية 🚢</h1>
 
       {/* Add Service Form */}
-      <div className="bg-[#111111] p-6 rounded-lg shadow-sm border border-gray-800 mb-8">
-        <h2 className="text-lg font-semibold text-white mb-4">إضافة خدمة جديدة</h2>
+      <div className="bg-[#0a0a0a] p-6 md:p-8 rounded-3xl shadow-xl border border-gray-800 mb-8">
+        <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">إضافة برنامج سياحي جديد</h2>
         <form onSubmit={handleAdd} className="space-y-4 max-w-4xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -156,7 +156,7 @@ export default function ServicesAdminPage() {
           </div>
         )}
         {services.map(service => (
-          <div key={service.id} className="bg-[#111111] rounded-lg border border-gray-800 overflow-hidden">
+          <div key={service.id} className="bg-[#0a0a0a] rounded-3xl border border-gray-800 overflow-hidden shadow-lg transition-all hover:border-gray-700">
             {/* Service Row */}
             <div className="flex items-center gap-4 p-4">
               {service.imageUrl && (
@@ -185,8 +185,8 @@ export default function ServicesAdminPage() {
 
             {/* Sub-items Panel */}
             {expandedId === service.id && (
-              <div className="border-t border-gray-800 bg-[#0d0d0d] p-4">
-                <h3 className="text-sm font-semibold text-gray-300 mb-3">أقسام الخدمة</h3>
+              <div className="border-t border-gray-800 bg-[#050505] p-6">
+                <h3 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-widest">تفاصيل الباقات والأقسام</h3>
 
                 {/* Existing Types */}
                 {service.types.length === 0 ? (

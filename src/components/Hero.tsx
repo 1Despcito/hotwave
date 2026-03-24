@@ -9,9 +9,10 @@ interface HeroProps {
   title?: string;
   subtitle?: string;
   imageUrl?: string;
+  whatsappNumber?: string;
 }
 
-export default function Hero({ title, subtitle, imageUrl }: HeroProps) {
+export default function Hero({ title, subtitle, imageUrl, whatsappNumber = "201110626484" }: HeroProps) {
   const t = useTranslations('Hero');
 
   const displayTitle = title || "Experience Hurghada Like Never Before";
@@ -64,7 +65,7 @@ export default function Hero({ title, subtitle, imageUrl }: HeroProps) {
 
             <div className="flex flex-col sm:flex-row gap-4 mb-16">
               <motion.a
-                href="https://wa.me/201110626484"
+                href={`https://wa.me/${whatsappNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}

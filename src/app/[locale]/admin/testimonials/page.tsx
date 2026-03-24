@@ -48,10 +48,10 @@ export default function TestimonialsAdminPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">إدارة آراء العملاء</h1>
+      <h1 className="text-3xl font-bold text-white mb-6 font-heading">إدارة آراء العملاء ⭐</h1>
       
-      <div className="bg-[#111111] p-6 rounded-lg shadow-sm border border-gray-800 mb-8">
-        <h2 className="text-lg font-semibold text-white mb-4">إضافة رأي جديد</h2>
+      <div className="bg-[#0a0a0a] p-6 md:p-8 rounded-3xl shadow-xl border border-gray-800 mb-8">
+        <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">إضافة رأي جديد (Testimonial)</h2>
         <form onSubmit={handleAdd} className="space-y-4 max-w-4xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -92,11 +92,11 @@ export default function TestimonialsAdminPage() {
         </form>
       </div>
 
-      <div className="bg-[#111111] rounded-lg shadow-sm border border-gray-800 overflow-hidden">
+      <div className="bg-[#0a0a0a] rounded-3xl shadow-xl border border-gray-800 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-800">
-          <thead className="bg-[#1a1a1a]">
+          <thead className="bg-[#111111]">
             <tr>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">الصورة</th>
+              <th className="px-6 py-5 rounded-tr-3xl text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">الصورة</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">الاسم والصفة (عربي)</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">الاسم والصفة (إنجليزي)</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">الرأي</th>

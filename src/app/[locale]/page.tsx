@@ -25,6 +25,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         title={heroTitle || undefined} 
         subtitle={heroSubtitle || undefined} 
         imageUrl={settings?.heroImageUrl || undefined} 
+        whatsappNumber={(settings as any)?.whatsappNumber || undefined}
       />
       <About />
       <Services initialServices={dbServices} locale={locale} settings={settings} />

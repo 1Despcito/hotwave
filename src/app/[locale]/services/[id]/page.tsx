@@ -1,10 +1,9 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
-import { ArrowRight, ArrowLeft, Tag, CheckCircle2 } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import BookingButton from '@/components/BookingButton';
+import ServicePackageCard from '@/components/ServicePackageCard';
 
 // Fallback data for empty DB
 const fallbackServices = {
@@ -111,72 +110,22 @@ export default async function ServiceDetailsPage({
         <div className="bg-brand-navy-light/80 backdrop-blur-2xl border border-gray-800 rounded-3xl p-8 mb-12 shadow-2xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-heading text-white mb-4">
-              {isArabic ? 'الباقات المتاحة' : 'Available Packages'}
+              {isArabic ? 'الخدمات المتاحة' : 'Available Services'}
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-brand-orange to-brand-cyan mx-auto rounded-full" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {serviceData.types.map((pkg: any, idx: number) => {
-              const pkgName = isArabic ? (pkg.nameAr || pkg.name || pkg.nameEn) : (pkg.nameEn || pkg.name);
-              const pkgPrice = pkg.price;
-              
-              // Handle includes parsing (comma separated in DB)
-              let pkgIncludes = ['Guide', 'Water', 'Transfer']; // default mock
-              const dbIncludesStr = isArabic ? (pkg.includes || pkg.includesEn) : (pkg.includesEn || pkg.includes);
-              if (dbIncludesStr && typeof dbIncludesStr === 'string') {
-                pkgIncludes = dbIncludesStr.split(',').map(item => item.trim()).filter(Boolean);
-              } else if (Array.isArray(pkg.includes)) {
-                pkgIncludes = pkg.includes;
-              }
-
-              const pkgDuration = isArabic ? (pkg.duration || pkg.durationEn) : (pkg.durationEn || pkg.duration);
-
-              return (
-                <div key={pkg.id || idx} className="bg-brand-navy border border-gray-700/50 rounded-2xl p-6 hover:border-brand-orange/50 hover:shadow-[0_10px_30px_rgba(255,107,0,0.1)] transition-all flex flex-col">
-                  <div className="flex justify-between items-start mb-6">
-                    <h3 className="text-2xl font-bold text-white font-heading">{pkgName}</h3>
-                    {pkgPrice && (
-                      <div className="bg-brand-cyan/10 text-brand-cyan px-3 py-1 rounded-full text-sm font-bold border border-brand-cyan/20">
-                        {pkgPrice}
-                      </div>
-                    )}
-                  </div>
-
-                  {pkgDuration && (
-                    <div className="inline-flex items-center gap-2 text-sm text-gray-400 mb-6 bg-black/20 w-fit px-3 py-1.5 rounded-lg border border-white/5">
-                      ⏱️ {isArabic ? 'المدة:' : 'Duration:'} <span className="text-white font-medium">{pkgDuration}</span>
-                    </div>
-                  )}
-
-                  <div className="flex-grow">
-                    <h4 className="text-sm text-gray-400 mb-3 uppercase tracking-wider font-semibold">
-                      {isArabic ? 'تشمل:' : 'Includes:'}
-                    </h4>
-                    <ul className="space-y-3 mb-8">
-                      {pkgIncludes.map((item: string, i: number) => (
-                        <li key={i} className="flex items-center gap-3 text-gray-300 text-sm">
-                          <CheckCircle2 className="w-4 h-4 text-brand-orange shrink-0" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <BookingButton
-                    serviceName={title}
-                    packageName={pkgName}
-                    whatsappNumber={(settings as any)?.whatsappNumber || "201110626484"}
-                    message={`Hello Hot Wave! I want to book the "${pkgName}" package from the ${title} category.`}
-                    className="w-full mt-auto py-3.5 bg-gradient-to-r from-brand-orange to-[#ff3300] text-white font-bold rounded-xl shadow-lg hover:shadow-brand-orange/30 border border-brand-orange/50 group/btn"
-                  >
-                    {isArabic ? 'احجز هذه الباقة' : 'Book This Package'}
-                    <ArrowRight className="w-4 h-4 rtl:hidden group-hover/btn:translate-x-1 transition-transform" />
-                    <ArrowRight className="w-4 h-4 hidden rtl:block rotate-180 group-hover/btn:-translate-x-1 transition-transform" />
-                  </BookingButton>
-                </div>
-              );
-            })}
+            {serviceData.types.map((pkg: any, idx: number) => (
+              <ServicePackageCard
+                key={pkg.id || idx}
+                pkg={pkg}
+                serviceTitle={title as string}
+                collectionId={id as string}
+                whatsappNumber={(settings as any)?.whatsappNumber || "201110626484"}
+                isArabic={isArabic}
+              />
+            ))}
           </div>
         </div>
       </section>

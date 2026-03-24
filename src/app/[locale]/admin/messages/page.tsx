@@ -33,12 +33,12 @@ export default function MessagesAdminPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">الرسائل الواردة</h1>
+      <h1 className="text-3xl font-bold text-white mb-6 font-heading">الرسائل الواردة 📨</h1>
       
-      <div className="bg-[#111111] rounded-lg shadow-sm border border-gray-800 overflow-hidden">
-        <ul className="divide-y divide-gray-800">
+      <div className="bg-[#0a0a0a] rounded-3xl shadow-xl border border-gray-800 overflow-hidden">
+        <ul className="divide-y divide-gray-800/50">
           {messages.map(msg => (
-            <li key={msg.id} className={`p-6 transition-colors ${!msg.read ? 'bg-blue-900/10' : 'bg-[#111111] hover:bg-gray-800/30'}`}>
+            <li key={msg.id} className={`p-6 md:p-8 transition-colors ${!msg.read ? 'bg-brand-cyan/5 hover:bg-brand-cyan/10' : 'bg-[#111111] hover:bg-white/[0.02]'}`}>
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-sm font-medium text-white">{msg.name}</h3>
@@ -48,16 +48,16 @@ export default function MessagesAdminPage() {
                   {new Date(msg.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </div>
               </div>
-              <div className="mt-4 text-sm text-gray-300 border-r-4 border-brand-cyan pl-4 py-2 bg-[#1a1a1a] rounded-l pr-2">
+              <div className="mt-4 text-sm text-gray-300 border-r-2 border-brand-cyan pl-4 py-3 bg-black/40 rounded-l-xl pr-4 leading-relaxed font-sans">
                 {msg.message}
               </div>
-              <div className="mt-4 flex space-x-4 space-x-reverse">
+              <div className="mt-6 flex space-x-4 space-x-reverse">
                 {!msg.read && (
-                  <button onClick={() => handleMarkAsRead(msg.id)} className="text-brand-cyan hover:text-cyan-400 text-sm font-medium transition-colors">
+                  <button onClick={() => handleMarkAsRead(msg.id)} className="text-brand-cyan hover:text-cyan-300 text-sm font-bold transition-colors bg-brand-cyan/10 px-4 py-2 rounded-lg">
                     تحديد كمقروءة
                   </button>
                 )}
-                <button onClick={() => handleDelete(msg.id)} className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors">
+                <button onClick={() => handleDelete(msg.id)} className="text-red-400 hover:text-red-300 text-sm font-bold transition-colors bg-red-400/10 px-4 py-2 rounded-lg">
                   حذف
                 </button>
               </div>

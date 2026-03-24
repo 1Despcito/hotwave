@@ -1,10 +1,12 @@
 'use client';
 
 import { Facebook, Instagram, MapPin, Phone, Mail, MessageCircle } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import Link from 'next/link';
 
 export default function Footer({ settings }: { settings?: any }) {
   const t = useTranslations('Footer');
+  const locale = useLocale();
 
   return (
     <footer className="bg-brand-navy border-t border-gray-800 pt-16 pb-8">
@@ -39,10 +41,10 @@ export default function Footer({ settings }: { settings?: any }) {
           <div>
             <h4 className="text-white font-semibold mb-6">{t('quick_links')}</h4>
             <ul className="space-y-3 font-sans text-gray-400">
-              <li><a href="#" className="hover:text-brand-cyan transition-colors">{t('link_home')}</a></li>
-              <li><a href="#services" className="hover:text-brand-cyan transition-colors">{t('link_services')}</a></li>
-              <li><a href="#" className="hover:text-brand-cyan transition-colors">{t('link_about')}</a></li>
-              <li><a href="#" className="hover:text-brand-cyan transition-colors">{t('link_contact')}</a></li>
+              <li><Link href={`/${locale}`} className="hover:text-brand-cyan transition-colors">{t('link_home')}</Link></li>
+              <li><Link href={`/${locale}/#services`} className="hover:text-brand-cyan transition-colors">{t('link_services')}</Link></li>
+              <li><Link href={`/${locale}/about`} className="hover:text-brand-cyan transition-colors">{t('link_about')}</Link></li>
+              <li><Link href={`/${locale}/contact`} className="hover:text-brand-cyan transition-colors">{t('link_contact')}</Link></li>
             </ul>
           </div>
 

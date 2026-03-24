@@ -62,7 +62,7 @@ export default function BookingsAdminPage() {
     <div className="max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">متتبع الحجوزات 📋</h1>
+          <h1 className="text-3xl font-bold text-white font-heading">متتبع الحجوزات 📋</h1>
           <p className="text-gray-400 mt-2 text-sm">متابعة كل من نقر على أزرار الحجز عبر الموقع لتفادي خسارة أي عميل محتمل لم يكمل محادثة الواتساب.</p>
         </div>
         
@@ -78,7 +78,7 @@ export default function BookingsAdminPage() {
         </div>
       </div>
 
-      <div className="bg-[#111111] rounded-2xl border border-gray-800 overflow-hidden shadow-xl min-h-[400px]">
+      <div className="bg-[#0a0a0a] rounded-3xl border border-gray-800 overflow-hidden shadow-xl min-h-[400px]">
         {isLoading ? (
           <div className="flex items-center justify-center h-[400px]">
             <Loader2 className="w-8 h-8 text-brand-orange animate-spin" />
@@ -93,12 +93,12 @@ export default function BookingsAdminPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-right text-sm text-gray-300">
-              <thead className="bg-[#1a1a1a] text-gray-400 uppercase font-semibold text-xs border-b border-gray-800">
+              <thead className="bg-[#111111] text-gray-400 uppercase font-semibold text-xs border-b border-gray-800">
                 <tr>
-                  <th className="px-6 py-4">العميل</th>
-                  <th className="px-6 py-4">الخدمة / الباقة</th>
-                  <th className="px-6 py-4">التاريخ</th>
-                  <th className="px-6 py-4 text-center">تحديث الحالة</th>
+                  <th className="px-6 py-5 rounded-tr-3xl">العميل</th>
+                  <th className="px-6 py-5">الخدمة / الباقة</th>
+                  <th className="px-6 py-5">التاريخ</th>
+                  <th className="px-6 py-5 text-center rounded-tl-3xl">تحديث الحالة</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800/50">

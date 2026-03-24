@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from './LanguageSwitcher';
+import Link from 'next/link';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,12 +13,14 @@ export default function Navbar() {
   
   const t = useTranslations('Nav');
   const tHero = useTranslations('Hero');
+  const locale = useLocale();
 
   const navLinks = [
-    { name: t('home'), href: '#' },
-    { name: t('services'), href: '#services' },
-    { name: t('about'), href: '#about' },
-    { name: t('testimonials'), href: '#testimonials' },
+    { name: t('home'), href: `/${locale}` },
+    { name: t('services'), href: `/${locale}/#services` },
+    { name: t('about'), href: `/${locale}/about` },
+    { name: t('testimonials'), href: `/${locale}/#testimonials` },
+    { name: locale === 'ar' ? 'تواصل معنا' : 'Contact Us', href: `/${locale}/contact` }
   ];
 
   useEffect(() => {
@@ -39,7 +42,7 @@ export default function Navbar() {
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
         {/* Brand */}
-        <a href="#" className="flex items-center gap-2 group">
+        <Link href={`/${locale}`} className="flex items-center gap-2 group">
           <div className="relative w-10 h-10 overflow-hidden rounded-full border border-gray-700 group-hover:border-brand-orange transition-colors">
               <div className="absolute inset-0 bg-gradient-to-tr from-brand-orange to-brand-cyan flex items-center justify-center text-white font-bold text-xs">
                 HW
@@ -48,19 +51,19 @@ export default function Navbar() {
           <span className="text-xl font-bold font-heading text-white tracking-wide rtl:tracking-normal">
             HOT <span className="text-brand-orange">WAVE</span>
           </span>
-        </a>
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6 rtl:gap-8">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.name}
               href={link.href}
               className="font-sans text-sm font-medium text-gray-300 hover:text-white transition-colors relative group"
             >
               {link.name}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-cyan transition-all group-hover:w-full" />
-            </a>
+            </Link>
           ))}
           
           <div className="flex items-center gap-3 w-px h-6 bg-gray-700 mx-1" />
@@ -102,14 +105,14 @@ export default function Navbar() {
           >
             <nav className="container mx-auto px-4 py-6 flex flex-col gap-4">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.name}
                   href={link.href}
                   className="font-sans text-lg font-medium text-gray-300 hover:text-brand-cyan transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {link.name}
-                </a>
+                </Link>
               ))}
               <a 
                 href="https://wa.me/201110626484"

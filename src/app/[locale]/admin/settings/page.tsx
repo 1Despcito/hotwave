@@ -85,7 +85,7 @@ export default function SettingsAdminPage() {
     <div className="max-w-5xl mx-auto pb-12">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">إعدادات الموقع الشاملة ⚙️</h1>
+          <h1 className="text-3xl font-bold text-white mb-2 font-heading">إعدادات الموقع الشاملة ⚙️</h1>
           <p className="text-gray-400">التحكم في النصوص الرئيسية، أرقام التواصل، وروابط منصات التواصل الاجتماعي.</p>
         </div>
         <button
@@ -100,7 +100,7 @@ export default function SettingsAdminPage() {
 
       <div className="grid gap-8">
         {/* Contact Info */}
-        <section className="bg-[#111111] p-6 md:p-8 rounded-2xl border border-gray-800 shadow-xl">
+        <section className="bg-[#0a0a0a] p-6 md:p-10 rounded-3xl border border-gray-800 shadow-xl">
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2 border-b border-gray-800 pb-4"><Globe className="w-6 h-6 text-brand-cyan" /> روابط ومعلومات التواصل</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
@@ -167,7 +167,7 @@ export default function SettingsAdminPage() {
         </section>
 
         {/* Hero Info */}
-        <section className="bg-[#111111] p-6 md:p-8 rounded-2xl border border-gray-800 shadow-xl">
+        <section className="bg-[#0a0a0a] p-6 md:p-10 rounded-3xl border border-gray-800 shadow-xl">
           <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-800 pb-4">واجهة الترحيب (Hero Section)</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             <div className="space-y-6">
