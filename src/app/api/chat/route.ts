@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   // Build the exact dynamic context block
   let contextStr = `\n--- المجموعات والخدمات المتاحة حالياً في الموقع ---\n`;
   collections.forEach(col => {
-    const colName = col.titleAr || col.title || col.titleEn;
+    const colName = col.title || col.titleEn;
     contextStr += `🔸 مجموعة: ${colName}\n`;
     
     // Find packages for this collection
@@ -24,10 +24,10 @@ export async function POST(req: Request) {
       contextStr += `(لا توجد باقات مفعلة حالياً في هذه المجموعة)\n`;
     } else {
       colPackages.forEach(pkg => {
-         const pkgName = pkg.nameAr || pkg.name || pkg.nameEn;
+         const pkgName = pkg.name || pkg.nameEn;
          const pkgPrice = pkg.price ? `${pkg.price}` : 'حسب الطلب أو غير محدد حالياً';
-         const pkgDuration = pkg.durationAr || pkg.duration || 'غير محدد';
-         const pkgIncludes = pkg.includesAr || pkg.includes || 'غير محدد';
+         const pkgDuration = pkg.duration || pkg.durationEn || 'غير محدد';
+         const pkgIncludes = pkg.includes || pkg.includesEn || 'غير محدد';
          contextStr += `   - خدمة (الباقة): ${pkgName} | السعر: ${pkgPrice} | المدة: ${pkgDuration} | تشمل: ${pkgIncludes}\n`;
       });
     }
