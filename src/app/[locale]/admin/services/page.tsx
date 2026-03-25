@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import ImageUpload from "@/components/ImageUpload";
-import { ChevronDown, ChevronUp, Plus, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Trash2, X, Edit3, Save, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 type ServiceType = {
   id: string;
@@ -17,6 +18,7 @@ type ServiceType = {
   durationEn?: string | null;
   includes?: string | null;
   includesEn?: string | null;
+  featured: boolean;
 };
 
 type Service = {
@@ -26,6 +28,7 @@ type Service = {
   description: string;
   descriptionEn: string;
   imageUrl: string;
+  icon?: string | null;
   types: ServiceType[];
 };
 
@@ -37,8 +40,15 @@ export default function ServicesAdminPage() {
   const [formData, setFormData] = useState({ title: "", titleEn: "", description: "", descriptionEn: "", imageUrl: "" });
   const [isAdding, setIsAdding] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  
+  // States for dynamic type adding
   const [typeForm, setTypeForm] = useState<Record<string, typeof emptyTypeForm>>({});
   const [addingTypeFor, setAddingTypeFor] = useState<string | null>(null);
+
+  // States for Editing Modals
+  const [editingService, setEditingService] = useState<Service | null>(null);
+  const [editingType, setEditingType] = useState<{serviceId: string, type: ServiceType} | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => { fetchServices(); }, []);
 
@@ -50,6 +60,10 @@ export default function ServicesAdminPage() {
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.imageUrl) {
+        toast.error("برجاء رفع صورة للخدمة أولاً");
+        return;
+    }
     setIsAdding(true);
     const res = await fetch("/api/services", {
       method: "POST",
@@ -67,7 +81,7 @@ export default function ServicesAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذه الخدمة؟")) return;
+    if (!confirm("هل أنت متأكد من حذف هذه الخدمة؟ هسيتم حذف جميع باقاتها أيضاً!")) return;
     const res = await fetch(`/api/services/${id}`, { method: "DELETE" });
     if (res.ok) {
       toast.success("تم حذف الخدمة");
@@ -77,6 +91,44 @@ export default function ServicesAdminPage() {
     }
   };
 
+  const handleUpdateService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingService) return;
+    setIsUpdating(true);
+    const res = await fetch(`/api/services/${editingService.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editingService),
+    });
+    if (res.ok) {
+      toast.success("تم التحديث بنجاح");
+      setEditingService(null);
+      fetchServices();
+    } else {
+      toast.error("فشل التحديث");
+    }
+    setIsUpdating(false);
+  };
+
+  const handleUpdateType = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingType) return;
+    setIsUpdating(true);
+    const res = await fetch(`/api/services/${editingType.serviceId}/types/${editingType.type.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editingType.type),
+    });
+    if (res.ok) {
+      toast.success("تم تحديث الباقة بنجاح");
+      setEditingType(null);
+      fetchServices();
+    } else {
+      toast.error("فشل التحديث");
+    }
+    setIsUpdating(false);
+  };
+
   const handleAddType = async (serviceId: string) => {
     const form = typeForm[serviceId] || emptyTypeForm;
     if (!form.name) return;
@@ -84,11 +136,11 @@ export default function ServicesAdminPage() {
     const res = await fetch(`/api/services/${serviceId}/types`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, price: form.price ? parseFloat(form.price) : null }),
+      body: JSON.stringify({ ...form, price: form.price ? parseFloat(form.price as string) : null }),
     });
     if (res.ok) {
       setTypeForm(prev => ({ ...prev, [serviceId]: { ...emptyTypeForm } }));
-      toast.success("تمت إضافة القسم للباقة بنجاح");
+      toast.success("تمت إضافة الباقة بنجاح");
       fetchServices();
     } else {
       toast.error("فشل الإضافة");
@@ -97,10 +149,10 @@ export default function ServicesAdminPage() {
   };
 
   const handleDeleteType = async (serviceId: string, typeId: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذا القسم؟")) return;
+    if (!confirm("هل أنت متأكد من حذف هذه الباقة؟")) return;
     const res = await fetch(`/api/services/${serviceId}/types/${typeId}`, { method: "DELETE" });
     if (res.ok) {
-      toast.success("تم حذف القسم");
+      toast.success("تم حذف الباقة");
       fetchServices();
     } else {
       toast.error("فشل الحذف");
@@ -111,193 +163,246 @@ export default function ServicesAdminPage() {
   const setTypeFormFor = (id: string, field: string, value: string) =>
     setTypeForm(prev => ({ ...prev, [id]: { ...(prev[id] || emptyTypeForm), [field]: value } }));
 
-  if (isLoading) return <div className="text-white">جاري التحميل...</div>;
+  if (isLoading) return <div className="text-white flex items-center justify-center min-h-[400px]"><Loader2 className="animate-spin mr-2" /> جاري تحميل البيانات...</div>;
 
   return (
-    <div>
+    <div className="pb-20">
       <h1 className="text-3xl font-bold text-white mb-6 font-heading">إدارة البرامج السياحية 🚢</h1>
 
-      {/* Add Service Form */}
+      {/* Add Service Section */}
       <div className="bg-[#0a0a0a] p-6 md:p-8 rounded-3xl shadow-xl border border-gray-800 mb-8">
-        <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">إضافة برنامج سياحي جديد</h2>
+        <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">إضافة مجموعة رحلات جديدة</h2>
         <form onSubmit={handleAdd} className="space-y-4 max-w-4xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300">عنوان الخدمة (بالعربية)</label>
-              <input required type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="mt-1 w-full border border-gray-700 bg-[#1a1a1a] text-white p-2 rounded" dir="rtl" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300">عنوان الخدمة (بالإنجليزية)</label>
-              <input required type="text" value={formData.titleEn} onChange={e => setFormData({ ...formData, titleEn: e.target.value })} className="mt-1 w-full border border-gray-700 bg-[#1a1a1a] text-white p-2 rounded" dir="ltr" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300">الوصف (بالعربية)</label>
-              <textarea required value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="mt-1 w-full border border-gray-700 bg-[#1a1a1a] text-white p-2 rounded" rows={3} dir="rtl" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300">الوصف (بالإنجليزية)</label>
-              <textarea required value={formData.descriptionEn} onChange={e => setFormData({ ...formData, descriptionEn: e.target.value })} className="mt-1 w-full border border-gray-700 bg-[#1a1a1a] text-white p-2 rounded" rows={3} dir="ltr" />
-            </div>
+            <InputField label="عنوان المجموعة (بالعربية)" value={formData.title} onChange={v => setFormData({ ...formData, title: v })} dir="rtl" required />
+            <InputField label="عنوان المجموعة (بالإنجليزية)" value={formData.titleEn} onChange={v => setFormData({ ...formData, titleEn: v })} dir="ltr" required />
+            <TextareaField label="الوصف (بالعربية)" value={formData.description} onChange={v => setFormData({ ...formData, description: v })} dir="rtl" required />
+            <TextareaField label="الوصف (بالإنجليزية)" value={formData.descriptionEn} onChange={v => setFormData({ ...formData, descriptionEn: v })} dir="ltr" required />
           </div>
-          <div className="border border-gray-800 bg-[#1a1a1a] p-4 rounded-md">
-            <ImageUpload label="صورة الخدمة" value={formData.imageUrl} onChange={(url) => setFormData({ ...formData, imageUrl: url })} />
+          <div className="border border-gray-800 bg-[#1a1a1a] p-4 rounded-xl">
+            <ImageUpload label="صورة الغلاف للمجموعة" value={formData.imageUrl} onChange={(url) => setFormData({ ...formData, imageUrl: url })} />
           </div>
-          <button disabled={isAdding} className="bg-brand-orange text-white px-6 py-2 rounded-md hover:bg-brand-orange/90 disabled:opacity-50 transition-colors mt-2">
-            {isAdding ? "جاري الإضافة..." : "إضافة الخدمة"}
+          <button disabled={isAdding} className="bg-brand-orange text-white px-8 py-3 rounded-xl hover:bg-brand-orange/90 disabled:opacity-50 transition-all font-bold shadow-lg shadow-brand-orange/20">
+            {isAdding ? "جاري الإضافة..." : "إضافة المجموعة"}
           </button>
         </form>
       </div>
 
       {/* Services List */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {services.length === 0 && (
-          <div className="bg-[#111111] p-6 text-center text-gray-500 rounded-lg border border-gray-800">
-            لا توجد خدمات مضافة حالياً.
+          <div className="bg-[#111111] p-12 text-center text-gray-500 rounded-3xl border border-gray-800">
+            <Plus className="w-12 h-12 mx-auto mb-4 opacity-20" />
+            لا توجد مجموعات مضافة حالياً.
           </div>
         )}
         {services.map(service => (
           <div key={service.id} className="bg-[#0a0a0a] rounded-3xl border border-gray-800 overflow-hidden shadow-lg transition-all hover:border-gray-700">
-            {/* Service Row */}
-            <div className="flex items-center gap-4 p-4">
+            {/* Service Header Row */}
+            <div className="flex flex-col md:flex-row items-center gap-4 p-5">
               {service.imageUrl && (
-                <img src={service.imageUrl} alt={service.title} className="h-14 w-14 rounded-lg object-cover flex-shrink-0 border border-gray-700" />
+                <img src={service.imageUrl} alt={service.title} className="h-20 w-32 rounded-2xl object-cover flex-shrink-0 border border-gray-800 shadow-md" />
               )}
-              <div className="flex-1 min-w-0">
-                <p className="text-white font-semibold truncate">{service.title}</p>
-                <p className="text-gray-400 text-sm truncate" dir="ltr">{service.titleEn}</p>
+              <div className="flex-1 min-w-0 text-center md:text-right">
+                <p className="text-white text-lg font-bold">{service.title}</p>
+                <p className="text-gray-500 text-sm font-medium" dir="ltr">{service.titleEn}</p>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <span className="text-xs text-gray-500 bg-gray-800 px-2 py-1 rounded-full">
-                  {service.types.length} قسم
+              <div className="flex items-center gap-2 flex-wrap justify-center">
+                <span className="text-xs font-bold text-gray-400 bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-800">
+                  {service.types.length} باقة / قسم
                 </span>
                 <button
                   onClick={() => setExpandedId(expandedId === service.id ? null : service.id)}
-                  className="flex items-center gap-1 text-sm text-brand-cyan hover:text-brand-cyan/80 px-3 py-1.5 rounded-md border border-brand-cyan/30 hover:border-brand-cyan/60 transition-colors"
+                  className="flex items-center gap-1.5 text-sm text-brand-cyan hover:text-white px-4 py-2 rounded-xl border border-brand-cyan/20 hover:bg-brand-cyan hover:border-brand-cyan transition-all"
                 >
                   {expandedId === service.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  {expandedId === service.id ? "إخفاء" : "إدارة الأقسام"}
+                  {expandedId === service.id ? "إغلاق" : "إدارة الباقات"}
                 </button>
-                <button onClick={() => handleDelete(service.id)} className="text-red-400 hover:text-red-300 transition-colors p-1.5">
-                  <Trash2 className="w-4 h-4" />
+                <button onClick={() => setEditingService(service)} className="text-gray-400 hover:text-brand-orange transition-colors p-2 bg-gray-900 rounded-xl border border-gray-800">
+                  <Edit3 className="w-5 h-5" />
+                </button>
+                <button onClick={() => handleDelete(service.id)} className="text-gray-400 hover:text-red-500 transition-colors p-2 bg-gray-900 rounded-xl border border-gray-800">
+                  <Trash2 className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            {/* Sub-items Panel */}
-            {expandedId === service.id && (
-              <div className="border-t border-gray-800 bg-[#050505] p-6">
-                <h3 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-widest">تفاصيل الباقات والأقسام</h3>
+            {/* Expanded Content: Sub-items & Add Form */}
+            <AnimatePresence>
+              {expandedId === service.id && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }} 
+                  animate={{ height: "auto", opacity: 1 }} 
+                  exit={{ height: 0, opacity: 0 }}
+                  className="border-t border-gray-800 bg-[#050505] overflow-hidden"
+                >
+                  <div className="p-6">
+                    <h3 className="text-xs font-bold text-gray-500 mb-6 uppercase tracking-widest flex items-center gap-2">
+                        <div className="h-px bg-gray-800 flex-1" />
+                        الباقات والخدمات المتاحة
+                        <div className="h-px bg-gray-800 flex-1" />
+                    </h3>
 
-                {/* Existing Types */}
-                {service.types.length === 0 ? (
-                  <p className="text-gray-600 text-sm mb-4">لا توجد أقسام بعد.</p>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
-                    {service.types.map(type => (
-                      <div key={type.id} className="flex items-start gap-3 bg-[#151515] border border-gray-800 rounded-lg p-3">
-                        {type.imageUrl && (
-                          <img src={type.imageUrl} alt={type.name} className="h-10 w-10 rounded object-cover flex-shrink-0" />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white text-sm font-medium">{type.name}</p>
-                          {type.nameEn && <p className="text-gray-500 text-xs" dir="ltr">{type.nameEn}</p>}
-                          {type.description && <p className="text-gray-400 text-xs mt-0.5 line-clamp-2">{type.description}</p>}
-                          {type.price && (
-                            <p className="text-brand-orange text-xs mt-1 font-semibold">{type.price} ج.م</p>
-                          )}
-                          {(type.duration || type.includes) && (
-                            <p className="text-brand-cyan text-xs mt-1">
-                                {type.duration && <span>⏱️ {type.duration} | </span>}
-                                {type.includes && <span className="text-gray-400">{type.includes}</span>}
-                            </p>
-                          )}
+                    {/* Simple list of sub-packages */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                      {service.types.map(type => (
+                        <div key={type.id} className="group relative bg-[#0d0d0d] border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-600 transition-all flex flex-col h-full">
+                           <div className="relative h-32 w-full">
+                                {type.imageUrl ? (
+                                    <img src={type.imageUrl} alt={type.name} className="h-full w-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all" />
+                                ) : (
+                                    <div className="h-full w-full bg-gray-900 flex items-center justify-center text-gray-700">لا توجد صورة</div>
+                                )}
+                                <div className="absolute top-2 right-2 flex gap-1 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
+                                    <button onClick={() => setEditingType({serviceId: service.id, type})} className="p-1.5 bg-brand-orange text-white rounded-lg shadow-lg hover:scale-105"><Edit3 size={14}/></button>
+                                    <button onClick={() => handleDeleteType(service.id, type.id)} className="p-1.5 bg-red-500 text-white rounded-lg shadow-lg hover:scale-105"><X size={14}/></button>
+                                </div>
+                           </div>
+                           <div className="p-4 flex-1">
+                                <p className="text-white text-sm font-bold truncate">{type.name}</p>
+                                <p className="text-gray-500 text-[10px] mb-2" dir="ltr">{type.nameEn}</p>
+                                {type.price && <p className="text-brand-cyan text-sm font-bold mb-2">{type.price} ج.م</p>}
+                                <p className="text-gray-400 text-xs line-clamp-2 leading-relaxed">{type.description}</p>
+                           </div>
                         </div>
-                        <button onClick={() => handleDeleteType(service.id, type.id)} className="text-red-500 hover:text-red-400 transition-colors flex-shrink-0 mt-0.5">
-                          <X className="w-4 h-4" />
-                        </button>
+                      ))}
+                      
+                      {/* Add Button Placeholder - triggers form below */}
+                      <div className="flex items-center justify-center bg-[#0d0d0d] border-2 border-dashed border-gray-800 rounded-2xl p-6 h-full text-gray-600 hover:text-brand-cyan hover:border-brand-cyan/50 transition-all cursor-default">
+                        <div className="text-center">
+                            <Plus size={24} className="mx-auto mb-2 opacity-50" />
+                            <p className="text-xs font-bold">أضف باقة جديدة أدناه</p>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                )}
+                    </div>
 
-                {/* Add Type Form */}
-                <div className="border border-dashed border-gray-700 rounded-lg p-3 bg-[#111111]">
-                  <p className="text-xs text-gray-400 mb-3 flex items-center gap-1"><Plus className="w-3 h-3" /> إضافة قسم جديد</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
-                    <input
-                      type="text" placeholder="اسم القسم (عربي) *" dir="rtl"
-                      value={getTypeForm(service.id).name}
-                      onChange={e => setTypeFormFor(service.id, "name", e.target.value)}
-                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
-                    />
-                    <input
-                      type="text" placeholder="اسم القسم (إنجليزي)" dir="ltr"
-                      value={getTypeForm(service.id).nameEn}
-                      onChange={e => setTypeFormFor(service.id, "nameEn", e.target.value)}
-                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
-                    />
-                    <textarea
-                      placeholder="وصف القسم (عربي)" dir="rtl" rows={2}
-                      value={getTypeForm(service.id).description}
-                      onChange={e => setTypeFormFor(service.id, "description", e.target.value)}
-                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
-                    />
-                    <textarea
-                      placeholder="وصف القسم (إنجليزي)" dir="ltr" rows={2}
-                      value={getTypeForm(service.id).descriptionEn}
-                      onChange={e => setTypeFormFor(service.id, "descriptionEn", e.target.value)}
-                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
-                    />
-                    <input
-                      type="number" placeholder="السعر (اختياري)"
-                      value={getTypeForm(service.id).price}
-                      onChange={e => setTypeFormFor(service.id, "price", e.target.value)}
-                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
-                    />
-                    <input
-                      type="text" placeholder="رابط الصورة (اختياري)" dir="ltr"
-                      value={getTypeForm(service.id).imageUrl}
-                      onChange={e => setTypeFormFor(service.id, "imageUrl", e.target.value)}
-                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
-                    />
-                    <input
-                      type="text" placeholder="المدة - مثلاً: 8 ساعات (اختياري)" dir="rtl"
-                      value={getTypeForm(service.id).duration}
-                      onChange={e => setTypeFormFor(service.id, "duration", e.target.value)}
-                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
-                    />
-                    <input
-                      type="text" placeholder="المدة (إنجليزي) - e.g. 8 Hours" dir="ltr"
-                      value={getTypeForm(service.id).durationEn}
-                      onChange={e => setTypeFormFor(service.id, "durationEn", e.target.value)}
-                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
-                    />
-                    <textarea
-                      placeholder="تشمل (كلمات يفصلها فاصلة) - مثلاً: غداء, مشروبات" dir="rtl" rows={2}
-                      value={getTypeForm(service.id).includes}
-                      onChange={e => setTypeFormFor(service.id, "includes", e.target.value)}
-                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
-                    />
-                    <textarea
-                      placeholder="Includes (Comma separated) - e.g. Lunch, Drinks" dir="ltr" rows={2}
-                      value={getTypeForm(service.id).includesEn}
-                      onChange={e => setTypeFormFor(service.id, "includesEn", e.target.value)}
-                      className="border border-gray-700 bg-[#1a1a1a] text-white text-sm p-2 rounded"
-                    />
+                    {/* New Integrated Add Type Form */}
+                    <div className="bg-[#0d0d0d] border border-gray-800 rounded-3xl p-6 shadow-inner">
+                        <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2"><Plus className="w-4 h-4 text-brand-orange" /> إضافة باقة جديدة لهذا البرنامج</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <InputField label="اسم الباقة (ع)" value={getTypeForm(service.id).name} onChange={v => setTypeFormFor(service.id, "name", v)} dir="rtl" />
+                            <InputField label="اسم الباقة (En)" value={getTypeForm(service.id).nameEn} onChange={v => setTypeFormFor(service.id, "nameEn", v)} dir="ltr" />
+                            <TextareaField label="وصف الباقة (ع)" value={getTypeForm(service.id).description} onChange={v => setTypeFormFor(service.id, "description", v)} dir="rtl" />
+                            <TextareaField label="وصف الباقة (En)" value={getTypeForm(service.id).descriptionEn} onChange={v => setTypeFormFor(service.id, "descriptionEn", v)} dir="ltr" />
+                            <InputField label="السعر" type="number" value={getTypeForm(service.id).price} onChange={v => setTypeFormFor(service.id, "price", v)} />
+                            <InputField label="المدة (ع) - 8 ساعات مثلاً" value={getTypeForm(service.id).duration} onChange={v => setTypeFormFor(service.id, "duration", v)} dir="rtl" />
+                            <InputField label="ماذا تشمل؟ (ع) - سناكس، مياه" value={getTypeForm(service.id).includes} onChange={v => setTypeFormFor(service.id, "includes", v)} dir="rtl" />
+                            <div className="md:col-span-2 mt-2 bg-black/40 p-4 rounded-2xl border border-gray-800">
+                                <ImageUpload label="صورة الباقة" value={getTypeForm(service.id).imageUrl} onChange={v => setTypeFormFor(service.id, "imageUrl", v)} />
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => handleAddType(service.id)} 
+                            disabled={addingTypeFor === service.id || !getTypeForm(service.id).name}
+                            className="w-full md:w-auto mt-6 bg-brand-cyan text-brand-navy px-10 py-3 rounded-xl font-bold hover:brightness-110 shadow-lg shadow-brand-cyan/20 transition-all disabled:opacity-50"
+                        >
+                            {addingTypeFor === service.id ? "جاري الإضافة..." : "حفظ الباقة الجديدة"}
+                        </button>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => handleAddType(service.id)}
-                    disabled={addingTypeFor === service.id || !getTypeForm(service.id).name}
-                    className="bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/40 hover:bg-brand-cyan/30 px-4 py-1.5 rounded text-sm transition-colors disabled:opacity-40"
-                  >
-                    {addingTypeFor === service.id ? "جاري الإضافة..." : "إضافة القسم"}
-                  </button>
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ))}
       </div>
+
+      {/* Edit Service Modal */}
+      <Modal isOpen={!!editingService} onClose={() => setEditingService(null)} title="تعديل بيانات المجموعة">
+        {editingService && (
+            <form onSubmit={handleUpdateService} className="space-y-4">
+                <InputField label="العنوان (ع)" value={editingService.title} onChange={v => setEditingService({...editingService, title: v})} dir="rtl" />
+                <InputField label="العنوان (En)" value={editingService.titleEn} onChange={v => setEditingService({...editingService, titleEn: v})} dir="ltr" />
+                <TextareaField label="الوصف (ع)" value={editingService.description} onChange={v => setEditingService({...editingService, description: v})} dir="rtl" />
+                <TextareaField label="الوصف (En)" value={editingService.descriptionEn} onChange={v => setEditingService({...editingService, descriptionEn: v})} dir="ltr" />
+                <ImageUpload label="الصورة الحالية" value={editingService.imageUrl} onChange={url => setEditingService({...editingService, imageUrl: url})} />
+                <button disabled={isUpdating} className="w-full bg-brand-orange py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                    {isUpdating ? <Loader2 className="animate-spin" size={18}/> : <Save size={18}/>} حفظ التعديلات
+                </button>
+            </form>
+        )}
+      </Modal>
+
+      {/* Edit Type Modal */}
+      <Modal isOpen={!!editingType} onClose={() => setEditingType(null)} title="تعديل باقة / قسم">
+        {editingType && (
+            <form onSubmit={handleUpdateType} className="space-y-4 max-h-[70vh] overflow-y-auto px-1">
+                 <InputField label="اسم الباقة (ع)" value={editingType.type.name} onChange={v => setEditingType({...editingType, type: {...editingType.type, name: v}})} dir="rtl" />
+                 <InputField label="اسم الباقة (En)" value={editingType.type.nameEn} onChange={v => setEditingType({...editingType, type: {...editingType.type, nameEn: v}})} dir="ltr" />
+                 <TextareaField label="الوصف (ع)" value={editingType.type.description} onChange={v => setEditingType({...editingType, type: {...editingType.type, description: v}})} dir="rtl" />
+                 <TextareaField label="الوصف (En)" value={editingType.type.descriptionEn} onChange={v => setEditingType({...editingType, type: {...editingType.type, descriptionEn: v}})} dir="ltr" />
+                 <div className="grid grid-cols-2 gap-4">
+                    <InputField label="السعر" type="number" value={String(editingType.type.price || "")} onChange={v => setEditingType({...editingType, type: {...editingType.type, price: v ? parseFloat(v) : null}})} />
+                    <InputField label="المدة" value={editingType.type.duration || ""} onChange={v => setEditingType({...editingType, type: {...editingType.type, duration: v}})} />
+                 </div>
+                 <InputField label="ماذا تشمل؟" value={editingType.type.includes || ""} onChange={v => setEditingType({...editingType, type: {...editingType.type, includes: v}})} />
+                 <ImageUpload label="تغيير الصورة" value={editingType.type.imageUrl || ""} onChange={url => setEditingType({...editingType, type: {...editingType.type, imageUrl: url}})} />
+                 <div className="flex items-center gap-2 p-3 bg-brand-orange/10 border border-brand-orange/20 rounded-xl">
+                    <input 
+                        type="checkbox" 
+                        id="featured-toggle"
+                        checked={editingType.type.featured} 
+                        onChange={e => setEditingType({...editingType, type: {...editingType.type, featured: e.target.checked}})}
+                        className="w-5 h-5 accent-brand-orange"
+                    />
+                    <label htmlFor="featured-toggle" className="text-white font-bold cursor-pointer">إظهار في "أكثر الرحلات طلباً" بالصفحة الرئيسية</label>
+                 </div>
+                 <button disabled={isUpdating} className="w-full bg-brand-cyan text-brand-navy py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                    {isUpdating ? <Loader2 className="animate-spin" size={18}/> : <Save size={18}/>} حفظ التعديلات
+                </button>
+            </form>
+        )}
+      </Modal>
+    </div>
+  );
+}
+
+// Helper Components for Admin Forms
+function InputField({ label, value, onChange, type = "text", dir, required = false }: { label: string, value: string, onChange: (v: string) => void, type?: string, dir?: "rtl" | "ltr", required?: boolean }) {
+  return (
+    <div className="w-full">
+      <label className="block text-xs font-bold text-gray-500 mb-1.5 mr-2">{label}</label>
+      <input 
+        required={required} type={type} value={value} 
+        onChange={e => onChange(e.target.value)} 
+        className="w-full border border-gray-800 bg-[#161616] text-white p-3 rounded-xl focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan/20 outline-none transition-all" 
+        dir={dir} 
+      />
+    </div>
+  );
+}
+
+function TextareaField({ label, value, onChange, dir, required = false }: { label: string, value: string, onChange: (v: string) => void, dir?: "rtl" | "ltr", required?: boolean }) {
+  return (
+    <div className="w-full">
+      <label className="block text-xs font-bold text-gray-500 mb-1.5 mr-2">{label}</label>
+      <textarea 
+        required={required} value={value} 
+        onChange={e => onChange(e.target.value)} 
+        className="w-full border border-gray-800 bg-[#161616] text-white p-3 rounded-xl focus:border-brand-cyan outline-none transition-all" 
+        rows={3} dir={dir} 
+      />
+    </div>
+  );
+}
+
+function Modal({ isOpen, onClose, title, children }: { isOpen: boolean, onClose: () => void, title: string, children: React.ReactNode }) {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={onClose} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+      <motion.div 
+        initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }}
+        className="relative bg-[#0a0a0a] border border-gray-800 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl"
+      >
+        <div className="flex items-center justify-between p-6 border-b border-gray-800 bg-[#111] ">
+          <h3 className="text-xl font-bold text-white">{title}</h3>
+          <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-full transition-colors text-gray-400"><X size={20}/></button>
+        </div>
+        <div className="p-6">
+          {children}
+        </div>
+      </motion.div>
     </div>
   );
 }

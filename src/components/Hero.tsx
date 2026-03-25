@@ -108,10 +108,10 @@ export default function Hero({ title, subtitle, imageUrl, whatsappNumber = "2011
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-            className="lg:col-span-5 relative hidden md:block"
+            className="lg:col-span-5 relative"
           >
             {/* The Logo Centerpiece integrated into a glass card */}
-            <div className="relative w-full max-w-md mx-auto aspect-square group">
+            <div className="relative w-full max-w-sm md:max-w-md mx-auto aspect-square group">
                 {/* Rotating glow ring */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-brand-orange to-brand-cyan rounded-full animate-spin-slow opacity-20 blur-xl group-hover:opacity-40 transition-opacity duration-500" />
                 
@@ -120,11 +120,19 @@ export default function Hero({ title, subtitle, imageUrl, whatsappNumber = "2011
                   {/* Subtle Background pattern inside card */}
                   <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none" />
 
-                  <div className="relative w-48 h-48 drop-shadow-[0_0_30px_rgba(255,94,0,0.8)] z-10 mb-6 group-hover:scale-105 transition-transform duration-500">
-                    <div className="absolute inset-0 bg-brand-navy rounded-full flex items-center justify-center text-white font-bold text-3xl overflow-hidden border-2 border-brand-orange/50">
-                      <div className="w-full h-full bg-gradient-to-tr from-brand-orange to-brand-cyan flex items-center justify-center text-center leading-tight shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
-                        HOT<br/>WAVE
-                      </div>
+                  {/* Logo Centerpiece */}
+                  <div className="relative w-32 h-32 z-10 mb-8 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
+                    {/* Glowing Effect Background */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-brand-orange to-brand-cyan rounded-full blur-3xl opacity-25 animate-pulse" />
+                    
+                    {/* The Container Circle */}
+                    <div className="relative w-full h-full bg-brand-navy-light/30 backdrop-blur-2xl rounded-full border border-white/10 flex items-center justify-center shadow-2xl overflow-hidden p-6">
+                      <img 
+                        src="/logo.png" 
+                        alt="Hot Wave Logo" 
+                        className="w-full h-full object-contain filter drop-shadow-xl" 
+                        loading="eager"
+                      />
                     </div>
                   </div>
 
@@ -163,8 +171,57 @@ export default function Hero({ title, subtitle, imageUrl, whatsappNumber = "2011
         </div>
       </div>
 
-      {/* Decorative Wave at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-brand-navy to-transparent z-20" />
+      {/* Interactive Floating Waves/Blobs */}
+      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none scale-110 lg:scale-100">
+        <motion.div 
+          animate={{ x: [0, 40, 0], y: [0, -30, 0] }} 
+          transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+          className="absolute -top-[20%] -right-[10%] w-[120%] h-[120%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-cyan/20 via-transparent to-transparent blur-[120px]" 
+        />
+        <motion.div 
+          animate={{ x: [0, -40, 0], y: [0, 30, 0] }} 
+          transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
+          className="absolute -bottom-[10%] -left-[10%] w-[100%] h-[100%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-orange/15 via-transparent to-transparent blur-[120px]" 
+        />
+      </div>
+
+      {/* Modern Wave SVG at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-none overflow-hidden h-[200px] md:h-[300px]">
+        <svg viewBox="0 0 1440 320" className="absolute bottom-0 w-full h-full opacity-60">
+          <motion.path 
+            initial={{ d: "M0,160L48,176C96,192,192,224,288,224C384,224,480,192,576,165.3C672,139,768,117,864,133.3C960,149,1056,203,1152,218.7C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z" }}
+            animate={{ d: [
+                "M0,160L48,176C96,192,192,224,288,224C384,224,480,192,576,165.3C672,139,768,117,864,133.3C960,149,1056,203,1152,218.7C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z",
+                "M0,192L48,181.3C96,171,192,149,288,144C384,139,480,149,576,165.3C672,181,768,203,864,192C960,181,1056,139,1152,133.3C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z",
+                "M0,160L48,176C96,192,192,224,288,224C384,224,480,192,576,165.3C672,139,768,117,864,133.3C960,149,1056,203,1152,218.7C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+            ]}}
+            transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
+            fill="url(#wave-gradient)" 
+          />
+          <defs>
+            <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.4" />
+                <stop offset="50%" stopColor="#ff5e00" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.4" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        {/* Second layered wave for depth */}
+        <svg viewBox="0 0 1440 320" className="absolute bottom-0 w-full h-full opacity-30 blur-[2px]">
+          <motion.path 
+             animate={{ d: [
+                "M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,165.3C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z",
+                "M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,138.7C672,128,768,160,864,186.7C960,213,1056,235,1152,213.3C1248,192,1344,128,1392,96L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z",
+                "M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,250.7C960,235,1056,181,1152,165.3C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+             ]}}
+             transition={{ repeat: Infinity, duration: 15, ease: "easeInOut" }}
+             fill="#0ea5e9"
+          />
+        </svg>
+
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-navy to-transparent opacity-100" />
+      </div>
     </section>
   );
 }

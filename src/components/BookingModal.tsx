@@ -23,6 +23,7 @@ export default function BookingModal({
   const [formData, setFormData] = useState({
     customerName: "",
     phoneNumber: "",
+    customerEmail: "",
     notes: "",
   });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -35,8 +36,13 @@ export default function BookingModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.customerName || !formData.phoneNumber) {
-      setErrorMessage(isArabic ? "برجاء إدخال الاسم ورقم الهاتف" : "Please enter your name and phone number");
+    if (!formData.customerName) {
+      setErrorMessage(isArabic ? "برجاء إدخال الاسم" : "Please enter your name");
+      return;
+    }
+
+    if (!formData.phoneNumber && !formData.customerEmail) {
+      setErrorMessage(isArabic ? "برجاء إدخال رقم الهاتف أو البريد الإلكتروني للتواصل" : "Please enter either phone number or email to contact you");
       return;
     }
 
@@ -50,6 +56,7 @@ export default function BookingModal({
         body: JSON.stringify({
           customerName: formData.customerName,
           phoneNumber: formData.phoneNumber,
+          customerEmail: formData.customerEmail,
           notes: formData.notes,
           serviceName,
           packageName,
@@ -62,7 +69,7 @@ export default function BookingModal({
       setTimeout(() => {
         onClose();
         setStatus("idle");
-        setFormData({ customerName: "", phoneNumber: "", notes: "" });
+        setFormData({ customerName: "", phoneNumber: "", customerEmail: "", notes: "" });
       }, 3000); // close after 3 seconds of success
     } catch (err: any) {
       console.error(err);
@@ -156,7 +163,7 @@ export default function BookingModal({
                       {/* Phone input */}
                       <div>
                         <label className="mb-1.5 block text-sm font-medium text-gray-300">
-                          {isArabic ? "رقم الهاتف / واتساب" : "Phone Number / WhatsApp"} <span className="text-brand-orange">*</span>
+                          {isArabic ? "رقم الهاتف / واتساب" : "Phone Number / WhatsApp"}
                         </label>
                         <div className="relative">
                           <Phone className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 h-5 w-5 rtl:right-3 rtl:left-auto" />
@@ -165,9 +172,26 @@ export default function BookingModal({
                             name="phoneNumber"
                             value={formData.phoneNumber}
                             onChange={handleChange}
-                            required
                             className="w-full rounded-xl border border-gray-700 bg-brand-navy/50 py-3 pl-10 rtl:pr-10 rtl:pl-4 pr-4 text-white placeholder-gray-500 focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan transition-colors"
                             placeholder={isArabic ? "مثال: +201012345678" : "e.g. +201012345678"}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Email input */}
+                      <div>
+                        <label className="mb-1.5 block text-sm font-medium text-gray-300">
+                          {isArabic ? "البريد الإلكتروني" : "Email Address"}
+                        </label>
+                        <div className="relative">
+                          <svg className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 h-5 w-5 rtl:right-3 rtl:left-auto" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                          <input
+                            type="email"
+                            name="customerEmail"
+                            value={formData.customerEmail}
+                            onChange={handleChange}
+                            className="w-full rounded-xl border border-gray-700 bg-brand-navy/50 py-3 pl-10 rtl:pr-10 rtl:pl-4 pr-4 text-white placeholder-gray-500 focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan transition-colors"
+                            placeholder={isArabic ? "example@mail.com" : "example@mail.com"}
                           />
                         </div>
                       </div>

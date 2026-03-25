@@ -75,10 +75,11 @@ export default function AIChatWidget({ locale = 'ar' }: { locale?: string }) {
             {isOpen ? (
               <X size={32} className="drop-shadow-lg" />
             ) : (
-              <>
-                <div className="text-sm">HOT</div>
-                <div className="text-sm">WAVE</div>
-              </>
+              <img 
+                src="/logo.png" 
+                alt="Logo" 
+                className="w-12 h-12 object-contain filter drop-shadow-md" 
+              />
             )}
           </div>
         </motion.button>

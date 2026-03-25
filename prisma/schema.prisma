@@ -95,6 +95,7 @@ model ServiceType {
   durationEn    String?
   includes      String?
   includesEn    String?
+  featured      Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -130,6 +131,7 @@ model Booking {
   id            String   @id @default(cuid())
   customerName  String?
   phoneNumber   String?
+  customerEmail String?
   serviceName   String
   packageName   String?
   status        String   @default("PENDING") // PENDING, CONTACTED, BOOKED, CANCELLED

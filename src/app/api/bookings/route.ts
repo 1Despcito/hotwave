@@ -25,7 +25,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { customerName, phoneNumber, serviceName, packageName, notes } = body;
+    const { customerName, phoneNumber, customerEmail, serviceName, packageName, notes } = body;
 
     if (!serviceName) {
       return NextResponse.json({ error: "Service name is required" }, { status: 400 });
@@ -35,6 +35,7 @@ export async function POST(req: Request) {
       data: {
         customerName: customerName || null,
         phoneNumber: phoneNumber || null,
+        customerEmail: customerEmail || null,
         serviceName,
         packageName: packageName || null,
         notes: notes || null,

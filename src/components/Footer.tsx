@@ -15,9 +15,11 @@ export default function Footer({ settings }: { settings?: any }) {
           
           {/* Brand Column */}
           <div className="md:col-span-1">
-            <h3 className="text-2xl font-bold font-heading mb-4 text-white">
-              HOT <span className="text-brand-orange">WAVE</span>
-            </h3>
+            <img 
+              src="/logo.png" 
+              alt="Hot Wave Logo" 
+              className="h-12 w-auto object-contain mb-4" 
+            />
             <p className="text-gray-400 font-sans leading-relaxed mb-6">
               {t('brand_desc')}
             </p>

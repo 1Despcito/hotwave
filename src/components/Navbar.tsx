@@ -43,14 +43,11 @@ export default function Navbar() {
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
         {/* Brand */}
         <Link href={`/${locale}`} className="flex items-center gap-2 group">
-          <div className="relative w-10 h-10 overflow-hidden rounded-full border border-gray-700 group-hover:border-brand-orange transition-colors">
-              <div className="absolute inset-0 bg-gradient-to-tr from-brand-orange to-brand-cyan flex items-center justify-center text-white font-bold text-xs">
-                HW
-              </div>
-          </div>
-          <span className="text-xl font-bold font-heading text-white tracking-wide rtl:tracking-normal">
-            HOT <span className="text-brand-orange">WAVE</span>
-          </span>
+          <img 
+            src="/logo.png" 
+            alt="Hot Wave Logo" 
+            className="h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-105" 
+          />
         </Link>
 
         {/* Desktop Navigation */}

@@ -8,6 +8,7 @@ type Booking = {
   id: string;
   customerName: string | null;
   phoneNumber: string | null;
+  customerEmail: string | null;
   serviceName: string;
   packageName: string | null;
   status: string;
@@ -107,12 +108,22 @@ export default function BookingsAdminPage() {
                     <td className="px-6 py-5">
                       <div className="font-bold text-white text-base">{b.customerName || "لم يكتب اسمه"}</div>
                       <div className="flex items-center gap-1.5 text-xs text-brand-cyan/80 mt-1 font-medium bg-brand-cyan/10 w-fit px-2 py-0.5 rounded" dir="ltr">
-                        <Phone className="w-3 h-3" /> {b.phoneNumber || "تواصل مباشر عبر الواتساب"}
+                        <Phone className="w-3 h-3" /> {b.phoneNumber || (b.customerEmail ? "تواصل عبر البريد" : "تواصل مباشر عبر الواتساب")}
                       </div>
+                      {b.customerEmail && (
+                        <div className="text-xs text-gray-500 mt-1 flex items-center gap-1.5 mr-1 overflow-hidden text-ellipsis whitespace-nowrap max-w-[180px]">
+                          📧 {b.customerEmail}
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-5">
                       <div className="font-medium text-gray-200">{b.serviceName}</div>
                       {b.packageName && <div className="text-brand-orange text-xs mt-1 font-semibold">{b.packageName}</div>}
+                      {b.notes && (
+                        <div className="mt-2 p-2 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400 italic leading-relaxed max-w-xs">
+                          💬 {b.notes}
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-5 text-gray-400" dir="ltr">
                       {new Date(b.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
