@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import ImageUpload from "@/components/ImageUpload";
+import MultiImageUpload from "@/components/MultiImageUpload";
 import { ChevronDown, ChevronUp, Plus, Trash2, X, Edit3, Save, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,6 +15,7 @@ type ServiceType = {
   descriptionEn: string;
   price: number | null;
   imageUrl: string | null;
+  images: string[];
   duration?: string | null;
   durationEn?: string | null;
   includes?: string | null;
@@ -27,7 +29,8 @@ type Service = {
   titleEn: string;
   description: string;
   descriptionEn: string;
-  imageUrl: string;
+  imageUrl: string | null;
+  images: string[];
   icon?: string | null;
   types: ServiceType[];
 };
@@ -37,7 +40,7 @@ const emptyTypeForm = { name: "", nameEn: "", description: "", descriptionEn: ""
 export default function ServicesAdminPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [formData, setFormData] = useState({ title: "", titleEn: "", description: "", descriptionEn: "", imageUrl: "" });
+  const [formData, setFormData] = useState({ title: "", titleEn: "", description: "", descriptionEn: "", images: [] as string[] });
   const [isAdding, setIsAdding] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   
@@ -60,8 +63,8 @@ export default function ServicesAdminPage() {
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.imageUrl) {
-        toast.error("برجاء رفع صورة للخدمة أولاً");
+    if (formData.images.length === 0) {
+        toast.error("برجاء رفع صور للخدمة أولاً");
         return;
     }
     setIsAdding(true);
@@ -71,7 +74,7 @@ export default function ServicesAdminPage() {
       body: JSON.stringify(formData),
     });
     if (res.ok) {
-      setFormData({ title: "", titleEn: "", description: "", descriptionEn: "", imageUrl: "" });
+      setFormData({ title: "", titleEn: "", description: "", descriptionEn: "", images: [] });
       toast.success("تمت إضافة الخدمة بنجاح");
       fetchServices();
     } else {
@@ -179,8 +182,8 @@ export default function ServicesAdminPage() {
             <TextareaField label="الوصف (بالعربية)" value={formData.description} onChange={v => setFormData({ ...formData, description: v })} dir="rtl" required />
             <TextareaField label="الوصف (بالإنجليزية)" value={formData.descriptionEn} onChange={v => setFormData({ ...formData, descriptionEn: v })} dir="ltr" required />
           </div>
-          <div className="border border-gray-800 bg-[#1a1a1a] p-4 rounded-xl">
-            <ImageUpload label="صورة الغلاف للمجموعة" value={formData.imageUrl} onChange={(url) => setFormData({ ...formData, imageUrl: url })} />
+          <div className="border border-gray-800 bg-[#1a1a1a] p-6 rounded-2xl">
+            <MultiImageUpload label="صور الغلاف للمجموعة" value={formData.images} onChange={(urls) => setFormData({ ...formData, images: urls })} />
           </div>
           <button disabled={isAdding} className="bg-brand-orange text-white px-8 py-3 rounded-xl hover:bg-brand-orange/90 disabled:opacity-50 transition-all font-bold shadow-lg shadow-brand-orange/20">
             {isAdding ? "جاري الإضافة..." : "إضافة المجموعة"}
@@ -199,15 +202,20 @@ export default function ServicesAdminPage() {
         {services.map(service => (
           <div key={service.id} className="bg-[#0a0a0a] rounded-3xl border border-gray-800 overflow-hidden shadow-lg transition-all hover:border-gray-700">
             {/* Service Header Row */}
-            <div className="flex flex-col md:flex-row items-center gap-4 p-5">
-              {service.imageUrl && (
+            <div 
+              onClick={() => setExpandedId(expandedId === service.id ? null : service.id)}
+              className="flex flex-col md:flex-row items-center gap-4 p-5 cursor-pointer hover:bg-white/5 transition-colors"
+            >
+              {service.images && service.images.length > 0 ? (
+                <img src={service.images[0]} alt={service.title} className="h-20 w-32 rounded-2xl object-cover flex-shrink-0 border border-gray-800 shadow-md" />
+              ) : service.imageUrl ? (
                 <img src={service.imageUrl} alt={service.title} className="h-20 w-32 rounded-2xl object-cover flex-shrink-0 border border-gray-800 shadow-md" />
-              )}
+              ) : null}
               <div className="flex-1 min-w-0 text-center md:text-right">
                 <p className="text-white text-lg font-bold">{service.title}</p>
                 <p className="text-gray-500 text-sm font-medium" dir="ltr">{service.titleEn}</p>
               </div>
-              <div className="flex items-center gap-2 flex-wrap justify-center">
+              <div className="flex items-center gap-2 flex-wrap justify-center" onClick={(e) => e.stopPropagation()}>
                 <span className="text-xs font-bold text-gray-400 bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-800">
                   {service.types.length} باقة / قسم
                 </span>
@@ -315,7 +323,9 @@ export default function ServicesAdminPage() {
                 <InputField label="العنوان (En)" value={editingService.titleEn} onChange={v => setEditingService({...editingService, titleEn: v})} dir="ltr" />
                 <TextareaField label="الوصف (ع)" value={editingService.description} onChange={v => setEditingService({...editingService, description: v})} dir="rtl" />
                 <TextareaField label="الوصف (En)" value={editingService.descriptionEn} onChange={v => setEditingService({...editingService, descriptionEn: v})} dir="ltr" />
-                <ImageUpload label="الصورة الحالية" value={editingService.imageUrl} onChange={url => setEditingService({...editingService, imageUrl: url})} />
+                <div className="bg-black/20 p-4 rounded-xl border border-gray-800">
+                    <MultiImageUpload label="صور المجموعة" value={editingService.images || []} onChange={urls => setEditingService({...editingService, images: urls})} />
+                </div>
                 <button disabled={isUpdating} className="w-full bg-brand-orange py-3 rounded-xl font-bold flex items-center justify-center gap-2">
                     {isUpdating ? <Loader2 className="animate-spin" size={18}/> : <Save size={18}/>} حفظ التعديلات
                 </button>

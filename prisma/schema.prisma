@@ -76,6 +76,7 @@ model Service {
   descriptionEn String        @default("")
   icon          String?
   imageUrl      String?
+  images        String[]      @default([])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   types         ServiceType[]
@@ -91,6 +92,7 @@ model ServiceType {
   descriptionEn String   @default("")
   price         Float?
   imageUrl      String?
+  images        String[]      @default([])
   duration      String?
   durationEn    String?
   includes      String?
@@ -128,14 +130,17 @@ model SiteSettings {
 }
 
 model Booking {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   customerName  String?
   phoneNumber   String?
   customerEmail String?
   serviceName   String
   packageName   String?
-  status        String   @default("PENDING") // PENDING, CONTACTED, BOOKED, CANCELLED
+  adults        Int       @default(1)
+  children      Int       @default(0)
+  bookingDate   DateTime?
+  status        String    @default("PENDING") // PENDING, CONTACTED, BOOKED, CANCELLED
   notes         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }

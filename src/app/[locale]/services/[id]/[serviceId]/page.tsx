@@ -57,7 +57,8 @@ export default async function DedicatedServicePage({
   const srvDesc = isArabic ? (serviceData.descriptionAr || serviceData.description || serviceData.descriptionEn) : (serviceData.descriptionEn || serviceData.description);
   const srvDuration = isArabic ? (serviceData.durationAr || serviceData.duration || serviceData.durationEn) : (serviceData.durationEn || serviceData.duration);
   const srvPrice = serviceData.price;
-  const imageUrl = serviceData.imageUrl || collectionData.imageUrl || collectionData.image || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070';
+  const images = (serviceData.images && serviceData.images.length > 0) ? serviceData.images : (serviceData.imageUrl ? [serviceData.imageUrl] : []);
+  const heroImage = images.length > 0 ? images[0] : (collectionData.imageUrl || collectionData.image || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070');
   
   // Includes Parsing
   let pkgIncludes = ['Guide', 'Water', 'Transfer'];
@@ -74,7 +75,7 @@ export default async function DedicatedServicePage({
       <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src={imageUrl}
+            src={heroImage}
             alt={srvTitle}
             fill
             className="object-cover"
@@ -140,6 +141,28 @@ export default async function DedicatedServicePage({
                   </div>
                 ))}
               </div>
+
+              {/* Image Gallery */}
+              {images.length > 1 && (
+                <div className="mt-12">
+                  <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                    {isArabic ? 'معرض الصور' : 'Photo Gallery'}
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {images.map((img: string, idx: number) => (
+                      <div key={idx} className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 group cursor-pointer">
+                        <Image 
+                          src={img} 
+                          alt={`${srvTitle} ${idx + 1}`} 
+                          fill 
+                          className="object-cover transition-transform duration-500 group-hover:scale-110" 
+                        />
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

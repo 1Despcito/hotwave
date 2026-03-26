@@ -22,10 +22,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { title, titleEn, description, descriptionEn, imageUrl } = await req.json();
+    const { title, titleEn, description, descriptionEn, images, imageUrl } = await req.json();
 
     const service = await prisma.service.create({
-      data: { title, titleEn, description, descriptionEn, imageUrl },
+      data: { 
+        title, 
+        titleEn, 
+        description, 
+        descriptionEn, 
+        images: images || (imageUrl ? [imageUrl] : []),
+        imageUrl: imageUrl || (images && images.length > 0 ? images[0] : null)
+      },
     });
 
     return NextResponse.json(service, { status: 201 });

@@ -11,6 +11,9 @@ type Booking = {
   customerEmail: string | null;
   serviceName: string;
   packageName: string | null;
+  adults: number;
+  children: number;
+  bookingDate: string | null;
   status: string;
   notes: string | null;
   createdAt: string;
@@ -98,7 +101,8 @@ export default function BookingsAdminPage() {
                 <tr>
                   <th className="px-6 py-5 rounded-tr-3xl">العميل</th>
                   <th className="px-6 py-5">الخدمة / الباقة</th>
-                  <th className="px-6 py-5">التاريخ</th>
+                  <th className="px-6 py-5">التفاصيل</th>
+                  <th className="px-6 py-5">تاريخ الرحلة</th>
                   <th className="px-6 py-5 text-center rounded-tl-3xl">تحديث الحالة</th>
                 </tr>
               </thead>
@@ -125,8 +129,29 @@ export default function BookingsAdminPage() {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-5 text-gray-400" dir="ltr">
-                      {new Date(b.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-white font-medium flex items-center gap-1.5 whitespace-nowrap">
+                          👨 {b.adults} بالغ
+                        </span>
+                        {b.children > 0 && (
+                          <span className="text-gray-400 text-xs flex items-center gap-1.5">
+                            👶 {b.children} طفل
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      {b.bookingDate ? (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-brand-orange font-bold whitespace-nowrap">
+                            {new Date(b.bookingDate).toLocaleDateString('ar-EG', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </span>
+                          <span className="text-[10px] text-gray-500">تم الطلب: {new Date(b.createdAt).toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' })}</span>
+                        </div>
+                      ) : (
+                        <span className="text-gray-500 italic text-xs">غير محدد</span>
+                      )}
                     </td>
                     <td className="px-6 py-5">
                       <div className="flex items-center justify-center gap-2">

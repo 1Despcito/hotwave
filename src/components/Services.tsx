@@ -59,7 +59,7 @@ export default function Services({ initialServices = [], locale = 'en', settings
         title: locale === 'ar' ? (srv.title || srv.titleEn) : (srv.titleEn || srv.title),
         description: locale === 'ar' ? (srv.description || srv.descriptionEn) : (srv.descriptionEn || srv.description),
         icon: defaultServices[idx % defaultServices.length].icon,
-        image: srv.imageUrl || defaultServices[idx % defaultServices.length].image,
+        image: (srv.images && srv.images.length > 0) ? srv.images[0] : (srv.imageUrl || defaultServices[idx % defaultServices.length].image),
         color: defaultServices[idx % defaultServices.length].color,
         emoji: defaultServices[idx % defaultServices.length].emoji,
         types: (srv.types || []).map((tp: any) => ({

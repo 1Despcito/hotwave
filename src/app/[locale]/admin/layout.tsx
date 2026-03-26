@@ -12,7 +12,8 @@ import {
   Briefcase, 
   CalendarCheck,
   Menu,
-  X
+  X,
+  Tag
 } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import { useState } from "react";
@@ -39,6 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       title: "إدارة المحتوى",
       items: [
         { name: "البرامج السياحية", href: "/ar/admin/services", icon: Briefcase },
+        { name: "الباقات والأقسام", href: "/ar/admin/packages", icon: Tag },
         { name: "آراء العملاء", href: "/ar/admin/testimonials", icon: Star },
       ]
     },

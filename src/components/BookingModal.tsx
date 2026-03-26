@@ -25,6 +25,9 @@ export default function BookingModal({
     phoneNumber: "",
     customerEmail: "",
     notes: "",
+    adults: 1,
+    children: 0,
+    bookingDate: "",
   });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -58,6 +61,9 @@ export default function BookingModal({
           phoneNumber: formData.phoneNumber,
           customerEmail: formData.customerEmail,
           notes: formData.notes,
+          adults: formData.adults,
+          children: formData.children,
+          bookingDate: formData.bookingDate,
           serviceName,
           packageName,
         }),
@@ -69,7 +75,7 @@ export default function BookingModal({
       setTimeout(() => {
         onClose();
         setStatus("idle");
-        setFormData({ customerName: "", phoneNumber: "", customerEmail: "", notes: "" });
+        setFormData({ customerName: "", phoneNumber: "", customerEmail: "", notes: "", adults: 1, children: 0, bookingDate: "" });
       }, 3000); // close after 3 seconds of success
     } catch (err: any) {
       console.error(err);
@@ -160,39 +166,92 @@ export default function BookingModal({
                         </div>
                       </div>
 
-                      {/* Phone input */}
-                      <div>
-                        <label className="mb-1.5 block text-sm font-medium text-gray-300">
-                          {isArabic ? "رقم الهاتف / واتساب" : "Phone Number / WhatsApp"}
-                        </label>
-                        <div className="relative">
-                          <Phone className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 h-5 w-5 rtl:right-3 rtl:left-auto" />
-                          <input
-                            type="tel"
-                            name="phoneNumber"
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
-                            className="w-full rounded-xl border border-gray-700 bg-brand-navy/50 py-3 pl-10 rtl:pr-10 rtl:pl-4 pr-4 text-white placeholder-gray-500 focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan transition-colors"
-                            placeholder={isArabic ? "مثال: +201012345678" : "e.g. +201012345678"}
-                          />
+                      {/* Phone and Email Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Phone */}
+                        <div>
+                          <label className="mb-1.5 block text-sm font-medium text-gray-300">
+                            {isArabic ? "رقم الهاتف / واتساب" : "Phone Number"}
+                          </label>
+                          <div className="relative">
+                            <Phone className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 h-5 w-5 rtl:right-3 rtl:left-auto" />
+                            <input
+                              type="tel"
+                              name="phoneNumber"
+                              value={formData.phoneNumber}
+                              onChange={handleChange}
+                              className="w-full rounded-xl border border-gray-700 bg-brand-navy/50 py-3 pl-10 rtl:pr-10 rtl:pl-4 pr-4 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan transition-colors"
+                              placeholder="+20..."
+                            />
+                          </div>
+                        </div>
+                        {/* Email */}
+                        <div>
+                          <label className="mb-1.5 block text-sm font-medium text-gray-300">
+                            {isArabic ? "البريد الإلكتروني" : "Email Address"}
+                          </label>
+                          <div className="relative">
+                            <svg className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 h-5 w-5 rtl:right-3 rtl:left-auto" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            <input
+                              type="email"
+                              name="customerEmail"
+                              value={formData.customerEmail}
+                              onChange={handleChange}
+                              className="w-full rounded-xl border border-gray-700 bg-brand-navy/50 py-3 pl-10 rtl:pr-10 rtl:pl-4 pr-4 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan transition-colors"
+                              placeholder="mail@example.com"
+                            />
+                          </div>
                         </div>
                       </div>
 
-                      {/* Email input */}
-                      <div>
-                        <label className="mb-1.5 block text-sm font-medium text-gray-300">
-                          {isArabic ? "البريد الإلكتروني" : "Email Address"}
-                        </label>
-                        <div className="relative">
-                          <svg className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 h-5 w-5 rtl:right-3 rtl:left-auto" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                          <input
-                            type="email"
-                            name="customerEmail"
-                            value={formData.customerEmail}
-                            onChange={handleChange}
-                            className="w-full rounded-xl border border-gray-700 bg-brand-navy/50 py-3 pl-10 rtl:pr-10 rtl:pl-4 pr-4 text-white placeholder-gray-500 focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan transition-colors"
-                            placeholder={isArabic ? "example@mail.com" : "example@mail.com"}
-                          />
+                      {/* Date and Guests Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Booking Date */}
+                        <div>
+                          <label className="mb-1.5 block text-sm font-medium text-gray-300">
+                            {isArabic ? "تاريخ الحجز" : "Booking Date"}
+                          </label>
+                          <div className="relative">
+                            <CalendarDays className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 h-5 w-5 rtl:right-3 rtl:left-auto pointer-events-none" />
+                            <input
+                              type="date"
+                              name="bookingDate"
+                              value={formData.bookingDate}
+                              onChange={handleChange}
+                              required
+                              className="w-full rounded-xl border border-gray-700 bg-brand-navy/50 py-3 pl-10 rtl:pr-10 rtl:pl-4 pr-4 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan transition-colors [color-scheme:dark]"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Guests Count */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="mb-1.5 block text-xs font-medium text-gray-400">
+                              {isArabic ? "بالغين" : "Adults"}
+                            </label>
+                            <input
+                              type="number"
+                              name="adults"
+                              min="1"
+                              value={formData.adults}
+                              onChange={handleChange}
+                              className="w-full rounded-xl border border-gray-700 bg-brand-navy/50 py-3 px-3 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan transition-colors outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1.5 block text-xs font-medium text-gray-400">
+                              {isArabic ? "أطفال" : "Children"}
+                            </label>
+                            <input
+                              type="number"
+                              name="children"
+                              min="0"
+                              value={formData.children}
+                              onChange={handleChange}
+                              className="w-full rounded-xl border border-gray-700 bg-brand-navy/50 py-3 px-3 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan transition-colors outline-none"
+                            />
+                          </div>
                         </div>
                       </div>
 
@@ -207,9 +266,9 @@ export default function BookingModal({
                             name="notes"
                             value={formData.notes}
                             onChange={handleChange}
-                            rows={3}
+                            rows={2}
                             className="w-full rounded-xl border border-gray-700 bg-brand-navy/50 py-3 pl-10 rtl:pr-10 rtl:pl-4 pr-4 text-white placeholder-gray-500 focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan transition-colors resize-none"
-                            placeholder={isArabic ? "أي تفاصيل أخرى (عدد الأفراد، يوم مفضل)..." : "Any other details (guests count, preferred day)..."}
+                            placeholder={isArabic ? "أي تفاصيل أخرى..." : "Any other details..."}
                           />
                         </div>
                       </div>
