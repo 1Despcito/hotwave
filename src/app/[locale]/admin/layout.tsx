@@ -33,6 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       title: "المبيعات والتواصل",
       items: [
         { name: "الحجوزات (Leads)", href: "/ar/admin/bookings", icon: CalendarCheck },
+        { name: "محادثات البوت", href: "/ar/admin/conversations", icon: MessageSquare },
         { name: "صندوق الوارد", href: "/ar/admin/messages", icon: MessageSquare },
       ]
     },

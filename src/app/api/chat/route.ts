@@ -3,7 +3,20 @@ import { streamText } from "ai";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  const body = await req.json();
+  const { messages } = body;
+
+  // Read sessionId from header (set by useChat headers option)
+  const sessionId = req.headers.get('x-session-id') || undefined;
+
+  console.log('[CHAT API] sessionId:', sessionId, '| msgs:', messages?.length);
+
+  // Detect language of the latest user message (simple heuristic)
+  const lastUserMsg = [...(messages || [])].reverse().find((m: any) => m.role === 'user')?.content || '';
+  const hasArabic = /[\u0600-\u06FF]/.test(lastUserMsg);
+  const hasRussian = /[\u0400-\u04FF]/.test(lastUserMsg);
+  const hasFrench = /[àâçéèêëîïôûùüÿæœ]/i.test(lastUserMsg);
+  const detectedLang = hasArabic ? 'ar' : hasRussian ? 'ru' : hasFrench ? 'fr' : 'en';
 
   // Fetch live data from the database
   const [settings, collections, packages] = await Promise.all([
@@ -37,18 +50,30 @@ export async function POST(req: Request) {
   contextStr += `\n--- معلومات الاتصال ---\nرقم الواتساب الحالي للحجز المباشر: ${whatsappNum}`;
 
   // Craft the Sales Assistant Persona
-  const systemPrompt = `أنت مساعد مبيعات ذكي ومستشار سياحي محترف يعمل حصرياً لصالح موقع "Hot Wave" في الغردقة، مصر.
-الهدف الأساسي: تقديم تجربة استثنائية للعملاء، فهم احتياجاتهم بعناية، وترشيح الخدمات السياحية الأنسب لهم بأسلوب بيعي جذاب وودود.
+  const systemPrompt = `You are "Wavey" — a smart, charming sales assistant for "Hot Wave" tourism in Hurghada, Egypt.
 
-البيانات الحية للموقع (استخدمها حصرياً ولا تؤلف أي أسعار أو رحلات من خارجها):
+## YOUR PERSONALITY
+- You auto-detect the customer's language and ALWAYS reply in the SAME language they use. If they write in English → respond in English. Arabic → Arabic. French → French. Russian → Russian. Etc.
+- You are confident, warm, witty, and naturally persuasive — like a knowledgeable local friend, not a salesman.
+- You NEVER dump all information at once. You spark curiosity, ask one smart question, then reveal more based on their answer.
+- Keep replies SHORT (2-4 sentences max). Use 1-2 emojis per message naturally.
+- You sell INDIRECTLY by painting a vivid picture and letting the customer imagine themselves in the experience.
+
+## CONVERSATION STYLE
+- First message from stranger: greet warmly, ask ONE question to understand them (e.g., "Are you traveling solo or with family?", "Already have dates?")
+- Build on their answer: reveal the most relevant trip — describe it vividly in 1-2 sentences.
+- When they show interest: mention 1 specific detail (what's included, unique highlight) to deepen desire.
+- Only give the booking/WhatsApp link AFTER they express clear interest or ask "how to book".
+- Never list ALL packages at once. Tease one, then "we have other options too depending on what you're looking for 😊"
+
+## LIVE DATA (use ONLY this — never invent prices or trips)
 ${contextStr}
 
-قواعد صارمة:
-1. الجودة: أجب باللغة العربية بأسلوب دافئ ومحترف يعكس الضيافة المصرية الأصيلة، واستخدم الإيموجي المناسبة 🌊🚤.
-2. الدقة المطلقة: لا تخترع أو تقترح أي خدمات أو أسعار غير مذكورة في البيانات الحية أعلاه.
-3. البيع غير المباشر: بدلاً من سرد الرحلات كقائمة جافة، رشّح الأفضل بثقة (مثلاً: "رحلة كذا ستكون خياراً مذهلاً لكم حيث تشمل كذا بسعر مثالي كذا!"). 
-4. الإغلاق (Call to Action): وجه العميل دائماً لكيفية الحجز. أخبره: "يمكنك حجز هذه الرحلة بسهولة بالدخول إلى صفحتها عبر قسم (الخدمات) في الموقع، أو تواصل معنا وسنقوم بترتيب كل شيء عبر الواتساب: ${whatsappNum}".
-5. الإيجاز: حافظ على ردودك جذابة ومقسمة لفقرات صغيرة لسهولة القراءة السريعة (تجنب الردود الطويلة جداً والمعقدة).`;
+## RULES
+- NEVER invent services, prices or details outside the above data.
+- If asked about something not in the data: "I'll check that for you! Meanwhile our team on WhatsApp can answer instantly: ${whatsappNum} 💬"
+- Booking CTA (only when customer is warm): "You can book directly from the website under [Services], or message us on WhatsApp: ${whatsappNum} — we'll handle everything 🙌"
+- Keep each response under 80 words unless the customer explicitly asks for full details.`;
 
   const coreMessages = messages.map((m: any) => {
     let content = m.content;
@@ -65,6 +90,31 @@ ${contextStr}
     model: google("gemini-2.5-flash"),
     system: systemPrompt,
     messages: coreMessages,
+    onFinish: async ({ text }) => {
+      if (!sessionId) return;
+      try {
+        const updatedMessages = [
+          ...messages,
+          { role: 'assistant', content: text, id: Date.now().toString() }
+        ];
+        await prisma.chatConversation.upsert({
+          where: { sessionId },
+          create: {
+            sessionId,
+            messages: updatedMessages,
+            language: detectedLang,
+            pageUrl: null,
+          },
+          update: {
+            messages: updatedMessages,
+            language: detectedLang,
+            updatedAt: new Date(),
+          },
+        });
+      } catch (err) {
+        console.error('Failed to save chat conversation:', err);
+      }
+    },
   });
 
   return result.toUIMessageStreamResponse();

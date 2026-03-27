@@ -126,6 +126,8 @@ model SiteSettings {
   instagramUrl   String?
   tiktokUrl      String?
   contactEmail   String?
+  googleAnalyticsId String?
+  facebookPixelId   String?
   updatedAt      DateTime @updatedAt
 }
 
@@ -136,6 +138,7 @@ model Booking {
   customerEmail String?
   serviceName   String
   packageName   String?
+  hotelName     String?
   adults        Int       @default(1)
   children      Int       @default(0)
   bookingDate   DateTime?
@@ -143,4 +146,14 @@ model Booking {
   notes         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model ChatConversation {
+  id          String   @id @default(cuid())
+  sessionId   String   @unique
+  messages    Json     @default("[]")
+  language    String?
+  pageUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

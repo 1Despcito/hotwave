@@ -17,6 +17,8 @@ export default function SettingsAdminPage() {
     instagramUrl: "",
     tiktokUrl: "",
     contactEmail: "",
+    googleAnalyticsId: "",
+    facebookPixelId: "",
   });
 
   useEffect(() => {
@@ -36,6 +38,8 @@ export default function SettingsAdminPage() {
               instagramUrl: data.instagramUrl || "",
               tiktokUrl: data.tiktokUrl || "",
               contactEmail: data.contactEmail || "",
+              googleAnalyticsId: data.googleAnalyticsId || "",
+              facebookPixelId: data.facebookPixelId || "",
             });
           }
         }
@@ -162,6 +166,49 @@ export default function SettingsAdminPage() {
                 className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
                 dir="ltr"
               />
+            </div>
+          </div>
+        </section>
+
+        {/* Marketing & Analytics */}
+        <section className="bg-[#0a0a0a] p-6 md:p-10 rounded-3xl border border-gray-800 shadow-xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/5 blur-3xl -translate-y-1/2 translate-x-1/2 rounded-full" />
+          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2 border-b border-gray-800 pb-4">
+             <span className="p-1.5 rounded-lg bg-brand-orange/10 text-brand-orange"><Globe className="w-5 h-5" /></span>
+             أدوات التحليل والتتبع (Analytics)
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+            <div>
+              <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                Google Analytics (GA4) ID
+              </label>
+              <input
+                type="text"
+                name="googleAnalyticsId"
+                value={formData.googleAnalyticsId}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
+                placeholder="G-XXXXXXXXXX"
+                dir="ltr"
+              />
+              <p className="text-[10px] text-gray-500 mt-2">معرف التتبع الخاص بجوجل أناليتكس (يبدأ بـ G-)</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-blue-700"></span>
+                Facebook Pixel ID
+              </label>
+              <input
+                type="text"
+                name="facebookPixelId"
+                value={formData.facebookPixelId}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
+                placeholder="1234567890..."
+                dir="ltr"
+              />
+              <p className="text-[10px] text-gray-500 mt-2">معرف البيكسل الخاص بفيسبوك (أرقام فقط)</p>
             </div>
           </div>
         </section>

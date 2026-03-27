@@ -16,8 +16,9 @@ export async function GET() {
     });
 
     return NextResponse.json(bookings);
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch bookings" }, { status: 500 });
+  } catch (error: any) {
+    console.error("Booking GET Error:", error);
+    return NextResponse.json({ error: "Failed to fetch bookings", details: error.message }, { status: 500 });
   }
 }
 
@@ -25,30 +26,45 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { customerName, phoneNumber, customerEmail, serviceName, packageName, notes, adults, children, bookingDate } = body;
+    console.log("POST Body:", body);
+    
+    if (!process.env.DATABASE_URL) {
+        console.error("CRITICAL: DATABASE_URL is missing!");
+        return NextResponse.json({ error: "Internal Server Configuration Error (DB)" }, { status: 500 });
+    }
+
+    const { customerName, phoneNumber, customerEmail, serviceName, packageName, hotelName, notes, adults, children, bookingDate } = body;
 
     if (!serviceName) {
       return NextResponse.json({ error: "Service name is required" }, { status: 400 });
     }
 
-    const booking = await prisma.booking.create({
-      data: {
-        customerName: customerName || null,
-        phoneNumber: phoneNumber || null,
-        customerEmail: customerEmail || null,
-        serviceName,
-        packageName: packageName || null,
-        adults: adults ? parseInt(adults) : 1,
-        children: children ? parseInt(children) : 0,
-        bookingDate: bookingDate ? new Date(bookingDate) : null,
-        notes: notes || null,
-        status: "PENDING",
-      },
-    });
-
-    return NextResponse.json(booking, { status: 201 });
-  } catch (error) {
-    console.error("Booking error:", error);
-    return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
+    try {
+        const booking = await prisma.booking.create({
+          data: {
+            customerName: customerName || null,
+            phoneNumber: phoneNumber || null,
+            customerEmail: customerEmail || null,
+            serviceName,
+            packageName: packageName || null,
+            hotelName: hotelName || null,
+            adults: (typeof adults === 'string' ? parseInt(adults) : adults) || 1,
+            children: (typeof children === 'string' ? parseInt(children) : children) || 0,
+            bookingDate: bookingDate ? new Date(bookingDate) : null,
+            notes: notes || null,
+            status: "PENDING",
+          },
+        });
+        return NextResponse.json(booking, { status: 201 });
+    } catch (dbError: any) {
+        console.error("PRISMA CREATE ERROR:", dbError);
+        return NextResponse.json({ error: "Database operation failed", details: dbError.message }, { status: 500 });
+    }
+  } catch (error: any) {
+    console.error("Booking API Fatal Error:", error);
+    return NextResponse.json({ 
+      error: "General API failure", 
+      details: error.message || String(error) 
+    }, { status: 500 });
   }
 }

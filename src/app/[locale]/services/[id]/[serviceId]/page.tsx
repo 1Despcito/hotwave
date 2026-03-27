@@ -1,8 +1,10 @@
+import { BookingFormWidget } from './BookingFormWidget';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { ArrowRight, ArrowLeft, Clock, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
+import { ImageGallery } from './ImageGallery';
 
 // Fallback data for empty DB just in case, similar to previous pages
 const fallbackServices = {
@@ -142,27 +144,12 @@ export default async function DedicatedServicePage({
                 ))}
               </div>
 
-              {/* Image Gallery */}
-              {images.length > 1 && (
-                <div className="mt-12">
-                  <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                    {isArabic ? 'معرض الصور' : 'Photo Gallery'}
-                  </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {images.map((img: string, idx: number) => (
-                      <div key={idx} className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 group cursor-pointer">
-                        <Image 
-                          src={img} 
-                          alt={`${srvTitle} ${idx + 1}`} 
-                          fill 
-                          className="object-cover transition-transform duration-500 group-hover:scale-110" 
-                        />
-                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Dynamic Image Gallery */}
+              <ImageGallery 
+                images={images} 
+                title={srvTitle as string} 
+                isArabic={isArabic} 
+              />
             </div>
           </div>
 
@@ -193,7 +180,3 @@ export default async function DedicatedServicePage({
     </main>
   );
 }
-
-// Inline Client Component for the Booking Form so we don't need a separate file if we don't want to,
-// but actually Next.js App router allows client components in the same folder or we can just make it inline.
-import { BookingFormWidget } from './BookingFormWidget';

@@ -1,10 +1,22 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Sailboat, Map, Tent, ArrowRight, Tag } from 'lucide-react';
+import { Sailboat, Map, Tent, ArrowRight, Tag, Waves, Mountain, Compass, Camera, Ghost } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import BookingButton from '@/components/BookingButton';
+
+// Icon Map for dynamic icons from DB
+const iconMap: Record<string, any> = {
+  'Sailboat': <Sailboat className="w-8 h-8 text-brand-cyan" />,
+  'Map': <Map className="w-8 h-8 text-brand-orange" />,
+  'Tent': <Tent className="w-8 h-8 text-yellow-500" />,
+  'Waves': <Waves className="w-8 h-8 text-brand-cyan" />,
+  'Mountain': <Mountain className="w-8 h-8 text-brand-orange" />,
+  'Compass': <Compass className="w-8 h-8 text-brand-cyan" />,
+  'Camera': <Camera className="w-8 h-8 text-brand-orange" />,
+  'Ghost': <Ghost className="w-8 h-8 text-brand-cyan" />,
+};
 
 const defaultServices = [
   {
@@ -55,20 +67,23 @@ export default function Services({ initialServices = [], locale = 'en', settings
   const t = useTranslations('Services');
 
   const displayServices = initialServices.length > 0
-    ? initialServices.map((srv: any, idx: number) => ({
-        title: locale === 'ar' ? (srv.title || srv.titleEn) : (srv.titleEn || srv.title),
-        description: locale === 'ar' ? (srv.description || srv.descriptionEn) : (srv.descriptionEn || srv.description),
-        icon: defaultServices[idx % defaultServices.length].icon,
-        image: (srv.images && srv.images.length > 0) ? srv.images[0] : (srv.imageUrl || defaultServices[idx % defaultServices.length].image),
-        color: defaultServices[idx % defaultServices.length].color,
-        emoji: defaultServices[idx % defaultServices.length].emoji,
-        types: (srv.types || []).map((tp: any) => ({
-          id: tp.id,
-          name: locale === 'ar' ? (tp.name || tp.nameEn) : (tp.nameEn || tp.name),
-          price: tp.price,
-        })),
-        id: srv.id || defaultServices[idx % defaultServices.length].id,
-      }))
+    ? initialServices.map((srv: any, idx: number) => {
+        const dbIcon = srv.icon && iconMap[srv.icon] ? iconMap[srv.icon] : null;
+        return {
+          title: locale === 'ar' ? (srv.title || srv.titleEn) : (srv.titleEn || srv.title),
+          description: locale === 'ar' ? (srv.description || srv.descriptionEn) : (srv.descriptionEn || srv.description),
+          icon: dbIcon || defaultServices[idx % defaultServices.length].icon,
+          image: (srv.images && srv.images.length > 0) ? srv.images[0] : (srv.imageUrl || defaultServices[idx % defaultServices.length].image),
+          color: defaultServices[idx % defaultServices.length].color,
+          emoji: defaultServices[idx % defaultServices.length].emoji,
+          types: (srv.types || []).map((tp: any) => ({
+            id: tp.id,
+            name: locale === 'ar' ? (tp.name || tp.nameEn) : (tp.nameEn || tp.name),
+            price: tp.price,
+          })),
+          id: srv.id || defaultServices[idx % defaultServices.length].id,
+        };
+      })
     : defaultServices;
 
   return (

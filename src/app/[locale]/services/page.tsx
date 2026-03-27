@@ -1,8 +1,18 @@
 import { prisma } from '@/lib/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
-import { ArrowRight, ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { Sailboat, Map, Tent, ArrowRight, ArrowLeft, ArrowUpRight, Waves, Mountain, Compass, Camera, Ghost } from 'lucide-react';
+
+const iconMap: Record<string, any> = {
+  'Sailboat': <Sailboat className="w-5 h-5" />,
+  'Map': <Map className="w-5 h-5" />,
+  'Tent': <Tent className="w-5 h-5" />,
+  'Waves': <Waves className="w-5 h-5" />,
+  'Mountain': <Mountain className="w-5 h-5" />,
+  'Compass': <Compass className="w-5 h-5" />,
+  'Camera': <Camera className="w-5 h-5" />,
+  'Ghost': <Ghost className="w-5 h-5" />,
+};
 
 interface ServiceCollection {
   id: string;
@@ -14,6 +24,7 @@ interface ServiceCollection {
   descriptionAr?: string;
   image?: string;
   imageUrl?: string;
+  icon?: string;
 }
 
 // Fallback data for empty DB
@@ -117,7 +128,14 @@ export default async function ServicesCollectionsPage({
                 {/* Content Container */}
                 <div className="relative w-full p-8 flex flex-col flex-grow -mt-8">
                   <div className="flex justify-between items-start mb-4">
-                    <h2 className="text-3xl font-bold text-white font-heading">{title}</h2>
+                    <div className="flex flex-col gap-2">
+                        {col.icon && iconMap[col.icon] && (
+                            <div className="w-10 h-10 rounded-xl bg-brand-cyan/20 flex items-center justify-center text-brand-cyan border border-brand-cyan/30 mb-2 shadow-lg">
+                                {iconMap[col.icon]}
+                            </div>
+                        )}
+                        <h2 className="text-3xl font-bold text-white font-heading">{title}</h2>
+                    </div>
                     <div className="w-10 h-10 rounded-full bg-brand-cyan/10 flex items-center justify-center text-brand-cyan border border-brand-cyan/20 group-hover:bg-brand-cyan group-hover:text-brand-navy transition-colors shrink-0">
                       <ArrowUpRight className="w-5 h-5 rtl:hidden" />
                       <ArrowUpRight className="w-5 h-5 hidden rtl:block rotate-[-90deg]" />

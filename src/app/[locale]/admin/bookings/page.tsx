@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Clock, CheckCircle2, XCircle, Phone, Search, Loader2, CalendarCheck } from "lucide-react";
+import { Clock, CheckCircle2, XCircle, Phone, Search, Loader2, CalendarCheck, ExternalLink, MapPin } from "lucide-react";
 import toast from "react-hot-toast";
 
 type Booking = {
@@ -11,6 +11,7 @@ type Booking = {
   customerEmail: string | null;
   serviceName: string;
   packageName: string | null;
+  hotelName: string | null;
   adults: number;
   children: number;
   bookingDate: string | null;
@@ -100,10 +101,10 @@ export default function BookingsAdminPage() {
               <thead className="bg-[#111111] text-gray-400 uppercase font-semibold text-xs border-b border-gray-800">
                 <tr>
                   <th className="px-6 py-5 rounded-tr-3xl">العميل</th>
-                  <th className="px-6 py-5">الخدمة / الباقة</th>
-                  <th className="px-6 py-5">التفاصيل</th>
-                  <th className="px-6 py-5">تاريخ الرحلة</th>
-                  <th className="px-6 py-5 text-center rounded-tl-3xl">تحديث الحالة</th>
+                  <th className="px-6 py-5">الرحلة / الفندق</th>
+                  <th className="px-6 py-5">العدد</th>
+                  <th className="px-6 py-5">التاريخ والوقت</th>
+                  <th className="px-6 py-5 text-center rounded-tl-3xl">الحالة</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800/50">
@@ -111,18 +112,35 @@ export default function BookingsAdminPage() {
                   <tr key={b.id} className="hover:bg-white/[0.02] transition-colors group">
                     <td className="px-6 py-5">
                       <div className="font-bold text-white text-base">{b.customerName || "لم يكتب اسمه"}</div>
-                      <div className="flex items-center gap-1.5 text-xs text-brand-cyan/80 mt-1 font-medium bg-brand-cyan/10 w-fit px-2 py-0.5 rounded" dir="ltr">
-                        <Phone className="w-3 h-3" /> {b.phoneNumber || (b.customerEmail ? "تواصل عبر البريد" : "تواصل مباشر عبر الواتساب")}
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="flex items-center gap-1.5 text-xs text-brand-cyan/80 font-medium bg-brand-cyan/10 w-fit px-2 py-0.5 rounded" dir="ltr">
+                          <Phone className="w-3 h-3" /> {b.phoneNumber || (b.customerEmail ? "بريد إلكتروني" : "لا يوجد رقم")}
+                        </div>
+                        {b.phoneNumber && (
+                          <a 
+                            href={`https://wa.me/${b.phoneNumber.replace(/\+/g, '').replace(/\s/g, '')}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="p-1 px-2 bg-green-500/20 text-green-400 rounded-md hover:bg-green-500 hover:text-white text-[10px] font-bold transition-all flex items-center gap-1"
+                          >
+                            واتساب <ExternalLink size={10}/>
+                          </a>
+                        )}
                       </div>
                       {b.customerEmail && (
-                        <div className="text-xs text-gray-500 mt-1 flex items-center gap-1.5 mr-1 overflow-hidden text-ellipsis whitespace-nowrap max-w-[180px]">
+                        <div className="text-[10px] text-gray-500 mt-1 flex items-center gap-1.5 mr-1 overflow-hidden text-ellipsis whitespace-nowrap max-w-[180px]">
                           📧 {b.customerEmail}
                         </div>
                       )}
                     </td>
                     <td className="px-6 py-5">
                       <div className="font-medium text-gray-200">{b.serviceName}</div>
-                      {b.packageName && <div className="text-brand-orange text-xs mt-1 font-semibold">{b.packageName}</div>}
+                      {b.packageName && <div className="text-brand-orange text-xs mt-0.5 font-semibold">{b.packageName}</div>}
+                      {b.hotelName && (
+                        <div className="mt-1.5 flex items-center gap-1.5 text-brand-cyan text-xs font-medium">
+                          <MapPin size={12}/> {b.hotelName}
+                        </div>
+                      )}
                       {b.notes && (
                         <div className="mt-2 p-2 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-400 italic leading-relaxed max-w-xs">
                           💬 {b.notes}
@@ -131,34 +149,33 @@ export default function BookingsAdminPage() {
                     </td>
                     <td className="px-6 py-5">
                       <div className="flex flex-col gap-1">
-                        <span className="text-white font-medium flex items-center gap-1.5 whitespace-nowrap">
-                          👨 {b.adults} بالغ
+                        <span className="text-white font-bold text-lg">
+                          {(b.adults || 0) + (b.children || 0)} <span className="text-[10px] text-gray-500 font-normal">أفراد</span>
                         </span>
-                        {b.children > 0 && (
-                          <span className="text-gray-400 text-xs flex items-center gap-1.5">
-                            👶 {b.children} طفل
-                          </span>
-                        )}
+                        <div className="flex items-center gap-2 text-[10px] text-gray-500">
+                          <span>{b.adults} بالغ</span>
+                          {b.children > 0 && <span>• {b.children} طفل</span>}
+                        </div>
                       </div>
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="px-6 py-5 text-center">
                       {b.bookingDate ? (
-                        <div className="flex flex-col gap-1">
-                          <span className="text-brand-orange font-bold whitespace-nowrap">
-                            {new Date(b.bookingDate).toLocaleDateString('ar-EG', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="text-brand-orange font-bold whitespace-nowrap text-lg">
+                            {new Date(b.bookingDate).toLocaleDateString('ar-EG', { day: '2-digit', month: 'long', year: 'numeric' })}
                           </span>
-                          <span className="text-[10px] text-gray-500">تم الطلب: {new Date(b.createdAt).toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' })}</span>
+                          <span className="text-[10px] text-gray-500 mt-1">تم الطلب: {new Date(b.createdAt).toLocaleDateString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                       ) : (
                         <span className="text-gray-500 italic text-xs">غير محدد</span>
                       )}
                     </td>
                     <td className="px-6 py-5">
-                      <div className="flex items-center justify-center gap-2">
+                      <div className="flex items-center justify-center">
                         <select
                           value={b.status}
                           onChange={(e) => updateStatus(b.id, e.target.value)}
-                          className={`appearance-none font-semibold text-xs px-4 py-2 rounded-xl outline-none border cursor-pointer transition-all
+                          className={`appearance-none font-bold text-[10px] px-3 py-2 rounded-xl outline-none border cursor-pointer transition-all text-center
                             ${b.status === 'PENDING' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20 hover:bg-yellow-500/20' : 
                               b.status === 'BOOKED' ? 'bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20' : 
                               b.status === 'CONTACTED' ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/20 hover:bg-brand-cyan/20' :
