@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Sailboat, Map, Tent, ArrowRight, Tag, Waves, Mountain, Compass, Camera, Ghost } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
@@ -86,6 +87,12 @@ export default function Services({ initialServices = [], locale = 'en', settings
       })
     : defaultServices;
 
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
   return (
     <section className="py-24 bg-brand-navy-light relative overflow-hidden" id="services">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-cyan/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3" />
@@ -112,26 +119,53 @@ export default function Services({ initialServices = [], locale = 'en', settings
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto perspective-1000">
           {displayServices.map((service, index) => (
-            <motion.div
+            <CinematicCard 
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.2, duration: 0.5 }}
-              className="group relative rounded-[2rem] overflow-hidden min-h-[480px] flex flex-col justify-end shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(255,107,0,0.15)] rtl:text-right"
-            >
-              {/* Full Bleed Background Image */}
-              <div className="absolute inset-0 z-0">
-                <Image
-                  src={service.image}
-                  alt={service.title}
-                  fill
-                  className="object-cover scale-100 group-hover:scale-110 transition-transform duration-700 ease-in-out"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-brand-navy/60 to-brand-navy/95 group-hover:via-brand-navy/50 transition-colors duration-500" />
-              </div>
+              index={index}
+              service={service}
+              locale={locale}
+              settings={settings}
+              scrollYProgress={scrollYProgress}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CinematicCard({ service, index, locale, settings, scrollYProgress }: any) {
+  // Staggered cinematic entrance and parallax scrolling
+  // Middle items move slightly differently for depth
+  const yOffset = index % 3 === 1 ? -60 : -20;
+  
+  const y = useTransform(scrollYProgress, [0, 0.4, 1], [150, 0, yOffset]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+  const scale = useTransform(scrollYProgress, [0, 0.4, 1], [0.85, 1, 1]);
+  // Parallax for the background image
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.25]);
+
+  return (
+    <motion.div
+      style={{ y, opacity, scale }}
+      className="group relative rounded-[2rem] overflow-hidden min-h-[480px] flex flex-col justify-end shadow-2xl transition-shadow duration-500 hover:shadow-[0_30px_60px_rgba(255,107,0,0.3)] rtl:text-right"
+    >
+      {/* Full Bleed Background Image with Parallax */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <motion.div style={{ scale: imageScale }} className="absolute inset-0 w-full h-full origin-bottom">
+           <div className="w-full h-full transform transition-transform duration-700 ease-out group-hover:scale-110">
+              <Image
+                src={service.image}
+                alt={service.title}
+                fill
+                className="object-cover"
+              />
+           </div>
+        </motion.div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-brand-navy/60 to-brand-navy/95 group-hover:via-brand-navy/60 transition-colors duration-500" />
+      </div>
 
               {/* Top Badge */}
               <div className="absolute top-6 right-6 z-20 bg-white/10 backdrop-blur-md rounded-full w-14 h-14 flex items-center justify-center text-3xl border border-white/20 shadow-lg rtl:left-6 rtl:right-auto group-hover:rotate-12 transition-transform duration-500">
@@ -145,9 +179,22 @@ export default function Services({ initialServices = [], locale = 'en', settings
                 </div>
 
                 <div className="transform transition-transform duration-500 group-hover:-translate-y-4">
-                  <h3 className="text-3xl font-bold font-heading mb-3 text-white shadow-black/50 drop-shadow-lg">
-                    {service.title}
-                  </h3>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-3xl font-bold font-heading text-white shadow-black/50 drop-shadow-lg">
+                      {service.title}
+                    </h3>
+                    {index === 0 && (
+                      <div className="flex flex-col items-end shrink-0">
+                        <span className="text-[10px] bg-red-500/90 backdrop-blur-sm text-white font-bold uppercase tracking-widest px-2 py-1 rounded-md mb-1 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.6)] border border-red-400">🔥 {locale === 'ar' ? 'مطلوب بشدة' : 'High Demand'}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5 mb-3">
+                     <div className="flex text-brand-orange text-sm drop-shadow-md">★★★★★</div>
+                     <span className="text-xs text-brand-cyan font-bold bg-brand-navy-light/50 px-2 py-0.5 rounded-full border border-brand-cyan/20">
+                        {locale === 'ar' ? '+2,400 مغامر سعيد' : '+2,400 Happy Bookers'}
+                     </span>
+                  </div>
                   <p className="text-gray-300 font-sans leading-relaxed mb-6 line-clamp-3 group-hover:line-clamp-none transition-all">
                     {service.description}
                   </p>
@@ -191,15 +238,10 @@ export default function Services({ initialServices = [], locale = 'en', settings
                     >
                       {locale === 'ar' ? 'احجز سريعاً' : 'Quick Book'}
                       <ArrowRight className="w-5 h-5 rtl:hidden group-hover/btn:translate-x-2 transition-transform duration-300" />
-                      <ArrowRight className="w-5 h-5 hidden rtl:block rotate-180 group-hover/btn:-translate-x-2 transition-transform duration-300" />
                     </BookingButton>
                   </div>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
+    </motion.div>
   );
 }

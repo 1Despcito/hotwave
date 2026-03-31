@@ -1,6 +1,7 @@
 import Hero from '@/components/Hero';
 import FeaturedTrips from '@/components/FeaturedTrips';
 import Services from '@/components/Services';
+import TrustShowcase from '@/components/TrustShowcase';
 import About from '@/components/About';
 import Testimonials from '@/components/Testimonials';
 import Footer from '@/components/Footer';
@@ -32,8 +33,9 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       
       <FeaturedTrips trips={featuredTrips} />
 
-      <About />
       <Services initialServices={dbServices} locale={locale} settings={settings} />
+      <TrustShowcase />
+      <About />
       <Testimonials initialTestimonials={dbTestimonials} locale={locale} />
       <Footer settings={settings} />
       <AIChatWidget />

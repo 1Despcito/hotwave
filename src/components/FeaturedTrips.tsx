@@ -16,7 +16,7 @@ export default function FeaturedTrips({ trips }: FeaturedTripsProps) {
   if (!trips || trips.length === 0) return null;
 
   return (
-    <section className="py-24 bg-brand-navy relative overflow-hidden">
+    <section className="py-24 bg-brand-navy relative overflow-hidden" id="featured">
       {/* Background Ornaments */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-orange/5 rounded-full blur-[120px] -z-10" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-cyan/5 rounded-full blur-[120px] -z-10" />
