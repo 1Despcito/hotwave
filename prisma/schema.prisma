@@ -100,8 +100,19 @@ model ServiceType {
   featured      Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  reviews       Review[]
 }
 
+model Review {
+  id            String      @id @default(cuid())
+  rating        Int         @default(5)
+  comment       String?     @db.Text
+  authorName    String
+  serviceTypeId String
+  serviceType   ServiceType @relation(fields: [serviceTypeId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  isApproved    Boolean     @default(true) // Currently defaulting to true so it shows up immediately
+}
 model Testimonial {
   id        String   @id @default(cuid())
   name      String

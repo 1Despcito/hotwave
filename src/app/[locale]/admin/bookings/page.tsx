@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Clock, CheckCircle2, XCircle, Phone, Search, Loader2, CalendarCheck, ExternalLink, MapPin } from "lucide-react";
+import { Clock, CheckCircle2, XCircle, Phone, Search, Loader2, CalendarCheck, ExternalLink, MapPin, Download } from "lucide-react";
 import toast from "react-hot-toast";
 
 type Booking = {
@@ -63,6 +63,44 @@ export default function BookingsAdminPage() {
     b.serviceName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const exportToCSV = () => {
+    if (filtered.length === 0) {
+      toast.error("لا توجد بيانات لتصديرها");
+      return;
+    }
+    
+    const headers = ["رقم الحجز", "العميل", "رقم الهاتف", "البريد الإلكتروني", "الخدمة/الرحلة", "الباقة", "الفندق", "بالغين", "أطفال", "تاريخ الرحلة", "حالة الحجز", "ملاحظات", "تاريخ ووقت الإنشاء"];
+    
+    const csvContent = [
+      headers.join(","),
+      ...filtered.map(b => [
+        b.id,
+        `"${b.customerName || ''}"`,
+        `"${b.phoneNumber || ''}"`,
+        `"${b.customerEmail || ''}"`,
+        `"${b.serviceName || ''}"`,
+        `"${b.packageName || ''}"`,
+        `"${b.hotelName || ''}"`,
+        b.adults || 0,
+        b.children || 0,
+        b.bookingDate ? new Date(b.bookingDate).toLocaleDateString('en-US') : "",
+        b.status,
+        `"${(b.notes || '').replace(/"/g, '""')}"`,
+        new Date(b.createdAt).toLocaleString('en-US')
+      ].join(","))
+    ].join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `hotwave_bookings_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("تم التصدير بنجاح");
+  };
+
   return (
     <div className="max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -71,15 +109,25 @@ export default function BookingsAdminPage() {
           <p className="text-gray-400 mt-2 text-sm">متابعة كل من نقر على أزرار الحجز عبر الموقع لتفادي خسارة أي عميل محتمل لم يكمل محادثة الواتساب.</p>
         </div>
         
-        <div className="relative w-full md:w-72">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-          <input 
-            type="text" 
-            placeholder="بحث بالرقم أو الاسم..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[#111111] border border-gray-800 text-white rounded-full py-2 pr-10 pl-4 focus:outline-none focus:border-brand-cyan/50 transition-colors placeholder:text-gray-600"
-          />
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <input 
+              type="text" 
+              placeholder="بحث بالرقم أو الاسم..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-[#111111] border border-gray-800 text-white rounded-full py-2.5 pr-10 pl-4 focus:outline-none focus:border-brand-cyan/50 transition-colors placeholder:text-gray-600 shadow-inner"
+            />
+          </div>
+          
+          <button 
+            onClick={exportToCSV}
+            className="flex items-center justify-center gap-2 bg-brand-navy-light border border-gray-700 hover:border-brand-cyan hover:text-brand-cyan text-gray-300 px-5 py-2.5 rounded-full transition-all text-sm font-bold shadow-lg"
+          >
+            <Download className="w-4 h-4" />
+            تصدير CSV
+          </button>
         </div>
       </div>
 

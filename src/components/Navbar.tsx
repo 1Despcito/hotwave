@@ -6,6 +6,7 @@ import { Menu, X } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import LanguageSwitcher from './LanguageSwitcher';
 import Link from 'next/link';
+import CurrencySelector from './CurrencySelector';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -66,6 +67,7 @@ export default function Navbar() {
           <div className="flex items-center gap-3 w-px h-6 bg-gray-700 mx-1" />
           
           <LanguageSwitcher />
+          <CurrencySelector />
 
           <motion.a
             href="https://wa.me/201110626484"
@@ -80,7 +82,8 @@ export default function Navbar() {
         </nav>
 
         {/* Mobile Menu Toggle & Language */}
-        <div className="flex items-center gap-4 md:hidden">
+        <div className="flex items-center gap-3 md:hidden">
+          <CurrencySelector />
           <LanguageSwitcher />
           <button
             className="text-gray-300 hover:text-white"

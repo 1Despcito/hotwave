@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
@@ -44,6 +45,50 @@ const fallbackServices = {
     ]
   }
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}): Promise<Metadata> {
+  const { locale, id } = await params;
+  const isArabic = locale === 'ar';
+  
+  const serviceDataInDb = await prisma.service.findUnique({
+    where: { id },
+  });
+  
+  let serviceData: any = serviceDataInDb;
+  if (!serviceData && fallbackServices[id as keyof typeof fallbackServices]) {
+    serviceData = fallbackServices[id as keyof typeof fallbackServices];
+  }
+
+  if (!serviceData) {
+    return { title: 'Service Not Found | Hot Wave' };
+  }
+
+  const title = isArabic ? (serviceData.title || serviceData.titleEn) : (serviceData.titleEn || serviceData.title);
+  const description = isArabic ? (serviceData.description || serviceData.descriptionEn) : (serviceData.descriptionEn || serviceData.description);
+  const imageUrl = serviceData.imageUrl || serviceData.image || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070';
+
+  return {
+    title: `${title} | Hot Wave`,
+    description: description,
+    openGraph: {
+      title: `${title} | Hot Wave`,
+      description: description,
+      images: [imageUrl],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} | Hot Wave`,
+      description: description,
+      images: [imageUrl],
+    }
+  };
+}
+
+export const revalidate = 3600;
 
 export default async function ServiceDetailsPage({
   params,

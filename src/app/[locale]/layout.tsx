@@ -10,6 +10,7 @@ import { routing } from "@/i18n/routing";
 import { prisma } from "@/lib/prisma";
 import GlobalFooter from "@/components/GlobalFooter";
 import FloatingWhatsAppWidget from "@/components/FloatingWhatsAppWidget";
+import { CurrencyProvider } from "@/components/CurrencyProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -55,10 +56,12 @@ export default async function RootLayout({
       >
         <NextIntlClientProvider messages={messages}>
           <NextAuthProvider>
-            <ConditionalNavbar />
-            {children}
-            <GlobalFooter settings={settings} services={topServices} />
-            <FloatingWhatsAppWidget whatsappNumber={(settings as any)?.whatsappNumber || "201110626484"} />
+            <CurrencyProvider>
+              <ConditionalNavbar />
+              {children}
+              <GlobalFooter settings={settings} services={topServices} />
+              <FloatingWhatsAppWidget whatsappNumber={(settings as any)?.whatsappNumber || "201110626484"} />
+            </CurrencyProvider>
           </NextAuthProvider>
         </NextIntlClientProvider>
       </body>

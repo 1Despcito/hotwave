@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Sailboat, Map, Tent, ArrowRight, Tag, Waves, Mountain, Compass, Camera, Ghost } from 'lucide-react';
+import { Sailboat, Map, Tent, ArrowRight, Tag, Waves, Mountain, Compass, Camera, Ghost, Search } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -65,8 +65,9 @@ const defaultServices = [
   },
 ];
 
-export default function Services({ initialServices = [], locale = 'en', settings }: { initialServices?: any[], locale?: string, settings?: any }) {
+export default function Services({ initialServices = [], locale = 'en', settings, showSearch = false }: { initialServices?: any[], locale?: string, settings?: any, showSearch?: boolean }) {
   const t = useTranslations('Services');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const displayServices = initialServices.length > 0
     ? initialServices.map((srv: any, idx: number) => {
@@ -87,6 +88,15 @@ export default function Services({ initialServices = [], locale = 'en', settings
         };
       })
     : defaultServices;
+
+  const filteredServices = displayServices.filter((srv: any) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    const titleMatch = srv.title?.toLowerCase().includes(q) || false;
+    const descMatch = srv.description?.toLowerCase().includes(q) || false;
+    const tpMatch = srv.types?.some((tp: any) => tp.name?.toLowerCase().includes(q));
+    return titleMatch || descMatch || tpMatch;
+  });
 
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -120,17 +130,51 @@ export default function Services({ initialServices = [], locale = 'en', settings
           </motion.p>
         </div>
 
+        {showSearch && (
+          <div className="max-w-2xl mx-auto mb-16 relative z-20 px-4">
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative group w-full"
+            >
+              <div className="absolute inset-0 bg-brand-cyan/20 rounded-full blur-md group-hover:bg-brand-cyan/30 transition-all duration-300" />
+              <div className="relative flex items-center bg-[#0d1627] rounded-full border border-gray-700/50 p-3 shadow-xl h-14">
+                <Search className="w-5 h-5 text-gray-400 mx-4 shrink-0" />
+                <input
+                  type="text"
+                  placeholder={locale === 'ar' ? "ابحث عن رحلة بحرية، سفاري، أورانج باي..." : "Search for sea trips, safari, orange bay..."}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-transparent text-white placeholder-gray-500 font-sans outline-none text-lg rtl:ps-2 ltr:pe-2"
+                />
+              </div>
+            </motion.div>
+          </div>
+        )}
+
         <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto perspective-1000">
-          {displayServices.map((service, index) => (
-            <CinematicCard 
-              key={index}
-              index={index}
-              service={service}
-              locale={locale}
-              settings={settings}
-              scrollYProgress={scrollYProgress}
-            />
-          ))}
+          {filteredServices.length > 0 ? (
+            filteredServices.map((service: any, index: number) => (
+              <CinematicCard 
+                key={index}
+                index={index}
+                service={service}
+                locale={locale}
+                settings={settings}
+                scrollYProgress={scrollYProgress}
+              />
+            ))
+          ) : (
+            <div className="col-span-1 md:col-span-3 text-center py-16">
+              <Search className="w-16 h-16 text-gray-600 mx-auto mb-4 opacity-50" />
+              <h3 className="text-xl font-bold text-gray-300 mb-2">
+                {locale === 'ar' ? 'لم يتم العثور على أي نتائج' : 'No results found'}
+              </h3>
+              <p className="text-gray-500 font-sans">
+                {locale === 'ar' ? 'حاول البحث بكلمات مختلفة أو تعديل الفلاتر' : 'Try adjusting your search keywords'}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </section>

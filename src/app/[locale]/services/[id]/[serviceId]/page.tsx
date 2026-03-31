@@ -1,4 +1,5 @@
 import { BookingFormWidget } from './BookingFormWidget';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
@@ -6,6 +7,10 @@ import { ArrowRight, ArrowLeft, Clock, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { ImageGallery } from './ImageGallery';
 import { HeroSlider } from './HeroSlider';
+import { PackageReviewsWidget } from '@/components/PackageReviewsWidget';
+import { PriceDisplay } from '@/components/PriceDisplay';
+
+export const revalidate = 3600; // 1 hour ISR
 
 // Fallback data for empty DB just in case, similar to previous pages
 const fallbackServices = {
@@ -24,6 +29,55 @@ const fallbackServices = {
   }
 };
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string; serviceId: string }>;
+}): Promise<Metadata> {
+  const { locale, id, serviceId } = await params;
+  const isArabic = locale === 'ar';
+  
+  const [collectionDataInDb, serviceDataInDb] = await Promise.all([
+    prisma.service.findUnique({ where: { id: id } }),
+    prisma.serviceType.findUnique({ where: { id: serviceId } })
+  ]);
+  
+  let collectionData: any = collectionDataInDb;
+  let serviceData: any = serviceDataInDb;
+
+  if (!collectionData && fallbackServices[id as keyof typeof fallbackServices]) {
+    collectionData = fallbackServices[id as keyof typeof fallbackServices];
+    serviceData = collectionData?.types.find((t: any) => t.id === serviceId);
+  }
+
+  if (!collectionData || !serviceData) {
+    return { title: 'Package Not Found | Hot Wave' };
+  }
+
+  const srvTitle = isArabic ? (serviceData.name || serviceData.nameEn) : (serviceData.nameEn || serviceData.name);
+  const srvDesc = isArabic ? (serviceData.description || serviceData.descriptionEn) : (serviceData.descriptionEn || serviceData.description);
+  
+  const displayImages = serviceData.images && serviceData.images.length > 0
+    ? serviceData.images
+    : (serviceData.imageUrl ? [serviceData.imageUrl] : ['https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=2070']);
+
+  return {
+    title: `${srvTitle} | Hot Wave`,
+    description: srvDesc,
+    openGraph: {
+      title: `${srvTitle} | Hot Wave`,
+      description: srvDesc,
+      images: [displayImages[0]],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${srvTitle} | Hot Wave`,
+      description: srvDesc,
+      images: [displayImages[0]],
+    }
+  };
+}
+
 export default async function DedicatedServicePage({
   params,
 }: {
@@ -35,7 +89,15 @@ export default async function DedicatedServicePage({
   // Try fetching from DB first
   const [collectionDataInDb, serviceDataInDb, settings] = await Promise.all([
     prisma.service.findUnique({ where: { id: id } }),
-    prisma.serviceType.findUnique({ where: { id: serviceId } }),
+    prisma.serviceType.findUnique({ 
+      where: { id: serviceId },
+      include: {
+        reviews: {
+          where: { isApproved: true },
+          orderBy: { createdAt: 'desc' },
+        }
+      }
+    }),
     prisma.siteSettings.findFirst()
   ]);
   
@@ -75,6 +137,24 @@ export default async function DedicatedServicePage({
 
   return (
     <main className="min-h-screen bg-[#050B14] pb-24 font-sans text-gray-200">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: srvTitle,
+            description: srvDesc,
+            image: images,
+            offers: {
+              "@type": "Offer",
+              price: typeof srvPrice === 'number' ? srvPrice : (srvPrice?.toString().replace(/[^0-9.]/g, '') || "0"),
+              priceCurrency: "USD",
+              availability: "https://schema.org/InStock",
+            }
+          })
+        }}
+      />
       {/* Dynamic Hero Section */}
       <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
         <HeroSlider images={images} title={srvTitle as string} isArabic={isArabic} />
@@ -100,9 +180,9 @@ export default async function DedicatedServicePage({
                 <span>{srvDuration}</span>
               </div>
             )}
-            {srvPrice && (
+            {srvPrice != null && (
               <div className="flex items-center gap-2 bg-brand-cyan/20 backdrop-blur-md px-5 py-2.5 rounded-xl border border-brand-cyan/30 text-brand-cyan font-bold shadow-lg text-lg tracking-wide">
-                <span>{srvPrice}</span>
+                <PriceDisplay price={srvPrice} />
               </div>
             )}
           </div>
@@ -167,8 +247,55 @@ export default async function DedicatedServicePage({
               </div>
             </div>
           </div>
-          
         </div>
+
+        {/* Dynamic Reviews Section */}
+        <PackageReviewsWidget 
+          serviceTypeId={serviceId}
+          isArabic={isArabic}
+          initialReviews={serviceData.reviews || []}
+        />
+
+        {/* Related Tours Section */}
+        {(() => {
+          const relatedTours = collectionData.types?.filter((t: any) => t.id !== serviceId).slice(0, 3) || [];
+          if (relatedTours.length === 0) return null;
+          
+          return (
+            <div className="mt-20 pt-16 border-t border-gray-800/50">
+              <h3 className="text-3xl font-bold font-heading text-white mb-8">
+                {isArabic ? 'رحلات أخرى قد تعجبك' : 'Other Tours You Might Like'}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {relatedTours.map((tour: any) => {
+                  const rTitle = isArabic ? (tour.nameAr || tour.name || tour.nameEn) : (tour.nameEn || tour.name);
+                  const rPrice = tour.price;
+                  const rDuration = isArabic ? (tour.durationAr || tour.duration || tour.durationEn) : (tour.durationEn || tour.duration);
+                  const dbImgs = (tour.images && tour.images.length > 0) ? tour.images : (tour.imageUrl ? [tour.imageUrl] : []);
+                  const rColImgs = (collectionData.images && collectionData.images.length > 0) ? collectionData.images : (collectionData.imageUrl ? [collectionData.imageUrl] : ['https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=2070']);
+                  const rImage = dbImgs.length > 0 ? dbImgs[0] : rColImgs[0];
+                  
+                  return (
+                    <Link key={tour.id} href={`/${locale}/services/${id}/${tour.id}`} className="group block rounded-2xl overflow-hidden bg-brand-navy-light/50 border border-gray-800 hover:border-brand-cyan/40 transition-all duration-300 hover:shadow-lg hover:shadow-brand-cyan/10">
+                      <div className="relative h-48 w-full overflow-hidden">
+                        <Image src={rImage} alt={rTitle} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 to-transparent" />
+                      </div>
+                      <div className="p-5 relative z-10 -mt-8">
+                        <h4 className="text-xl font-bold text-white mb-2 font-heading">{rTitle}</h4>
+                        <div className="flex items-center justify-between mt-4">
+                          <span className="text-gray-400 text-sm flex items-center gap-1"><Clock className="w-4 h-4 text-brand-cyan" /> {rDuration || '-'}</span>
+                          <span className="text-brand-orange font-bold font-heading text-lg bg-brand-orange/10 px-3 py-1 rounded-full border border-brand-orange/20">{rPrice}</span>
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
       </section>
     </main>
   );

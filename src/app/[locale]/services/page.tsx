@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Sailboat, Map, Tent, ArrowRight, ArrowLeft, ArrowUpRight, Waves, Mountain, Compass, Camera, Ghost } from 'lucide-react';
+import { ServicesSearchGrid } from '@/components/ServicesSearchGrid';
 
 const iconMap: Record<string, any> = {
   'Sailboat': <Sailboat className="w-5 h-5" />,
@@ -55,6 +56,8 @@ const fallbackCollections = [
   }
 ];
 
+export const revalidate = 3600;
+
 export default async function ServicesCollectionsPage({
   params,
 }: {
@@ -104,59 +107,8 @@ export default async function ServicesCollectionsPage({
         </div>
       </section>
 
-      {/* Collections Grid Section */}
-      <section className="container px-4 mx-auto -mt-10 relative z-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {collections.map((col: any) => {
-            const title = isArabic ? (col.titleAr || col.title || col.titleEn) : (col.titleEn || col.title);
-            const description = isArabic ? (col.descriptionAr || col.description || col.descriptionEn) : (col.descriptionEn || col.description);
-            const imageUrl = (col.images && col.images.length > 0) ? col.images[0] : (col.imageUrl || col.image || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070');
-
-            return (
-              <Link key={col.id} href={`/${locale}/services/${col.id}`} className="group relative block overflow-hidden rounded-3xl bg-brand-navy-light/80 border border-gray-800 shadow-2xl hover:border-brand-cyan/50 hover:shadow-[0_10px_40px_rgba(0,229,255,0.15)] transition-all duration-500 flex flex-col items-center">
-                {/* Image Container */}
-                <div className="relative w-full h-64 overflow-hidden">
-                  <Image
-                    src={imageUrl}
-                    alt={title || 'Collection Image'}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/40 to-transparent" />
-                </div>
-                
-                {/* Content Container */}
-                <div className="relative w-full p-8 flex flex-col flex-grow -mt-8">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex flex-col gap-2">
-                        {col.icon && iconMap[col.icon] && (
-                            <div className="w-10 h-10 rounded-xl bg-brand-cyan/20 flex items-center justify-center text-brand-cyan border border-brand-cyan/30 mb-2 shadow-lg">
-                                {iconMap[col.icon]}
-                            </div>
-                        )}
-                        <h2 className="text-3xl font-bold text-white font-heading">{title}</h2>
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-brand-cyan/10 flex items-center justify-center text-brand-cyan border border-brand-cyan/20 group-hover:bg-brand-cyan group-hover:text-brand-navy transition-colors shrink-0">
-                      <ArrowUpRight className="w-5 h-5 rtl:hidden" />
-                      <ArrowUpRight className="w-5 h-5 hidden rtl:block rotate-[-90deg]" />
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-400 mb-6 leading-relaxed flex-grow">
-                    {description}
-                  </p>
-
-                  <div className="flex items-center gap-2 text-brand-cyan font-bold mt-auto group-hover:text-brand-orange transition-colors">
-                    {isArabic ? 'استكشف الخدمات' : 'Explore Services'}
-                    {isArabic ? <ArrowLeft className="w-4 h-4 ml-2 rtl:hidden group-hover:-translate-x-2 transition-transform" /> : <ArrowRight className="w-4 h-4 rtl:hidden group-hover:translate-x-2 transition-transform" />}
-                    {isArabic ? <ArrowLeft className="w-4 h-4 hidden rtl:block rotate-180 group-hover:translate-x-2 transition-transform" /> : null}
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+      {/* Collections Grid Section with Search */}
+      <ServicesSearchGrid collections={collections} locale={locale} iconMap={iconMap} />
     </main>
   );
 }

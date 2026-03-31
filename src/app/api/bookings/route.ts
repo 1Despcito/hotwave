@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { sendBookingConfirmationEmail } from "@/lib/mailer";
 
 // GET all bookings (Admin only)
 export async function GET() {
@@ -55,6 +56,11 @@ export async function POST(req: Request) {
             status: "PENDING",
           },
         });
+
+        // Add email sending in the background
+        const siteSettings = await prisma.siteSettings.findFirst();
+        sendBookingConfirmationEmail(booking, siteSettings).catch(e => console.error("Email processing failed:", e));
+
         return NextResponse.json(booking, { status: 201 });
     } catch (dbError: any) {
         console.error("PRISMA CREATE ERROR:", dbError);
