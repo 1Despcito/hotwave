@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { prisma } from "@/lib/prisma";
 import GlobalFooter from "@/components/GlobalFooter";
+import FloatingWhatsAppWidget from "@/components/FloatingWhatsAppWidget";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -57,6 +58,7 @@ export default async function RootLayout({
             <ConditionalNavbar />
             {children}
             <GlobalFooter settings={settings} services={topServices} />
+            <FloatingWhatsAppWidget whatsappNumber={(settings as any)?.whatsappNumber || "201110626484"} />
           </NextAuthProvider>
         </NextIntlClientProvider>
       </body>

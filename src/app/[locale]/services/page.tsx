@@ -65,7 +65,7 @@ export default async function ServicesCollectionsPage({
   
   // Try fetching from DB first
   const collectionsInDb = await prisma.service.findMany({
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: 'desc' },
   });
   
   let collections: any = collectionsInDb;
@@ -107,10 +107,10 @@ export default async function ServicesCollectionsPage({
       {/* Collections Grid Section */}
       <section className="container px-4 mx-auto -mt-10 relative z-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {collections.map((col: ServiceCollection) => {
+          {collections.map((col: any) => {
             const title = isArabic ? (col.titleAr || col.title || col.titleEn) : (col.titleEn || col.title);
             const description = isArabic ? (col.descriptionAr || col.description || col.descriptionEn) : (col.descriptionEn || col.description);
-            const imageUrl = col.imageUrl || col.image || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070';
+            const imageUrl = (col.images && col.images.length > 0) ? col.images[0] : (col.imageUrl || col.image || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070');
 
             return (
               <Link key={col.id} href={`/${locale}/services/${col.id}`} className="group relative block overflow-hidden rounded-3xl bg-brand-navy-light/80 border border-gray-800 shadow-2xl hover:border-brand-cyan/50 hover:shadow-[0_10px_40px_rgba(0,229,255,0.15)] transition-all duration-500 flex flex-col items-center">

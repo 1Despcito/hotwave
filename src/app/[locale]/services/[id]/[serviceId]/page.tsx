@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { ArrowRight, ArrowLeft, Clock, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { ImageGallery } from './ImageGallery';
+import { HeroSlider } from './HeroSlider';
 
 // Fallback data for empty DB just in case, similar to previous pages
 const fallbackServices = {
@@ -59,8 +60,9 @@ export default async function DedicatedServicePage({
   const srvDesc = isArabic ? (serviceData.descriptionAr || serviceData.description || serviceData.descriptionEn) : (serviceData.descriptionEn || serviceData.description);
   const srvDuration = isArabic ? (serviceData.durationAr || serviceData.duration || serviceData.durationEn) : (serviceData.durationEn || serviceData.duration);
   const srvPrice = serviceData.price;
-  const images = (serviceData.images && serviceData.images.length > 0) ? serviceData.images : (serviceData.imageUrl ? [serviceData.imageUrl] : []);
-  const heroImage = images.length > 0 ? images[0] : (collectionData.imageUrl || collectionData.image || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070');
+  const dbImages = (serviceData.images && serviceData.images.length > 0) ? serviceData.images : (serviceData.imageUrl ? [serviceData.imageUrl] : []);
+  const heroImage = dbImages.length > 0 ? dbImages[0] : (collectionData.imageUrl || collectionData.image || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070');
+  const images = dbImages.length > 0 ? dbImages : [heroImage];
   
   // Includes Parsing
   let pkgIncludes = ['Guide', 'Water', 'Transfer'];
@@ -75,16 +77,7 @@ export default async function DedicatedServicePage({
     <main className="min-h-screen bg-[#050B14] pb-24 font-sans text-gray-200">
       {/* Dynamic Hero Section */}
       <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src={heroImage}
-            alt={srvTitle}
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#050B14] via-[#050B14]/70 to-black/40" />
-        </div>
+        <HeroSlider images={images} title={srvTitle as string} isArabic={isArabic} />
         
         <div className="container relative z-10 px-4 mt-20 flex flex-col items-center md:items-start text-center md:text-start" dir={isArabic ? 'rtl' : 'ltr'}>
           {/* Breadcrumbs */}

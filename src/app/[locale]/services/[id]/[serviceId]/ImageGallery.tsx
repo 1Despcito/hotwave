@@ -59,21 +59,21 @@ export function ImageGallery({ images, title, isArabic }: ImageGalleryProps) {
         {isArabic ? "معرض الصور" : "Photo Gallery"}
       </h3>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="flex overflow-x-auto gap-4 pb-6 snap-x snap-mandatory hide-scrollbar rtl:space-x-reverse" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {images.map((img, idx) => (
           <motion.div
             key={idx}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setSelectedIndex(idx)}
-            className="relative h-40 md:h-48 rounded-2xl overflow-hidden border border-white/10 group cursor-pointer shadow-lg hover:border-brand-cyan/50 transition-all"
+            className="relative flex-none w-[70vw] sm:w-72 md:w-80 h-48 md:h-64 rounded-2xl overflow-hidden border border-white/10 group cursor-pointer shadow-lg hover:border-brand-cyan/50 transition-all snap-center"
           >
             <Image
               src={img}
               alt={`${title} ${idx + 1}`}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"
-              sizes="(max-width: 768px) 50vw, 25vw"
+              sizes="(max-width: 768px) 70vw, 320px"
             />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <div className="p-3 bg-white/20 backdrop-blur-md rounded-full border border-white/30 transform translate-y-4 group-hover:translate-y-0 transition-transform">
@@ -140,17 +140,37 @@ export function ImageGallery({ images, title, isArabic }: ImageGalleryProps) {
                   </div>
                 </div>
 
-                <div className="relative w-full h-full p-2 md:p-8 flex items-center justify-center">
-                  <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl bg-black/20">
-                    <Image
-                      src={images[selectedIndex]}
-                      alt={title}
-                      fill
-                      className="object-contain"
-                      priority
-                      sizes="80vw"
-                    />
-                  </div>
+                <div className="relative w-full h-full p-2 md:p-8 flex items-center justify-center overflow-hidden">
+                  <AnimatePresence mode="popLayout" custom={selectedIndex}>
+                    <motion.div
+                      key={selectedIndex}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      dragElastic={0.2}
+                      onDragEnd={(e, { offset, velocity }) => {
+                        const swipe = Math.abs(offset.x) * velocity.x;
+                        const rtlDir = isArabic ? -1 : 1;
+                        if (swipe < -10000 || offset.x < -50) rtlDir === 1 ? handleNext() : handlePrev();
+                        else if (swipe > 10000 || offset.x > 50) rtlDir === 1 ? handlePrev() : handleNext();
+                      }}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute w-full h-full p-2 md:p-8 flex items-center justify-center"
+                    >
+                      <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl bg-black/20 touch-none">
+                        <Image
+                          src={images[selectedIndex]}
+                          alt={title}
+                          fill
+                          className="object-contain pointer-events-none"
+                          priority
+                          sizes="80vw"
+                        />
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
               </motion.div>
             </div>

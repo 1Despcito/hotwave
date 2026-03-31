@@ -21,7 +21,7 @@ function getSessionId() {
   return sid;
 }
 
-export default function AIChatWidget({ locale = 'ar' }: { locale?: string }) {
+export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?: string, customTrigger?: (toggle: () => void, isOpen: boolean) => React.ReactNode }) {
   const t = useTranslations('Chat');
   const [isOpen, setIsOpen] = useState(false);
 
@@ -90,61 +90,63 @@ export default function AIChatWidget({ locale = 'ar' }: { locale?: string }) {
       `}} />
 
       {/* Toggle Button */}
-      <div className="fixed bottom-6 rtl:right-6 rtl:left-auto ltr:left-6 ltr:right-auto z-50">
-        <div className="relative">
-          {/* Pulse Rings (only when closed) */}
-          {!isOpen && (
-            <div className="ring-anim absolute inset-0 rounded-full pointer-events-none" />
-          )}
+      {customTrigger ? customTrigger(() => setIsOpen(!isOpen), isOpen) : (
+        <div className="fixed bottom-6 rtl:right-6 rtl:left-auto ltr:left-6 ltr:right-auto z-50">
+          <div className="relative">
+            {/* Pulse Rings (only when closed) */}
+            {!isOpen && (
+              <div className="ring-anim absolute inset-0 rounded-full pointer-events-none" />
+            )}
 
-          <motion.button
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.92 }}
-            onClick={() => setIsOpen(!isOpen)}
-            className={`relative w-[72px] h-[72px] rounded-full flex items-center justify-center transition-all duration-500 fire-glow overflow-visible ${!isOpen ? 'bot-float' : ''}`}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              padding: 0,
-            }}
-            aria-label="مساعد الذكاء الاصطناعي"
-          >
-            <AnimatePresence mode="wait">
-              {isOpen ? (
-                <motion.div
-                  key="close"
-                  initial={{ scale: 0, rotate: -90 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  exit={{ scale: 0, rotate: 90 }}
-                  transition={{ duration: 0.2 }}
-                  className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-[#ff6200] to-[#cc3d00] flex items-center justify-center shadow-lg"
-                >
-                  <X size={30} className="text-white" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="bot"
-                  initial={{ scale: 0, rotate: 90 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  exit={{ scale: 0, rotate: -90 }}
-                  transition={{ duration: 0.2 }}
-                  className="w-[72px] h-[72px] rounded-full overflow-hidden border-2 border-orange-500/60 shadow-lg"
-                  style={{ background: 'linear-gradient(135deg, #1a0a00, #2d1200)' }}
-                >
-                  <Image
-                    src="/hotwave-bot.png"
-                    alt="HotWave AI"
-                    width={72}
-                    height={72}
-                    className="object-cover w-full h-full scale-110"
-                    priority
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              onClick={() => setIsOpen(!isOpen)}
+              className={`relative w-[72px] h-[72px] rounded-full flex items-center justify-center transition-all duration-500 fire-glow overflow-visible ${!isOpen ? 'bot-float' : ''}`}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+              }}
+              aria-label="مساعد الذكاء الاصطناعي"
+            >
+              <AnimatePresence mode="wait">
+                {isOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={{ scale: 0, rotate: -90 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    exit={{ scale: 0, rotate: 90 }}
+                    transition={{ duration: 0.2 }}
+                    className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-[#ff6200] to-[#cc3d00] flex items-center justify-center shadow-lg"
+                  >
+                    <X size={30} className="text-white" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="bot"
+                    initial={{ scale: 0, rotate: 90 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    exit={{ scale: 0, rotate: -90 }}
+                    transition={{ duration: 0.2 }}
+                    className="w-[72px] h-[72px] rounded-full overflow-hidden border-2 border-orange-500/60 shadow-lg"
+                    style={{ background: 'linear-gradient(135deg, #1a0a00, #2d1200)' }}
+                  >
+                    <Image
+                      src="/hotwave-bot.png"
+                      alt="HotWave AI"
+                      width={72}
+                      height={72}
+                      className="object-cover w-full h-full scale-110"
+                      priority
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Chat Window */}
       <AnimatePresence>

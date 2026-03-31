@@ -50,7 +50,10 @@ export default function ServicePackageCard({
   };
 
   return (
-    <div className="group bg-brand-navy border border-gray-700/50 rounded-[2rem] overflow-hidden hover:border-brand-orange/50 hover:shadow-[0_20px_50px_rgba(255,107,0,0.15)] transition-all duration-500 flex flex-col h-full">
+    <div className="group bg-brand-navy border border-gray-700/50 rounded-[2rem] overflow-hidden hover:border-brand-orange/50 hover:shadow-[0_20px_50px_rgba(255,107,0,0.15)] transition-all duration-500 flex flex-col h-full relative">
+      {/* Invisible Overlay Link for the entire card */}
+      <Link href={`/${isArabic ? 'ar' : 'en'}/services/${collectionId}/${pkg.id}`} className="absolute inset-0 z-10" aria-label={`View details for ${pkgName}`} />
+
       {/* Top Image (if available) */}
       {pkgImage && (
         <div className="relative h-48 w-full overflow-hidden">
@@ -107,7 +110,7 @@ export default function ServicePackageCard({
           </ul>
         </div>
 
-        <div className="mt-auto flex flex-col gap-3 pt-4 border-t border-white/5">
+        <div className="mt-auto flex flex-col gap-3 pt-4 border-t border-white/5 relative z-20">
           <Link
             href={`/${isArabic ? 'ar' : 'en'}/services/${collectionId}/${pkg.id}`}
             className="w-full py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl border border-white/10 flex items-center justify-center gap-2 transition-all active:scale-95 text-center group/link"

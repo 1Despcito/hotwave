@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Sailboat, Map, Tent, ArrowRight, Tag, Waves, Mountain, Compass, Camera, Ghost } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import BookingButton from '@/components/BookingButton';
 
@@ -150,10 +151,13 @@ function CinematicCard({ service, index, locale, settings, scrollYProgress }: an
   return (
     <motion.div
       style={{ y, opacity, scale }}
-      className="group relative rounded-[2rem] overflow-hidden min-h-[480px] flex flex-col justify-end shadow-2xl transition-shadow duration-500 hover:shadow-[0_30px_60px_rgba(255,107,0,0.3)] rtl:text-right"
+      className="group bg-[#111827] border border-gray-800/80 rounded-[2rem] overflow-hidden flex flex-col shadow-2xl transition-all duration-500 hover:shadow-[0_30px_60px_rgba(255,107,0,0.15)] hover:border-brand-orange/30 rtl:text-right relative"
     >
-      {/* Full Bleed Background Image with Parallax */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      {/* Invisible Overlay Link for the entire card */}
+      <Link href={`/${locale}/services/${service.id}`} className="absolute inset-0 z-20" aria-label={`View details for ${service.title}`} />
+      
+      {/* Top Image Section - Clear and Unobstructed */}
+      <div className="relative h-[260px] w-full overflow-hidden shrink-0">
         <motion.div style={{ scale: imageScale }} className="absolute inset-0 w-full h-full origin-bottom">
            <div className="w-full h-full transform transition-transform duration-700 ease-out group-hover:scale-110">
               <Image
@@ -164,21 +168,19 @@ function CinematicCard({ service, index, locale, settings, scrollYProgress }: an
               />
            </div>
         </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-brand-navy/60 to-brand-navy/95 group-hover:via-brand-navy/60 transition-colors duration-500" />
+        
+        {/* Soft bottom fade to blend with card */}
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#111827] to-transparent" />
+        
+        {/* Top Badge */}
+        <div className="absolute top-4 right-4 z-10 bg-black/40 backdrop-blur-md rounded-full w-12 h-12 flex items-center justify-center text-2xl border border-white/20 shadow-lg rtl:left-4 rtl:right-auto group-hover:rotate-12 transition-transform duration-500">
+          {service.emoji}
+        </div>
       </div>
 
-              {/* Top Badge */}
-              <div className="absolute top-6 right-6 z-20 bg-white/10 backdrop-blur-md rounded-full w-14 h-14 flex items-center justify-center text-3xl border border-white/20 shadow-lg rtl:left-6 rtl:right-auto group-hover:rotate-12 transition-transform duration-500">
-                {service.emoji}
-              </div>
-
-              {/* Card Content (Bottom Aligned) */}
-              <div className="p-8 relative z-10 flex flex-col h-full justify-end">
-                <div className="mb-4 bg-white/10 backdrop-blur-md w-14 h-14 rounded-2xl flex items-center justify-center border border-white/20 shadow-inner group-hover:-translate-y-20 opacity-0 group-hover:opacity-100 absolute top-10 transition-all duration-500">
-                  {service.icon}
-                </div>
-
-                <div className="transform transition-transform duration-500 group-hover:-translate-y-4">
+      {/* Card Content Content */}
+      <div className="p-6 relative z-10 flex flex-col grow">
+        <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-3xl font-bold font-heading text-white shadow-black/50 drop-shadow-lg">
                       {service.title}
@@ -220,15 +222,13 @@ function CinematicCard({ service, index, locale, settings, scrollYProgress }: an
                   )}
 
                   {/* Main Call to Action Button */}
-                  <div className="pt-2 flex flex-col gap-3">
-                    <motion.a
+                  <div className="pt-2 flex flex-col gap-3 relative z-30">
+                    <Link
                       href={`/${locale}/services/${service.id}`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl flex items-center justify-center gap-3 border border-white/20 hover:bg-white/20 transition-all shadow-lg"
+                      className="w-full py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl flex items-center justify-center gap-3 border border-white/20 hover:bg-white/20 transition-all shadow-lg hover:scale-102 active:scale-95"
                     >
                       {locale === 'ar' ? 'استكشف الباقات والتفاصيل' : 'View Packages & Details'}
-                    </motion.a>
+                    </Link>
                     
                     <BookingButton
                       serviceName={service.title}
