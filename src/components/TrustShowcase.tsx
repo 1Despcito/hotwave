@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { MapPin, Anchor, ShieldCheck, Flame } from 'lucide-react';
 import { useLocale } from 'next-intl';
 
@@ -8,8 +9,18 @@ export default function TrustShowcase() {
   const locale = useLocale();
   const isArabic = locale === 'ar';
 
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const floatY1 = useTransform(scrollYProgress, [0, 1], [80, -80]);
+  const floatY2 = useTransform(scrollYProgress, [0, 1], [-50, 50]);
+  const cardScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1, 1.05]);
+
   return (
-    <section className="py-24 bg-brand-navy relative overflow-hidden">
+    <section ref={containerRef} className="py-24 bg-brand-navy relative overflow-hidden">
       {/* Background Ornaments */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-cyan/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-orange/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3" />
@@ -67,26 +78,31 @@ export default function TrustShowcase() {
 
         {/* Right Side: The Visual Glass Card extracted from Hero */}
         <motion.div 
-          initial={{ opacity: 0, x: 50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="md:w-1/2 relative flex justify-center w-full"
+          style={{ scale: cardScale }}
+          className="md:w-1/2 relative flex justify-center w-full will-change-transform"
         >
           {/* Floating Decals */}
           <motion.div 
-            animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }} 
-            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+            style={{ y: floatY1 }}
             className="absolute -top-10 -left-4 text-5xl opacity-80 drop-shadow-xl z-20"
           >
-            ⛵
+            <motion.div 
+              animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }} 
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+            >
+              ⛵
+            </motion.div>
           </motion.div>
           <motion.div 
-            animate={{ y: [0, 20, 0], rotate: [0, -10, 0] }} 
-            transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+            style={{ y: floatY2 }}
             className="absolute bottom-10 -right-4 text-5xl opacity-80 drop-shadow-xl z-20"
           >
-            🐪
+            <motion.div 
+              animate={{ y: [0, 20, 0], rotate: [0, -10, 0] }} 
+              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+            >
+              🐪
+            </motion.div>
           </motion.div>
 
           <div className="relative w-full max-w-sm aspect-square group">

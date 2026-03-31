@@ -4,7 +4,7 @@ import { Facebook, Instagram, MapPin, Phone, Mail, MessageCircle } from 'lucide-
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 
-export default function Footer({ settings }: { settings?: any }) {
+export default function Footer({ settings, services = [] }: { settings?: any, services?: any[] }) {
   const t = useTranslations('Footer');
   const locale = useLocale();
 
@@ -44,7 +44,7 @@ export default function Footer({ settings }: { settings?: any }) {
             <h4 className="text-white font-semibold mb-6">{t('quick_links')}</h4>
             <ul className="space-y-3 font-sans text-gray-400">
               <li><Link href={`/${locale}`} className="hover:text-brand-cyan transition-colors">{t('link_home')}</Link></li>
-              <li><Link href={`/${locale}/#services`} className="hover:text-brand-cyan transition-colors">{t('link_services')}</Link></li>
+              <li><Link href={`/${locale}/services`} className="hover:text-brand-cyan transition-colors">{t('link_services')}</Link></li>
               <li><Link href={`/${locale}/about`} className="hover:text-brand-cyan transition-colors">{t('link_about')}</Link></li>
               <li><Link href={`/${locale}/contact`} className="hover:text-brand-cyan transition-colors">{t('link_contact')}</Link></li>
             </ul>
@@ -54,10 +54,19 @@ export default function Footer({ settings }: { settings?: any }) {
           <div>
             <h4 className="text-white font-semibold mb-6">{t('adventures')}</h4>
             <ul className="space-y-3 font-sans text-gray-400">
-              <li><a href="#" className="hover:text-brand-orange transition-colors">{t('adv_sea')}</a></li>
-              <li><a href="#" className="hover:text-brand-orange transition-colors">{t('adv_safari')}</a></li>
-              <li><a href="#" className="hover:text-brand-orange transition-colors">{t('adv_horse')}</a></li>
-              <li><a href="#" className="hover:text-brand-orange transition-colors">{t('adv_city')}</a></li>
+              {services.map((service) => (
+                <li key={service.id}>
+                  <Link href={`/${locale}/services/${service.id}`} className="hover:text-brand-orange transition-colors">
+                    {locale === 'ar' ? service.title : service.titleEn || service.title}
+                  </Link>
+                </li>
+              ))}
+              {services.length === 0 && (
+                <>
+                  <li><Link href={`/${locale}/services`} className="hover:text-brand-orange transition-colors">{t('adv_sea')}</Link></li>
+                  <li><Link href={`/${locale}/services`} className="hover:text-brand-orange transition-colors">{t('adv_safari')}</Link></li>
+                </>
+              )}
             </ul>
           </div>
 
@@ -89,8 +98,8 @@ export default function Footer({ settings }: { settings?: any }) {
         <div className="border-t border-gray-800 pt-8 mt-8 flex flex-col md:flex-row items-center justify-between text-gray-500 font-sans text-sm">
           <p>&copy; {new Date().getFullYear()} Hot Wave Tourism. {t('rights')}</p>
           <div className="flex gap-4 mt-4 md:mt-0">
-            <a href="#" className="hover:text-white transition-colors">{t('privacy')}</a>
-            <a href="#" className="hover:text-white transition-colors">{t('terms')}</a>
+            <Link href={`/${locale}/privacy`} className="hover:text-white transition-colors">{t('privacy')}</Link>
+            <Link href={`/${locale}/terms`} className="hover:text-white transition-colors">{t('terms')}</Link>
           </div>
         </div>
       </div>

@@ -17,7 +17,7 @@ export default function Navbar() {
 
   const navLinks = [
     { name: t('home'), href: `/${locale}` },
-    { name: t('services'), href: `/${locale}/#services` },
+    { name: t('services'), href: `/${locale}/services` },
     { name: t('about'), href: `/${locale}/about` },
     { name: t('testimonials'), href: `/${locale}/#testimonials` },
     { name: locale === 'ar' ? 'تواصل معنا' : 'Contact Us', href: `/${locale}/contact` }

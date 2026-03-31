@@ -19,6 +19,12 @@ export default function SettingsAdminPage() {
     contactEmail: "",
     googleAnalyticsId: "",
     facebookPixelId: "",
+    aboutUsText: "",
+    aboutUsTextEn: "",
+    privacyPolicy: "",
+    privacyPolicyEn: "",
+    termsAndConditions: "",
+    termsAndConditionsEn: "",
   });
 
   useEffect(() => {
@@ -40,6 +46,12 @@ export default function SettingsAdminPage() {
               contactEmail: data.contactEmail || "",
               googleAnalyticsId: data.googleAnalyticsId || "",
               facebookPixelId: data.facebookPixelId || "",
+              aboutUsText: data.aboutUsText || "",
+              aboutUsTextEn: data.aboutUsTextEn || "",
+              privacyPolicy: data.privacyPolicy || "",
+              privacyPolicyEn: data.privacyPolicyEn || "",
+              termsAndConditions: data.termsAndConditions || "",
+              termsAndConditionsEn: data.termsAndConditionsEn || "",
             });
           }
         }
@@ -260,6 +272,85 @@ export default function SettingsAdminPage() {
                   value={formData.heroSubtitleEn}
                   onChange={handleChange}
                   rows={4}
+                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan/50 transition-colors"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Legal & Pages */}
+        <section className="bg-[#0a0a0a] p-6 md:p-10 rounded-3xl border border-gray-800 shadow-xl">
+          <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-800 pb-4 flex items-center gap-2">
+            <Globe className="w-6 h-6 text-green-500" />
+            الصفحات القانونية والتعريفية (Legal & Pages)
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            {/* Arabic Pages */}
+            <div className="space-y-6">
+              <h3 className="font-bold text-lg text-brand-orange bg-brand-orange/10 w-fit px-4 py-1.5 rounded-lg">النسخة العربية</h3>
+              <div>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">صفحة "من نحن" (About Us)</label>
+                <textarea
+                  name="aboutUsText"
+                  value={formData.aboutUsText}
+                  onChange={handleChange}
+                  rows={6}
+                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">سياسة الخصوصية (Privacy Policy)</label>
+                <textarea
+                  name="privacyPolicy"
+                  value={formData.privacyPolicy}
+                  onChange={handleChange}
+                  rows={6}
+                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">الشروط والأحكام (Terms & Conditions)</label>
+                <textarea
+                  name="termsAndConditions"
+                  value={formData.termsAndConditions}
+                  onChange={handleChange}
+                  rows={6}
+                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
+                />
+              </div>
+            </div>
+            
+            {/* English Pages */}
+            <div className="space-y-6" dir="ltr">
+              <h3 className="font-bold text-lg text-brand-cyan bg-brand-cyan/10 w-fit px-4 py-1.5 rounded-lg text-right" dir="rtl">النسخة الإنجليزية</h3>
+              <div>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">About Us Content</label>
+                <textarea
+                  name="aboutUsTextEn"
+                  value={formData.aboutUsTextEn}
+                  onChange={handleChange}
+                  rows={6}
+                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan/50 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">Privacy Policy</label>
+                <textarea
+                  name="privacyPolicyEn"
+                  value={formData.privacyPolicyEn}
+                  onChange={handleChange}
+                  rows={6}
+                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan/50 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">Terms & Conditions</label>
+                <textarea
+                  name="termsAndConditionsEn"
+                  value={formData.termsAndConditionsEn}
+                  onChange={handleChange}
+                  rows={6}
                   className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan/50 transition-colors"
                 />
               </div>

@@ -128,7 +128,13 @@ model SiteSettings {
   contactEmail   String?
   googleAnalyticsId String?
   facebookPixelId   String?
-  updatedAt      DateTime @updatedAt
+  aboutUsText       String?  @db.Text
+  aboutUsTextEn     String?  @db.Text
+  privacyPolicy     String?  @db.Text
+  privacyPolicyEn   String?  @db.Text
+  termsAndConditions String? @db.Text
+  termsAndConditionsEn String? @db.Text
+  updatedAt         DateTime @updatedAt
 }
 
 model Booking {

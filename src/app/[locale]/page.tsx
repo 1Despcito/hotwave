@@ -4,7 +4,6 @@ import Services from '@/components/Services';
 import TrustShowcase from '@/components/TrustShowcase';
 import About from '@/components/About';
 import Testimonials from '@/components/Testimonials';
-import Footer from '@/components/Footer';
 import AIChatWidget from '@/components/AIChatWidget';
 import { prisma } from '@/lib/prisma';
 
@@ -37,7 +36,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <TrustShowcase />
       <About />
       <Testimonials initialTestimonials={dbTestimonials} locale={locale} />
-      <Footer settings={settings} />
       <AIChatWidget />
     </main>
   );

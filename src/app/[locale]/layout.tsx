@@ -7,6 +7,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { prisma } from "@/lib/prisma";
+import GlobalFooter from "@/components/GlobalFooter";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -41,6 +43,10 @@ export default async function RootLayout({
 
   const messages = await getMessages();
 
+  // Fetch global settings and top services for the footer
+  const settings = await prisma.siteSettings.findFirst();
+  const topServices = await prisma.service.findMany({ select: { id: true, title: true, titleEn: true }, take: 4 });
+
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body
@@ -50,6 +56,7 @@ export default async function RootLayout({
           <NextAuthProvider>
             <ConditionalNavbar />
             {children}
+            <GlobalFooter settings={settings} services={topServices} />
           </NextAuthProvider>
         </NextIntlClientProvider>
       </body>

@@ -15,6 +15,14 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const { locale } = await params;
   const isArabic = locale === 'ar';
   
+  const settings = await prisma.siteSettings.findFirst();
+  const dynamicAboutText = isArabic ? settings?.aboutUsText : settings?.aboutUsTextEn;
+  const defaultAboutText = isArabic 
+    ? "نحن لسنا مجرد شركة سياحة، نحن عشاق للبحر الأحمر وصحراء الغردقة. هدفنا هو مشاركة هذا الجمال الساحر معك من خلال تجارب استثنائية."
+    : "We are not just a tourism company; we are lovers of the Red Sea and Hurghada's desert. Our goal is to share this magical beauty with you through exceptional experiences.";
+  
+  const displayAboutText = dynamicAboutText || defaultAboutText;
+
   const features = [
     {
       icon: <Shield className="w-8 h-8 text-brand-orange" />,
@@ -49,10 +57,8 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
             <span>{isArabic ? "قصة فريق" : "The Story of"}</span>
             <span className="text-brand-orange leading-relaxed" dir="ltr">HOT WAVE</span>
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto font-sans leading-relaxed">
-            {isArabic 
-              ? "نحن لسنا مجرد شركة سياحة، نحن عشاق للبحر الأحمر وصحراء الغردقة. هدفنا هو مشاركة هذا الجمال الساحر معك من خلال تجارب استثنائية."
-              : "We are not just a tourism company; we are lovers of the Red Sea and Hurghada's desert. Our goal is to share this magical beauty with you through exceptional experiences."}
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto font-sans leading-relaxed whitespace-pre-wrap">
+            {displayAboutText}
           </p>
         </div>
       </section>

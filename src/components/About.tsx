@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Compass, Shield, Users, Camera } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
@@ -31,8 +32,19 @@ export default function About() {
     },
   ];
 
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  // Parallax transformations for images
+  const yCol1 = useTransform(scrollYProgress, [0, 1], [50, -100]);
+  const yCol2 = useTransform(scrollYProgress, [0, 1], [150, -150]);
+  const opacityText = useTransform(scrollYProgress, [0, 0.4], [0, 1]);
+
   return (
-    <section className="py-24 bg-brand-navy relative overflow-hidden" id="about">
+    <section ref={containerRef} className="py-24 bg-brand-navy relative overflow-hidden" id="about">
       <div className="container px-4 mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
@@ -40,46 +52,49 @@ export default function About() {
           <motion.div 
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
-            className="relative"
+            className="relative will-change-transform"
           >
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-brand-cyan/10 rounded-full blur-[100px] -z-10" />
             
             <div className="grid grid-cols-2 gap-4 rtl:flex-row-reverse">
-              <div className="space-y-4 pt-12">
-                <div className="relative h-64 rounded-3xl overflow-hidden shadow-2xl shadow-brand-cyan/20">
+              <motion.div style={{ y: yCol1 }} className="space-y-4 pt-12">
+                <div className="relative h-64 rounded-3xl overflow-hidden shadow-2xl shadow-brand-cyan/20 group">
                   <Image 
                     src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1000" 
                     alt="Snorkeling in Hurghada" 
                     fill 
-                    className="object-cover"
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>
-                <div className="relative h-48 rounded-3xl overflow-hidden shadow-2xl shadow-brand-orange/20">
+                <div className="relative h-48 rounded-3xl overflow-hidden shadow-2xl shadow-brand-orange/20 group">
                   <Image 
                     src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80&w=1000" 
                     alt="Desert Safari" 
                     fill 
-                    className="object-cover"
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>
-              </div>
-              <div className="space-y-4">
-                <div className="relative h-48 rounded-3xl overflow-hidden shadow-2xl shadow-brand-orange/20">
+              </motion.div>
+              <motion.div style={{ y: yCol2 }} className="space-y-4">
+                <div className="relative h-48 rounded-3xl overflow-hidden shadow-2xl shadow-brand-orange/20 group">
                   <Image 
                     src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&q=80&w=1000" 
                     alt="Sunset over water" 
                     fill 
-                    className="object-cover"
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>
-                <div className="relative h-64 rounded-3xl overflow-hidden bg-brand-navy-light border border-gray-800 p-6 flex flex-col justify-center">
-                  <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-brand-cyan mb-2">10+</div>
-                  <div className="text-white font-heading text-xl">{t('years_exp')}</div>
-                  <p className="text-gray-400 mt-2 font-sans text-sm">{t('years_exp_desc')}</p>
+                <div className="relative h-64 rounded-3xl overflow-hidden bg-brand-navy-light border border-gray-800 p-6 flex flex-col justify-center overflow-hidden group hover:border-brand-cyan/50 transition-colors shadow-2xl shadow-brand-navy/50">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-brand-orange/5 to-brand-cyan/5 group-hover:opacity-100 opacity-50 transition-opacity" />
+                  <div className="relative z-10">
+                    <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-brand-cyan mb-2">10+</div>
+                    <div className="text-white font-heading text-xl">{t('years_exp')}</div>
+                    <p className="text-gray-400 mt-2 font-sans text-sm">{t('years_exp_desc')}</p>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
 
@@ -99,7 +114,14 @@ export default function About() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 rtl:text-right">
               {features.map((feature, index) => (
-                <div key={index} className="flex gap-4 items-start group rtl:flex-row">
+                <motion.div 
+                   key={index}
+                   initial={{ opacity: 0, y: 30 }}
+                   whileInView={{ opacity: 1, y: 0 }}
+                   viewport={{ once: true, margin: "-50px" }}
+                   transition={{ delay: index * 0.15, duration: 0.5 }}
+                   className="flex gap-4 items-start group rtl:flex-row"
+                >
                   <div className="w-14 h-14 rounded-2xl bg-brand-navy-light/80 backdrop-blur flex items-center justify-center shrink-0 border border-gray-800 group-hover:border-brand-cyan/50 group-hover:bg-brand-cyan/10 transition-all shadow-inner">
                     {feature.icon}
                   </div>
@@ -107,7 +129,7 @@ export default function About() {
                     <h4 className="text-white font-bold font-heading mb-2 text-lg group-hover:text-brand-cyan transition-colors">{feature.title}</h4>
                     <p className="text-gray-400 font-sans text-sm leading-relaxed">{feature.description}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
 
