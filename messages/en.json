@@ -65,10 +65,10 @@
     "terms": "Terms of Service"
   },
   "Chat": {
-    "title": "Hot Wave Assistant",
-    "subtitle": "We're always happy to help!",
-    "welcome": "Welcome! 👋",
-    "welcome_sub": "How can I help you plan your next adventure today?",
-    "placeholder": "Type your question here..."
+    "title": "Wavey | Your Hurghada Buddy",
+    "subtitle": "Expert in vibes & cool spots! 👋",
+    "welcome": "Yo! 👋",
+    "welcome_sub": "I'm Wavey. Where do you want to go or what are you looking for in Hurghada?",
+    "placeholder": "Chat with Wavey here..."
   }
 }

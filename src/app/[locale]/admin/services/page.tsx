@@ -93,13 +93,21 @@ export default function ServicesAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذه الخدمة؟ هسيتم حذف جميع باقاتها أيضاً!")) return;
-    const res = await fetch(`/api/services/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      toast.success("تم حذف الخدمة");
-      fetchServices();
-    } else {
-      toast.error("فشل الحذف");
+    console.log("Deleting service group:", id);
+    if (!confirm("Are you sure you want to delete this group? All its packages will be permanently removed!")) return;
+    try {
+      const res = await fetch(`/api/services/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        toast.success("Service group deleted successfully");
+        fetchServices();
+      } else {
+        const err = await res.json();
+        console.error("Delete failed:", err);
+        toast.error("Failed to delete: " + (err.error || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("An error occurred during deletion");
     }
   };
 
@@ -121,7 +129,7 @@ export default function ServicesAdminPage() {
       setEditingService(null);
       fetchServices();
     } else {
-      toast.error("فشل التحديث");
+      toast.error("Update failed");
     }
     setIsUpdating(false);
   };
@@ -178,13 +186,21 @@ export default function ServicesAdminPage() {
   };
 
   const handleDeleteType = async (serviceId: string, typeId: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذه الباقة؟")) return;
-    const res = await fetch(`/api/services/${serviceId}/types/${typeId}`, { method: "DELETE" });
-    if (res.ok) {
-      toast.success("تم حذف الباقة");
-      fetchServices();
-    } else {
-      toast.error("فشل الحذف");
+    console.log("Deleting package:", typeId, "from service:", serviceId);
+    if (!confirm("Are you sure you want to delete this package?")) return;
+    try {
+      const res = await fetch(`/api/services/${serviceId}/types/${typeId}`, { method: "DELETE" });
+      if (res.ok) {
+        toast.success("Package deleted successfully");
+        fetchServices();
+      } else {
+        const err = await res.json();
+        console.error("Delete failed:", err);
+        toast.error("Failed to delete: " + (err.error || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("An error occurred during deletion");
     }
   };
 
@@ -192,11 +208,11 @@ export default function ServicesAdminPage() {
   const setTypeFormFor = (id: string, field: string, value: string) =>
     setTypeForm(prev => ({ ...prev, [id]: { ...(prev[id] || emptyTypeForm), [field]: value } }));
 
-  if (isLoading) return <div className="text-white flex items-center justify-center min-h-[400px]"><Loader2 className="animate-spin mr-2" /> جاري تحميل البيانات...</div>;
+  if (isLoading) return <div className="text-white flex items-center justify-center min-h-[400px]"><Loader2 className="animate-spin mr-2" /> Loading data...</div>;
 
   return (
     <div className="pb-20">
-      <h1 className="text-3xl font-bold text-white mb-6 font-heading">إدارة البرامج السياحية 🚢</h1>
+      <h1 className="text-3xl font-bold text-white mb-6 font-heading">Programs Management 🚢</h1>
 
       {/* Add Service Section */}
       <div className="bg-[#0a0a0a] p-6 md:p-8 rounded-3xl shadow-xl border border-gray-800 mb-8">
@@ -207,10 +223,10 @@ export default function ServicesAdminPage() {
             <TextareaField label="Description" value={formData.descriptionEn} onChange={v => setFormData({ ...formData, descriptionEn: v })} dir="ltr" required />
           </div>
           <div className="border border-gray-800 bg-[#1a1a1a] p-6 rounded-2xl">
-            <MultiImageUpload label="صور الغلاف للمجموعة" value={formData.images} onChange={(urls) => setFormData({ ...formData, images: urls })} />
+            <MultiImageUpload label="Group Cover Images" value={formData.images} onChange={(urls) => setFormData({ ...formData, images: urls })} />
           </div>
           <button disabled={isAdding} className="bg-brand-orange text-white px-8 py-3 rounded-xl hover:bg-brand-orange/90 disabled:opacity-50 transition-all font-bold shadow-lg shadow-brand-orange/20">
-            {isAdding ? "جاري الإضافة..." : "إضافة المجموعة"}
+            {isAdding ? "Adding..." : "Add Group"}
           </button>
         </form>
       </div>
@@ -220,7 +236,7 @@ export default function ServicesAdminPage() {
         {services.length === 0 && (
           <div className="bg-[#111111] p-12 text-center text-gray-500 rounded-3xl border border-gray-800">
             <Plus className="w-12 h-12 mx-auto mb-4 opacity-20" />
-            لا توجد مجموعات مضافة حالياً.
+            No program groups added yet.
           </div>
         )}
         {services.map(service => (
@@ -241,14 +257,14 @@ export default function ServicesAdminPage() {
               </div>
               <div className="flex items-center gap-2 flex-wrap justify-center" onClick={(e) => e.stopPropagation()}>
                 <span className="text-xs font-bold text-gray-400 bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-800">
-                  {service.types.length} باقة / قسم
+                  {service.types.length} Packages / Sub-services
                 </span>
                 <button
                   onClick={() => setExpandedId(expandedId === service.id ? null : service.id)}
                   className="flex items-center gap-1.5 text-sm text-brand-cyan hover:text-white px-4 py-2 rounded-xl border border-brand-cyan/20 hover:bg-brand-cyan hover:border-brand-cyan transition-all"
                 >
                   {expandedId === service.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  {expandedId === service.id ? "إغلاق" : "إدارة الباقات"}
+                  {expandedId === service.id ? "Collapse" : "Manage Packages"}
                 </button>
                 <button onClick={() => setEditingService(service)} className="text-gray-400 hover:text-brand-orange transition-colors p-2 bg-gray-900 rounded-xl border border-gray-800">
                   <Edit3 className="w-5 h-5" />
@@ -271,7 +287,7 @@ export default function ServicesAdminPage() {
                   <div className="p-6">
                     <h3 className="text-xs font-bold text-gray-500 mb-6 uppercase tracking-widest flex items-center gap-2">
                         <div className="h-px bg-gray-800 flex-1" />
-                        الباقات والخدمات المتاحة
+                        Available Packages & Services
                         <div className="h-px bg-gray-800 flex-1" />
                     </h3>
 
@@ -283,7 +299,7 @@ export default function ServicesAdminPage() {
                                 {type.imageUrl ? (
                                     <img src={type.imageUrl} alt={type.name} className="h-full w-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all" />
                                 ) : (
-                                    <div className="h-full w-full bg-gray-900 flex items-center justify-center text-gray-700">لا توجد صورة</div>
+                                    <div className="h-full w-full bg-gray-900 flex items-center justify-center text-gray-700 font-bold uppercase tracking-tighter text-[10px]">No Image</div>
                                 )}
                                 <div className="absolute top-2 right-2 flex gap-1 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
                                     <button onClick={() => setEditingType({serviceId: service.id, type})} className="p-1.5 bg-brand-orange text-white rounded-lg shadow-lg hover:scale-105"><Edit3 size={14}/></button>
@@ -293,8 +309,8 @@ export default function ServicesAdminPage() {
                            <div className="p-4 flex-1">
                                 <p className="text-white text-sm font-bold truncate">{type.name}</p>
                                 <p className="text-gray-500 text-[10px] mb-2" dir="ltr">{type.nameEn}</p>
-                                {type.price && <p className="text-brand-cyan text-sm font-bold mb-2">{type.price} ج.م</p>}
-                                <p className="text-gray-400 text-xs line-clamp-2 leading-relaxed">{type.description}</p>
+                                {type.price && <p className="text-brand-cyan text-sm font-bold mb-2">{type.price} €</p>}
+                                <p className="text-gray-400 text-xs line-clamp-2 leading-relaxed">{type.descriptionEn || type.description}</p>
                            </div>
                         </div>
                       ))}
@@ -303,7 +319,7 @@ export default function ServicesAdminPage() {
                       <div className="flex items-center justify-center bg-[#0d0d0d] border-2 border-dashed border-gray-800 rounded-2xl p-6 h-full text-gray-600 hover:text-brand-cyan hover:border-brand-cyan/50 transition-all cursor-default">
                         <div className="text-center">
                             <Plus size={24} className="mx-auto mb-2 opacity-50" />
-                            <p className="text-xs font-bold">أضف باقة جديدة أدناه</p>
+                            <p className="text-xs font-bold">Add new package below</p>
                         </div>
                       </div>
                     </div>
@@ -345,10 +361,10 @@ export default function ServicesAdminPage() {
                 <InputField label="Title" value={editingService.titleEn} onChange={v => setEditingService({...editingService, titleEn: v})} dir="ltr" />
                 <TextareaField label="Description" value={editingService.descriptionEn} onChange={v => setEditingService({...editingService, descriptionEn: v})} dir="ltr" />
                 <div className="bg-black/20 p-4 rounded-xl border border-gray-800">
-                    <MultiImageUpload label="صور المجموعة" value={editingService.images || []} onChange={urls => setEditingService({...editingService, images: urls})} />
+                    <MultiImageUpload label="Group Images" value={editingService.images || []} onChange={urls => setEditingService({...editingService, images: urls})} />
                 </div>
                 <button disabled={isUpdating} className="w-full bg-brand-orange py-3 rounded-xl font-bold flex items-center justify-center gap-2">
-                    {isUpdating ? <Loader2 className="animate-spin" size={18}/> : <Save size={18}/>} حفظ التعديلات
+                    {isUpdating ? <Loader2 className="animate-spin" size={18}/> : <Save size={18}/>} Save Changes
                 </button>
             </form>
         )}
@@ -368,7 +384,7 @@ export default function ServicesAdminPage() {
                     <InputField label="What's Included?" value={editingType.type.includesEn || ""} onChange={v => setEditingType({...editingType, type: {...editingType.type, includesEn: v}})} dir="ltr" />
                     <InputField label="What's Not Included?" value={editingType.type.notIncludesEn || ""} onChange={v => setEditingType({...editingType, type: {...editingType.type, notIncludesEn: v}})} dir="ltr" />
                   </div>
-                  <ImageUpload label="تغيير الصورة" value={editingType.type.imageUrl || ""} onChange={url => setEditingType({...editingType, type: {...editingType.type, imageUrl: url}})} />
+                  <ImageUpload label="Change Image" value={editingType.type.imageUrl || ""} onChange={url => setEditingType({...editingType, type: {...editingType.type, imageUrl: url}})} />
                  <div className="flex items-center gap-2 p-3 bg-brand-orange/10 border border-brand-orange/20 rounded-xl">
                     <input 
                         type="checkbox" 
@@ -377,7 +393,7 @@ export default function ServicesAdminPage() {
                         onChange={e => setEditingType({...editingType, type: {...editingType.type, featured: e.target.checked}})}
                         className="w-5 h-5 accent-brand-orange"
                     />
-                    <label htmlFor="featured-toggle" className="text-white font-bold cursor-pointer">إظهار في "أكثر الرحلات طلباً" بالصفحة الرئيسية</label>
+                    <label htmlFor="featured-toggle" className="text-white font-bold cursor-pointer">Show in "Featured Trips" on Homepage</label>
                  </div>
                  <button disabled={isUpdating} className="w-full bg-brand-cyan text-brand-navy py-3 rounded-xl font-bold flex items-center justify-center gap-2">
                     {isUpdating ? <Loader2 className="animate-spin" size={18}/> : <Save size={18}/>} حفظ التعديلات

@@ -163,7 +163,7 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
               boxShadow: '0 25px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,107,0,0.1)',
               backdropFilter: 'blur(20px)',
             }}
-            dir="rtl"
+            dir={locale === 'ar' ? 'rtl' : 'ltr'}
           >
             {/* Decorative background */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -254,12 +254,12 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
                   key={m.id}
                   className={`max-w-[85%] text-sm leading-relaxed ${
                     m.role === "user"
-                      ? "self-start"
-                      : "self-end"
+                    ? (locale === 'ar' ? "self-start" : "self-end")
+                    : (locale === 'ar' ? "self-end" : "self-start")
                   }`}
                 >
                   {m.role === 'assistant' && (
-                    <div className="flex items-end gap-2 flex-row-reverse">
+                    <div className={`flex items-end gap-2 ${locale === 'ar' ? 'flex-row-reverse' : 'flex-row'}`}>
                       <div className="w-7 h-7 shrink-0 rounded-full overflow-hidden border border-orange-500/40" style={{minWidth:'28px',minHeight:'28px',maxWidth:'28px',maxHeight:'28px'}}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src="/hotwave-bot.png" alt="" style={{width:'28px',height:'28px',objectFit:'cover',objectPosition:'top center'}} />
@@ -358,7 +358,7 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
                     boxShadow: localInput.trim() ? '0 4px 15px rgba(255,98,0,0.4)' : 'none'
                   }}
                 >
-                  <Send size={16} className="text-white rtl:rotate-180 -ml-0.5" />
+                  <Send size={16} className={`text-white transition-transform ${locale === 'ar' ? 'rotate-180 -ml-0.5' : '-mr-0.5'}`} />
                 </motion.button>
               </form>
               <p className="text-center text-[10px] text-gray-600 mt-2">

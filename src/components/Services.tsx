@@ -30,10 +30,10 @@ const defaultServices = [
     emoji: '⛵',
     id: 'sea-trips',
     types: [
-        { id: '1', name: 'Orange Bay', nameEn: 'Orange Bay', price: '$35' },
-        { id: '2', name: 'Paradise Island', nameEn: 'Paradise Island', price: '$40' },
-        { id: '3', name: 'Diving', nameEn: 'Diving', price: '$50' },
-        { id: '4', name: 'Snorkeling', nameEn: 'Snorkeling', price: '$20' }
+        { id: '1', name: 'Orange Bay', nameEn: 'Orange Bay', price: '35 €' },
+        { id: '2', name: 'Paradise Island', nameEn: 'Paradise Island', price: '40 €' },
+        { id: '3', name: 'Diving', nameEn: 'Diving', price: '50 €' },
+        { id: '4', name: 'Snorkeling', nameEn: 'Snorkeling', price: '20 €' }
     ] as any[],
   },
   {
@@ -45,9 +45,9 @@ const defaultServices = [
     emoji: '🏜️',
     id: 'safari-adventures',
     types: [
-        { id: '1', name: 'Quad Biking', nameEn: 'Quad Biking', price: '$25' },
-        { id: '2', name: 'Bedouin Dinner', nameEn: 'Bedouin Dinner', price: '$45' },
-        { id: '3', name: 'Jeep Safari', nameEn: 'Jeep Safari', price: '$35' }
+        { id: '1', name: 'Quad Biking', nameEn: 'Quad Biking', price: '25 €' },
+        { id: '2', name: 'Bedouin Dinner', nameEn: 'Bedouin Dinner', price: '45 €' },
+        { id: '3', name: 'Jeep Safari', nameEn: 'Jeep Safari', price: '35 €' }
     ] as any[],
   },
   {
@@ -59,8 +59,8 @@ const defaultServices = [
     emoji: '🐎',
     id: 'horseback-riding',
     types: [
-        { id: '1', name: 'Beach Ride', nameEn: 'Beach Ride', price: '$30' },
-        { id: '2', name: 'Desert Sunset', nameEn: 'Desert Sunset', price: '$40' }
+        { id: '1', name: 'Beach Ride', nameEn: 'Beach Ride', price: '30 €' },
+        { id: '2', name: 'Desert Sunset', nameEn: 'Desert Sunset', price: '40 €' }
     ] as any[],
   },
 ];

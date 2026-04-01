@@ -128,13 +128,21 @@ export default function PackagesAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذه الباقة؟")) return;
-    const res = await fetch(`/api/service-types/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      toast.success("تم حذف الباقة");
-      fetchData();
-    } else {
-      toast.error("فشل الحذف");
+    console.log("Deleting package:", id);
+    if (!confirm("Are you sure you want to delete this package?")) return;
+    try {
+      const res = await fetch(`/api/service-types/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        toast.success("Package deleted successfully");
+        fetchData();
+      } else {
+        const err = await res.json();
+        console.error("Delete failed:", err);
+        toast.error("Delete failed: " + (err.error || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("An error occurred during deletion");
     }
   };
 
@@ -145,7 +153,7 @@ export default function PackagesAdminPage() {
     return matchesSearch && matchesFilter;
   });
 
-  if (isLoading) return <div className="text-white flex items-center justify-center min-h-[400px]"><Loader2 className="animate-spin mr-2" /> جاري التحميل...</div>;
+  if (isLoading) return <div className="text-white flex items-center justify-center min-h-[400px]"><Loader2 className="animate-spin mr-2" /> Loading data...</div>;
 
   return (
     <div className="pb-20">
@@ -181,7 +189,7 @@ export default function PackagesAdminPage() {
             onChange={(e) => setFilterService(e.target.value)}
             className="w-full bg-[#111] border border-gray-800 text-white py-3 pr-10 pl-4 rounded-xl focus:border-brand-cyan/50 outline-none transition-all appearance-none"
           >
-            <option value="all">كل المجموعات</option>
+            <option value="all">All Groups</option>
             {services.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
           </select>
         </div>
@@ -197,9 +205,15 @@ export default function PackagesAdminPage() {
           >
             <div className="relative h-48 w-full group overflow-hidden">
                 {(pkg.images || []).length > 0 ? (
-                    <img src={pkg.images[0]} alt={pkg.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <img 
+                    src={pkg.images[0]} 
+                    alt={pkg.name} 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                  />
                 ) : (
-                    <div className="w-full h-full bg-[#111] flex items-center justify-center text-gray-700">لا توجد صور</div>
+                  <div className="w-full h-full bg-[#111] flex items-center justify-center text-gray-700 font-bold uppercase tracking-tighter text-xs">
+                    No Image Found
+                  </div>
                 )}
                 <div className="absolute top-4 right-4 flex gap-2">
                     <button className="p-2 bg-brand-cyan/90 text-brand-navy rounded-xl shadow-lg hover:scale-105 transition-all"><Edit3 size={18}/></button>
@@ -211,7 +225,7 @@ export default function PackagesAdminPage() {
                     </button>
                 </div>
                 {pkg.featured && (
-                    <div className="absolute bottom-4 left-4 bg-brand-orange text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">مميز</div>
+                    <div className="absolute bottom-4 left-4 bg-brand-orange text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Featured</div>
                 )}
             </div>
             <div className="p-6 flex-1 flex flex-col">
@@ -222,9 +236,9 @@ export default function PackagesAdminPage() {
               <p className="text-gray-500 text-xs mb-4 line-clamp-3 leading-relaxed">{pkg.description}</p>
               
               <div className="mt-auto pt-4 border-t border-gray-800/50 flex items-center justify-between">
-                <span className="text-brand-orange font-bold text-lg">{pkg.price ? `${pkg.price} ج.م` : "سعر متغير"}</span>
+                <span className="text-brand-orange font-bold text-lg">{pkg.price ? `${pkg.price} €` : "Flexible Price"}</span>
                 {(pkg.images || []).length > 1 && (
-                    <span className="text-gray-500 text-[10px] bg-gray-900 px-2 py-1 rounded italic">+{(pkg.images || []).length - 1} صور أخرى</span>
+                    <span className="text-gray-500 text-[10px] bg-gray-900 px-2 py-1 rounded italic">+{ (pkg.images || []).length - 1} more photos</span>
                 )}
               </div>
             </div>
@@ -312,7 +326,7 @@ export default function PackagesAdminPage() {
               <div className="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-6">
                   <ArrowRight size={32} className="opacity-20" />
               </div>
-              <p className="text-xl">لا توجد باقات مضافة حالياً. ابدأ بإضافة أول باقة!</p>
+              <p className="text-xl">No packages added yet. Start by adding your first one!</p>
           </div>
       )}
     </div>

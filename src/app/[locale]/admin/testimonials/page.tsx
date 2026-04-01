@@ -44,16 +44,16 @@ export default function TestimonialsAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("هل أنت متأكد من الحذف؟")) return;
+    if (!confirm("Are you sure you want to delete this testimonial?")) return;
     const res = await fetch(`/api/testimonials/${id}`, { method: "DELETE" });
     if (res.ok) fetchTestimonials();
   };
 
-  if (isLoading) return <div className="text-white">جاري التحميل...</div>;
+  if (isLoading) return <div className="text-white">Loading data...</div>;
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-white mb-6 font-heading">إدارة آراء العملاء ⭐</h1>
+      <h1 className="text-3xl font-bold text-white mb-6 font-heading">Testimonials Management ⭐</h1>
       
       <div className="bg-[#0a0a0a] p-6 md:p-8 rounded-3xl shadow-xl border border-gray-800 mb-8">
         <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">Add New Testimonial</h2>
@@ -74,13 +74,13 @@ export default function TestimonialsAdminPage() {
           </div>
           <div className="border border-gray-800 bg-[#1a1a1a] p-4 rounded-md">
             <ImageUpload 
-              label="صورة شخصية (اختياري)" 
+              label="Personal Avatar (Optional)" 
               value={formData.avatarUrl} 
               onChange={(url) => setFormData({...formData, avatarUrl: url})} 
             />
           </div>
           <button disabled={isAdding} className="bg-brand-orange text-white px-6 py-2 rounded-md hover:bg-brand-orange/90 disabled:opacity-50 transition-colors mt-2">
-            {isAdding ? "جاري الإضافة..." : "إضافة الرأي"}
+            {isAdding ? "Adding..." : "Add Testimonial"}
           </button>
         </form>
       </div>
@@ -113,7 +113,7 @@ export default function TestimonialsAdminPage() {
             ))}
           </tbody>
         </table>
-        {testimonials.length === 0 && <div className="p-6 text-center text-gray-500">لا توجد آراء مضافة حالياً.</div>}
+        {testimonials.length === 0 && <div className="p-6 text-center text-gray-500">No testimonials added yet.</div>}
       </div>
     </div>
   );

@@ -98,13 +98,13 @@ export function ImageGallery({ images, title, isArabic }: ImageGalleryProps) {
                 className="absolute inset-0 bg-black/90 backdrop-blur-xl"
               />
 
-              {/* Close Button - Outside the card for clarity */}
+              {/* Close Button - Responsive and Accessible */}
               <button
                 onClick={() => setSelectedIndex(null)}
-                className="absolute top-8 right-8 z-[10000000] p-4 rounded-full bg-white/10 text-white hover:bg-brand-orange hover:scale-110 transition-all border border-white/20 shadow-2xl group"
+                className="absolute top-6 right-6 md:top-10 md:right-10 z-[10000000] p-4 rounded-full bg-white/10 text-white hover:bg-brand-orange hover:scale-110 transition-all border border-white/20 shadow-2xl group flex items-center justify-center backdrop-blur-md"
                 aria-label="Close"
               >
-                <X className="w-8 h-8 group-hover:rotate-90 transition-transform" />
+                <X className="w-6 h-6 md:w-8 md:h-8 group-hover:rotate-90 transition-transform" />
               </button>
 
               {/* Popup Content Box */}
@@ -112,7 +112,7 @@ export function ImageGallery({ images, title, isArabic }: ImageGalleryProps) {
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="relative w-full max-w-5xl aspect-video md:aspect-[16/10] bg-brand-navy rounded-[2.5rem] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center z-[9999999]"
+                className="relative w-full h-full md:max-w-5xl md:h-auto md:aspect-[14/10] bg-black md:bg-brand-navy md:rounded-[2.5rem] overflow-hidden md:border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center z-[9999999]"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Navigation Buttons */}
@@ -120,23 +120,26 @@ export function ImageGallery({ images, title, isArabic }: ImageGalleryProps) {
                   <>
                     <button
                       onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-                      className="absolute left-6 top-1/2 -translate-y-1/2 z-[10000000] p-4 rounded-full bg-black/40 text-white hover:bg-brand-cyan/50 hover:scale-110 transition-all border border-white/10 shadow-2xl backdrop-blur-md"
+                      className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-[10000000] p-3 md:p-4 rounded-full bg-black/40 text-white hover:bg-brand-cyan/50 hover:scale-110 transition-all border border-white/10 shadow-2xl backdrop-blur-md hidden md:flex"
                     >
-                      <ChevronLeft className="w-8 h-8" />
+                      <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleNext(); }}
-                      className="absolute right-6 top-1/2 -translate-y-1/2 z-[10000000] p-4 rounded-full bg-black/40 text-white hover:bg-brand-orange/50 hover:scale-110 transition-all border border-white/10 shadow-2xl backdrop-blur-md"
+                      className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-[10000000] p-3 md:p-4 rounded-full bg-black/40 text-white hover:bg-brand-orange/50 hover:scale-110 transition-all border border-white/10 shadow-2xl backdrop-blur-md hidden md:flex"
                     >
-                      <ChevronRight className="w-8 h-8" />
+                      <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
                     </button>
                   </>
                 )}
 
-                {/* Counter & Title Info */}
-                <div className="absolute top-10 right-1/2 translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none z-[10000001]">
-                  <div className="text-white font-extrabold bg-brand-orange px-6 py-2 rounded-full shadow-2xl tracking-widest text-base">
-                    {selectedIndex + 1} <span className="text-black/50 mx-2">/</span> {images.length}
+                {/* Counter & Swiping Info */}
+                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 pointer-events-none z-[10000001]">
+                  <div className="text-white font-black bg-brand-orange/90 backdrop-blur-md px-8 py-3 rounded-full shadow-[0_10px_40px_rgba(255,107,0,0.4)] tracking-widest text-lg border border-white/20">
+                    <span className="text-2xl">{selectedIndex + 1}</span> <span className="opacity-40 mx-2">/</span> {images.length}
+                  </div>
+                  <div className="text-white/40 text-[10px] uppercase tracking-[0.3em] font-bold md:hidden">
+                    Swipe to browse
                   </div>
                 </div>
 
@@ -159,14 +162,14 @@ export function ImageGallery({ images, title, isArabic }: ImageGalleryProps) {
                       transition={{ duration: 0.3 }}
                       className="absolute w-full h-full p-2 md:p-8 flex items-center justify-center"
                     >
-                      <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl bg-black/20 touch-none">
+                      <div className="relative w-full h-[90%] md:h-full md:rounded-2xl overflow-hidden shadow-2xl touch-pan-y">
                         <Image
                           src={images[selectedIndex]}
                           alt={title}
                           fill
-                          className="object-contain pointer-events-none"
+                          className="object-contain pointer-events-none drop-shadow-[0_20px_50px_rgba(0,0,0,1)]"
                           priority
-                          sizes="80vw"
+                          sizes="100vw"
                         />
                       </div>
                     </motion.div>
