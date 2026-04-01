@@ -20,6 +20,8 @@ type ServiceType = {
   durationEn?: string | null;
   includes?: string | null;
   includesEn?: string | null;
+  notIncludes?: string | null;
+  notIncludesEn?: string | null;
   featured: boolean;
 };
 
@@ -35,7 +37,7 @@ type Service = {
   types: ServiceType[];
 };
 
-const emptyTypeForm = { name: "", nameEn: "", description: "", descriptionEn: "", price: "", imageUrl: "", duration: "", durationEn: "", includes: "", includesEn: "" };
+const emptyTypeForm = { name: "", nameEn: "", description: "", descriptionEn: "", price: "", imageUrl: "", duration: "", durationEn: "", includes: "", includesEn: "", notIncludes: "", notIncludesEn: "" };
 
 export default function ServicesAdminPage() {
   const [services, setServices] = useState<Service[]>([]);
@@ -53,7 +55,10 @@ export default function ServicesAdminPage() {
   const [editingType, setEditingType] = useState<{serviceId: string, type: ServiceType} | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  useEffect(() => { fetchServices(); }, []);
+  useEffect(() => { 
+    fetchServices(); 
+    console.log("Hot Wave Admin UI - V2 loaded with NotIncluded fields");
+  }, []);
 
   const fetchServices = async () => {
     const res = await fetch("/api/services");
@@ -71,14 +76,18 @@ export default function ServicesAdminPage() {
     const res = await fetch("/api/services", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        ...formData,
+        title: formData.titleEn,
+        description: formData.descriptionEn
+      }),
     });
     if (res.ok) {
       setFormData({ title: "", titleEn: "", description: "", descriptionEn: "", images: [] });
-      toast.success("تمت إضافة الخدمة بنجاح");
+      toast.success("Service added successfully");
       fetchServices();
     } else {
-      toast.error("حدث خطأ أثناء الإضافة");
+      toast.error("Error adding service");
     }
     setIsAdding(false);
   };
@@ -101,10 +110,14 @@ export default function ServicesAdminPage() {
     const res = await fetch(`/api/services/${editingService.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editingService),
+      body: JSON.stringify({
+        ...editingService,
+        title: editingService.titleEn,
+        description: editingService.descriptionEn
+      }),
     });
     if (res.ok) {
-      toast.success("تم التحديث بنجاح");
+      toast.success("Updated successfully");
       setEditingService(null);
       fetchServices();
     } else {
@@ -120,33 +133,46 @@ export default function ServicesAdminPage() {
     const res = await fetch(`/api/services/${editingType.serviceId}/types/${editingType.type.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editingType.type),
+      body: JSON.stringify({
+        ...editingType.type,
+        name: editingType.type.nameEn,
+        description: editingType.type.descriptionEn,
+        duration: editingType.type.durationEn,
+        includes: editingType.type.includesEn,
+        notIncludes: editingType.type.notIncludesEn
+      }),
     });
     if (res.ok) {
-      toast.success("تم تحديث الباقة بنجاح");
+      toast.success("Package updated successfully");
       setEditingType(null);
       fetchServices();
     } else {
-      toast.error("فشل التحديث");
+      toast.error("Failed to update");
     }
     setIsUpdating(false);
   };
 
   const handleAddType = async (serviceId: string) => {
     const form = typeForm[serviceId] || emptyTypeForm;
-    if (!form.name) return;
-    setAddingTypeFor(serviceId);
     const res = await fetch(`/api/services/${serviceId}/types`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, price: form.price ? parseFloat(form.price as string) : null }),
+      body: JSON.stringify({ 
+        ...form, 
+        name: form.nameEn,
+        description: form.descriptionEn,
+        duration: form.durationEn,
+        includes: form.includesEn,
+        notIncludes: form.notIncludesEn,
+        price: form.price ? parseFloat(form.price as string) : null 
+      }),
     });
     if (res.ok) {
       setTypeForm(prev => ({ ...prev, [serviceId]: { ...emptyTypeForm } }));
-      toast.success("تمت إضافة الباقة بنجاح");
+      toast.success("Package added successfully");
       fetchServices();
     } else {
-      toast.error("فشل الإضافة");
+      toast.error("Failed to add");
     }
     setAddingTypeFor(null);
   };
@@ -174,13 +200,11 @@ export default function ServicesAdminPage() {
 
       {/* Add Service Section */}
       <div className="bg-[#0a0a0a] p-6 md:p-8 rounded-3xl shadow-xl border border-gray-800 mb-8">
-        <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">إضافة مجموعة رحلات جديدة</h2>
+        <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">Add New Trip Group</h2>
         <form onSubmit={handleAdd} className="space-y-4 max-w-4xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InputField label="عنوان المجموعة (بالعربية)" value={formData.title} onChange={v => setFormData({ ...formData, title: v })} dir="rtl" required />
-            <InputField label="عنوان المجموعة (بالإنجليزية)" value={formData.titleEn} onChange={v => setFormData({ ...formData, titleEn: v })} dir="ltr" required />
-            <TextareaField label="الوصف (بالعربية)" value={formData.description} onChange={v => setFormData({ ...formData, description: v })} dir="rtl" required />
-            <TextareaField label="الوصف (بالإنجليزية)" value={formData.descriptionEn} onChange={v => setFormData({ ...formData, descriptionEn: v })} dir="ltr" required />
+            <InputField label="Title" value={formData.titleEn} onChange={v => setFormData({ ...formData, titleEn: v })} dir="ltr" required />
+            <TextareaField label="Description" value={formData.descriptionEn} onChange={v => setFormData({ ...formData, descriptionEn: v })} dir="ltr" required />
           </div>
           <div className="border border-gray-800 bg-[#1a1a1a] p-6 rounded-2xl">
             <MultiImageUpload label="صور الغلاف للمجموعة" value={formData.images} onChange={(urls) => setFormData({ ...formData, images: urls })} />
@@ -286,25 +310,24 @@ export default function ServicesAdminPage() {
 
                     {/* New Integrated Add Type Form */}
                     <div className="bg-[#0d0d0d] border border-gray-800 rounded-3xl p-6 shadow-inner">
-                        <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2"><Plus className="w-4 h-4 text-brand-orange" /> إضافة باقة جديدة لهذا البرنامج</h4>
+                        <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2"><Plus className="w-4 h-4 text-brand-orange" /> Add New Package to this Group</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <InputField label="اسم الباقة (ع)" value={getTypeForm(service.id).name} onChange={v => setTypeFormFor(service.id, "name", v)} dir="rtl" />
-                            <InputField label="اسم الباقة (En)" value={getTypeForm(service.id).nameEn} onChange={v => setTypeFormFor(service.id, "nameEn", v)} dir="ltr" />
-                            <TextareaField label="وصف الباقة (ع)" value={getTypeForm(service.id).description} onChange={v => setTypeFormFor(service.id, "description", v)} dir="rtl" />
-                            <TextareaField label="وصف الباقة (En)" value={getTypeForm(service.id).descriptionEn} onChange={v => setTypeFormFor(service.id, "descriptionEn", v)} dir="ltr" />
-                            <InputField label="السعر" type="number" value={getTypeForm(service.id).price} onChange={v => setTypeFormFor(service.id, "price", v)} />
-                            <InputField label="المدة (ع) - 8 ساعات مثلاً" value={getTypeForm(service.id).duration} onChange={v => setTypeFormFor(service.id, "duration", v)} dir="rtl" />
-                            <InputField label="ماذا تشمل؟ (ع) - سناكس، مياه" value={getTypeForm(service.id).includes} onChange={v => setTypeFormFor(service.id, "includes", v)} dir="rtl" />
+                            <InputField label="Package Name" value={getTypeForm(service.id).nameEn} onChange={v => setTypeFormFor(service.id, "nameEn", v)} dir="ltr" />
+                            <TextareaField label="Description" value={getTypeForm(service.id).descriptionEn} onChange={v => setTypeFormFor(service.id, "descriptionEn", v)} dir="ltr" />
+                            <InputField label="Price (€)" type="number" value={getTypeForm(service.id).price} onChange={v => setTypeFormFor(service.id, "price", v)} />
+                            <InputField label="Duration (e.g. 8 hours)" value={getTypeForm(service.id).durationEn} onChange={v => setTypeFormFor(service.id, "durationEn", v)} dir="ltr" />
+                            <InputField label="What's Included?" value={getTypeForm(service.id).includesEn} onChange={v => setTypeFormFor(service.id, "includesEn", v)} dir="ltr" />
+                            <InputField label="What's Not Included?" value={getTypeForm(service.id).notIncludesEn} onChange={v => setTypeFormFor(service.id, "notIncludesEn", v)} dir="ltr" />
                             <div className="md:col-span-2 mt-2 bg-black/40 p-4 rounded-2xl border border-gray-800">
-                                <ImageUpload label="صورة الباقة" value={getTypeForm(service.id).imageUrl} onChange={v => setTypeFormFor(service.id, "imageUrl", v)} />
+                                <ImageUpload label="Package Image" value={getTypeForm(service.id).imageUrl} onChange={v => setTypeFormFor(service.id, "imageUrl", v)} />
                             </div>
                         </div>
                         <button 
                             onClick={() => handleAddType(service.id)} 
-                            disabled={addingTypeFor === service.id || !getTypeForm(service.id).name}
+                            disabled={addingTypeFor === service.id || !getTypeForm(service.id).nameEn}
                             className="w-full md:w-auto mt-6 bg-brand-cyan text-brand-navy px-10 py-3 rounded-xl font-bold hover:brightness-110 shadow-lg shadow-brand-cyan/20 transition-all disabled:opacity-50"
                         >
-                            {addingTypeFor === service.id ? "جاري الإضافة..." : "حفظ الباقة الجديدة"}
+                            {addingTypeFor === service.id ? "Adding..." : "Save New Package"}
                         </button>
                     </div>
                   </div>
@@ -316,13 +339,11 @@ export default function ServicesAdminPage() {
       </div>
 
       {/* Edit Service Modal */}
-      <Modal isOpen={!!editingService} onClose={() => setEditingService(null)} title="تعديل بيانات المجموعة">
+      <Modal isOpen={!!editingService} onClose={() => setEditingService(null)} title="Edit Group Data">
         {editingService && (
             <form onSubmit={handleUpdateService} className="space-y-4">
-                <InputField label="العنوان (ع)" value={editingService.title} onChange={v => setEditingService({...editingService, title: v})} dir="rtl" />
-                <InputField label="العنوان (En)" value={editingService.titleEn} onChange={v => setEditingService({...editingService, titleEn: v})} dir="ltr" />
-                <TextareaField label="الوصف (ع)" value={editingService.description} onChange={v => setEditingService({...editingService, description: v})} dir="rtl" />
-                <TextareaField label="الوصف (En)" value={editingService.descriptionEn} onChange={v => setEditingService({...editingService, descriptionEn: v})} dir="ltr" />
+                <InputField label="Title" value={editingService.titleEn} onChange={v => setEditingService({...editingService, titleEn: v})} dir="ltr" />
+                <TextareaField label="Description" value={editingService.descriptionEn} onChange={v => setEditingService({...editingService, descriptionEn: v})} dir="ltr" />
                 <div className="bg-black/20 p-4 rounded-xl border border-gray-800">
                     <MultiImageUpload label="صور المجموعة" value={editingService.images || []} onChange={urls => setEditingService({...editingService, images: urls})} />
                 </div>
@@ -334,19 +355,20 @@ export default function ServicesAdminPage() {
       </Modal>
 
       {/* Edit Type Modal */}
-      <Modal isOpen={!!editingType} onClose={() => setEditingType(null)} title="تعديل باقة / قسم">
+      <Modal isOpen={!!editingType} onClose={() => setEditingType(null)} title="Edit Package">
         {editingType && (
             <form onSubmit={handleUpdateType} className="space-y-4 max-h-[70vh] overflow-y-auto px-1">
-                 <InputField label="اسم الباقة (ع)" value={editingType.type.name} onChange={v => setEditingType({...editingType, type: {...editingType.type, name: v}})} dir="rtl" />
-                 <InputField label="اسم الباقة (En)" value={editingType.type.nameEn} onChange={v => setEditingType({...editingType, type: {...editingType.type, nameEn: v}})} dir="ltr" />
-                 <TextareaField label="الوصف (ع)" value={editingType.type.description} onChange={v => setEditingType({...editingType, type: {...editingType.type, description: v}})} dir="rtl" />
-                 <TextareaField label="الوصف (En)" value={editingType.type.descriptionEn} onChange={v => setEditingType({...editingType, type: {...editingType.type, descriptionEn: v}})} dir="ltr" />
+                 <InputField label="Package Name" value={editingType.type.nameEn} onChange={v => setEditingType({...editingType, type: {...editingType.type, nameEn: v}})} dir="ltr" />
+                 <TextareaField label="Description" value={editingType.type.descriptionEn} onChange={v => setEditingType({...editingType, type: {...editingType.type, descriptionEn: v}})} dir="ltr" />
                  <div className="grid grid-cols-2 gap-4">
-                    <InputField label="السعر" type="number" value={String(editingType.type.price || "")} onChange={v => setEditingType({...editingType, type: {...editingType.type, price: v ? parseFloat(v) : null}})} />
-                    <InputField label="المدة" value={editingType.type.duration || ""} onChange={v => setEditingType({...editingType, type: {...editingType.type, duration: v}})} />
+                    <InputField label="Price (€)" type="number" value={String(editingType.type.price || "")} onChange={v => setEditingType({...editingType, type: {...editingType.type, price: v ? parseFloat(v) : null}})} />
+                    <InputField label="Duration" value={editingType.type.durationEn || ""} onChange={v => setEditingType({...editingType, type: {...editingType.type, durationEn: v}})} dir="ltr" />
                  </div>
-                 <InputField label="ماذا تشمل؟" value={editingType.type.includes || ""} onChange={v => setEditingType({...editingType, type: {...editingType.type, includes: v}})} />
-                 <ImageUpload label="تغيير الصورة" value={editingType.type.imageUrl || ""} onChange={url => setEditingType({...editingType, type: {...editingType.type, imageUrl: url}})} />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField label="What's Included?" value={editingType.type.includesEn || ""} onChange={v => setEditingType({...editingType, type: {...editingType.type, includesEn: v}})} dir="ltr" />
+                    <InputField label="What's Not Included?" value={editingType.type.notIncludesEn || ""} onChange={v => setEditingType({...editingType, type: {...editingType.type, notIncludesEn: v}})} dir="ltr" />
+                  </div>
+                  <ImageUpload label="تغيير الصورة" value={editingType.type.imageUrl || ""} onChange={url => setEditingType({...editingType, type: {...editingType.type, imageUrl: url}})} />
                  <div className="flex items-center gap-2 p-3 bg-brand-orange/10 border border-brand-orange/20 rounded-xl">
                     <input 
                         type="checkbox" 

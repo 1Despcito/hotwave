@@ -50,10 +50,10 @@ export default function BookingsAdminPage() {
       body: JSON.stringify({ status })
     });
     if (res.ok) {
-      toast.success("تم تحديث حالة الحجز بنجاح");
+      toast.success("Booking status updated successfully");
       fetchBookings();
     } else {
-      toast.error("فشل تحديث الحالة");
+      toast.error("Failed to update status");
     }
   };
 
@@ -65,11 +65,11 @@ export default function BookingsAdminPage() {
 
   const exportToCSV = () => {
     if (filtered.length === 0) {
-      toast.error("لا توجد بيانات لتصديرها");
+      toast.error("No data to export");
       return;
     }
     
-    const headers = ["رقم الحجز", "العميل", "رقم الهاتف", "البريد الإلكتروني", "الخدمة/الرحلة", "الباقة", "الفندق", "بالغين", "أطفال", "تاريخ الرحلة", "حالة الحجز", "ملاحظات", "تاريخ ووقت الإنشاء"];
+    const headers = ["Booking ID", "Customer", "Phone", "Email", "Service/Trip", "Package", "Hotel", "Adults", "Children", "Trip Date", "Status", "Notes", "Creation Date"];
     
     const csvContent = [
       headers.join(","),
@@ -98,26 +98,26 @@ export default function BookingsAdminPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success("تم التصدير بنجاح");
+    toast.success("Exported successfully");
   };
 
   return (
     <div className="max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white font-heading">متتبع الحجوزات 📋</h1>
-          <p className="text-gray-400 mt-2 text-sm">متابعة كل من نقر على أزرار الحجز عبر الموقع لتفادي خسارة أي عميل محتمل لم يكمل محادثة الواتساب.</p>
+          <h1 className="text-3xl font-bold text-white font-heading">Bookings Tracker 📋</h1>
+          <p className="text-gray-400 mt-2 text-sm">Track everyone who clicked booking buttons across the site to avoid losing any potential leads.</p>
         </div>
         
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <div className="relative w-full sm:w-72">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <input 
               type="text" 
-              placeholder="بحث بالرقم أو الاسم..." 
+              placeholder="Search by name or phone..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#111111] border border-gray-800 text-white rounded-full py-2.5 pr-10 pl-4 focus:outline-none focus:border-brand-cyan/50 transition-colors placeholder:text-gray-600 shadow-inner"
+              className="w-full bg-[#111111] border border-gray-800 text-white rounded-full py-2.5 pl-10 pr-4 focus:outline-none focus:border-brand-cyan/50 transition-colors placeholder:text-gray-600 shadow-inner"
             />
           </div>
           
@@ -126,7 +126,7 @@ export default function BookingsAdminPage() {
             className="flex items-center justify-center gap-2 bg-brand-navy-light border border-gray-700 hover:border-brand-cyan hover:text-brand-cyan text-gray-300 px-5 py-2.5 rounded-full transition-all text-sm font-bold shadow-lg"
           >
             <Download className="w-4 h-4" />
-            تصدير CSV
+            Export CSV
           </button>
         </div>
       </div>
@@ -141,28 +141,28 @@ export default function BookingsAdminPage() {
             <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mb-4">
                <CalendarCheck className="w-8 h-8 opacity-50" />
             </div>
-            <p className="text-lg">لا توجد حجوزات تطابق البحث.</p>
+            <p className="text-lg">No bookings found matching your search.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-right text-sm text-gray-300">
+            <table className="w-full text-left text-sm text-gray-300">
               <thead className="bg-[#111111] text-gray-400 uppercase font-semibold text-xs border-b border-gray-800">
                 <tr>
-                  <th className="px-6 py-5 rounded-tr-3xl">العميل</th>
-                  <th className="px-6 py-5">الرحلة / الفندق</th>
-                  <th className="px-6 py-5">العدد</th>
-                  <th className="px-6 py-5">التاريخ والوقت</th>
-                  <th className="px-6 py-5 text-center rounded-tl-3xl">الحالة</th>
+                  <th className="px-6 py-5">Customer</th>
+                  <th className="px-6 py-5">Trip / Hotel</th>
+                  <th className="px-6 py-5">Pax</th>
+                  <th className="px-6 py-5">Date & Time</th>
+                  <th className="px-6 py-5 text-center">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800/50">
                 {filtered.map((b) => (
                   <tr key={b.id} className="hover:bg-white/[0.02] transition-colors group">
                     <td className="px-6 py-5">
-                      <div className="font-bold text-white text-base">{b.customerName || "لم يكتب اسمه"}</div>
+                      <div className="font-bold text-white text-base">{b.customerName || "No name provided"}</div>
                       <div className="flex items-center gap-2 mt-2">
                         <div className="flex items-center gap-1.5 text-xs text-brand-cyan/80 font-medium bg-brand-cyan/10 w-fit px-2 py-0.5 rounded" dir="ltr">
-                          <Phone className="w-3 h-3" /> {b.phoneNumber || (b.customerEmail ? "بريد إلكتروني" : "لا يوجد رقم")}
+                          <Phone className="w-3 h-3" /> {b.phoneNumber || (b.customerEmail ? "Email Only" : "No number")}
                         </div>
                         {b.phoneNumber && (
                           <a 
@@ -171,12 +171,12 @@ export default function BookingsAdminPage() {
                             rel="noopener noreferrer"
                             className="p-1 px-2 bg-green-500/20 text-green-400 rounded-md hover:bg-green-500 hover:text-white text-[10px] font-bold transition-all flex items-center gap-1"
                           >
-                            واتساب <ExternalLink size={10}/>
+                            WhatsApp <ExternalLink size={10}/>
                           </a>
                         )}
                       </div>
                       {b.customerEmail && (
-                        <div className="text-[10px] text-gray-500 mt-1 flex items-center gap-1.5 mr-1 overflow-hidden text-ellipsis whitespace-nowrap max-w-[180px]">
+                        <div className="text-[10px] text-gray-500 mt-1 flex items-center gap-1.5 ml-1 overflow-hidden text-ellipsis whitespace-nowrap max-w-[180px]">
                           📧 {b.customerEmail}
                         </div>
                       )}
@@ -198,11 +198,11 @@ export default function BookingsAdminPage() {
                     <td className="px-6 py-5">
                       <div className="flex flex-col gap-1">
                         <span className="text-white font-bold text-lg">
-                          {(b.adults || 0) + (b.children || 0)} <span className="text-[10px] text-gray-500 font-normal">أفراد</span>
+                          {(b.adults || 0) + (b.children || 0)} <span className="text-[10px] text-gray-500 font-normal">Persons</span>
                         </span>
                         <div className="flex items-center gap-2 text-[10px] text-gray-500">
-                          <span>{b.adults} بالغ</span>
-                          {b.children > 0 && <span>• {b.children} طفل</span>}
+                          <span>{b.adults} Adults</span>
+                          {b.children > 0 && <span>• {b.children} Children</span>}
                         </div>
                       </div>
                     </td>
@@ -210,12 +210,12 @@ export default function BookingsAdminPage() {
                       {b.bookingDate ? (
                         <div className="flex flex-col items-center gap-1">
                           <span className="text-brand-orange font-bold whitespace-nowrap text-lg">
-                            {new Date(b.bookingDate).toLocaleDateString('ar-EG', { day: '2-digit', month: 'long', year: 'numeric' })}
+                            {new Date(b.bookingDate).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })}
                           </span>
-                          <span className="text-[10px] text-gray-500 mt-1">تم الطلب: {new Date(b.createdAt).toLocaleDateString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                          <span className="text-[10px] text-gray-500 mt-1">Requested: {new Date(b.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                       ) : (
-                        <span className="text-gray-500 italic text-xs">غير محدد</span>
+                        <span className="text-gray-500 italic text-xs">Not specified</span>
                       )}
                     </td>
                     <td className="px-6 py-5">
@@ -230,10 +230,10 @@ export default function BookingsAdminPage() {
                               'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20'}
                           `}
                         >
-                          <option value="PENDING">⏳ قيد الانتظار</option>
-                          <option value="CONTACTED">📞 تم التواصل</option>
-                          <option value="BOOKED">✅ مؤكد</option>
-                          <option value="CANCELLED">❌ ملغي</option>
+                          <option value="PENDING">⏳ Pending</option>
+                          <option value="CONTACTED">📞 Contacted</option>
+                          <option value="BOOKED">✅ Booked</option>
+                          <option value="CANCELLED">❌ Cancelled</option>
                         </select>
                       </div>
                     </td>

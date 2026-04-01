@@ -97,6 +97,8 @@ model ServiceType {
   durationEn    String?
   includes      String?
   includesEn    String?
+  notIncludes   String?
+  notIncludesEn String?
   featured      Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

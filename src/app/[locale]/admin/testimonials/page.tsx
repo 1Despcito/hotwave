@@ -28,7 +28,12 @@ export default function TestimonialsAdminPage() {
     const res = await fetch("/api/testimonials", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        ...formData,
+        name: formData.nameEn,
+        role: formData.roleEn,
+        content: formData.contentEn
+      }),
     });
 
     if (res.ok) {
@@ -51,31 +56,19 @@ export default function TestimonialsAdminPage() {
       <h1 className="text-3xl font-bold text-white mb-6 font-heading">إدارة آراء العملاء ⭐</h1>
       
       <div className="bg-[#0a0a0a] p-6 md:p-8 rounded-3xl shadow-xl border border-gray-800 mb-8">
-        <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">إضافة رأي جديد (Testimonial)</h2>
+        <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">Add New Testimonial</h2>
         <form onSubmit={handleAdd} className="space-y-4 max-w-4xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300">الاسم (بالعربية)</label>
-              <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="mt-1 w-full border border-gray-700 bg-[#1a1a1a] text-white p-2 rounded" dir="rtl" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300">الاسم (بالإنجليزية)</label>
+              <label className="block text-sm font-medium text-gray-300">Name</label>
               <input required type="text" value={formData.nameEn} onChange={e => setFormData({...formData, nameEn: e.target.value})} className="mt-1 w-full border border-gray-700 bg-[#1a1a1a] text-white p-2 rounded" dir="ltr" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300">الوظيفة أو الصفة (بالعربية)</label>
-              <input required type="text" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})} className="mt-1 w-full border border-gray-700 bg-[#1a1a1a] text-white p-2 rounded" dir="rtl" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300">الوظيفة أو الصفة (بالإنجليزية)</label>
+              <label className="block text-sm font-medium text-gray-300">Role / Designation</label>
               <input required type="text" value={formData.roleEn} onChange={e => setFormData({...formData, roleEn: e.target.value})} className="mt-1 w-full border border-gray-700 bg-[#1a1a1a] text-white p-2 rounded" dir="ltr" />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300">الرأي (بالعربية)</label>
-              <textarea required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="mt-1 w-full border border-gray-700 bg-[#1a1a1a] text-white p-2 rounded" rows={3} dir="rtl" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300">الرأي (بالإنجليزية)</label>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-300">Testimonial Content</label>
               <textarea required value={formData.contentEn} onChange={e => setFormData({...formData, contentEn: e.target.value})} className="mt-1 w-full border border-gray-700 bg-[#1a1a1a] text-white p-2 rounded" rows={3} dir="ltr" />
             </div>
           </div>
@@ -96,11 +89,10 @@ export default function TestimonialsAdminPage() {
         <table className="min-w-full divide-y divide-gray-800">
           <thead className="bg-[#111111]">
             <tr>
-              <th className="px-6 py-5 rounded-tr-3xl text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">الصورة</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">الاسم والصفة (عربي)</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">الاسم والصفة (إنجليزي)</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">الرأي</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">الإجراءات</th>
+              <th className="px-6 py-5 rounded-tr-3xl text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Avatar</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Personal Info</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Testimonial</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
@@ -110,16 +102,12 @@ export default function TestimonialsAdminPage() {
                   {t.avatarUrl && <img src={t.avatarUrl} alt={t.name} className="h-10 w-10 rounded-full object-cover" />}
                 </td>
                 <td className="px-6 py-4">
-                  <div className="font-medium text-gray-300">{t.name}</div>
-                  <div className="text-gray-500 text-sm">{t.role}</div>
-                </td>
-                <td className="px-6 py-4" dir="ltr">
                   <div className="font-medium text-gray-300">{t.nameEn}</div>
                   <div className="text-gray-500 text-sm">{t.roleEn}</div>
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-300 max-w-xs truncate">{t.content}</td>
+                <td className="px-6 py-4 text-sm text-gray-300 max-w-xs truncate">{t.contentEn}</td>
                 <td className="px-6 py-4">
-                  <button onClick={() => handleDelete(t.id)} className="text-red-400 hover:text-red-300 font-medium transition-colors">حذف</button>
+                  <button onClick={() => handleDelete(t.id)} className="text-red-400 hover:text-red-300 font-medium transition-colors">Delete</button>
                 </td>
               </tr>
             ))}

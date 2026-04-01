@@ -29,11 +29,11 @@ export default function MessagesAdminPage() {
     if (res.ok) fetchMessages();
   };
 
-  if (isLoading) return <div className="text-white">جاري التحميل...</div>;
+  if (isLoading) return <div className="text-white">Loading messages...</div>;
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-white mb-6 font-heading">الرسائل الواردة 📨</h1>
+      <h1 className="text-3xl font-bold text-white mb-6 font-heading">Inbox Messages 📨</h1>
       
       <div className="bg-[#0a0a0a] rounded-3xl shadow-xl border border-gray-800 overflow-hidden">
         <ul className="divide-y divide-gray-800/50">
@@ -45,26 +45,26 @@ export default function MessagesAdminPage() {
                   <p className="text-sm text-gray-400">{msg.email}</p>
                 </div>
                 <div className="text-sm text-gray-500">
-                  {new Date(msg.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  {new Date(msg.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </div>
               </div>
-              <div className="mt-4 text-sm text-gray-300 border-r-2 border-brand-cyan pl-4 py-3 bg-black/40 rounded-l-xl pr-4 leading-relaxed font-sans">
+              <div className="mt-4 text-sm text-gray-300 border-l-2 border-brand-cyan pl-4 py-3 bg-black/40 rounded-r-xl pr-4 leading-relaxed font-sans">
                 {msg.message}
               </div>
-              <div className="mt-6 flex space-x-4 space-x-reverse">
+              <div className="mt-6 flex space-x-4">
                 {!msg.read && (
                   <button onClick={() => handleMarkAsRead(msg.id)} className="text-brand-cyan hover:text-cyan-300 text-sm font-bold transition-colors bg-brand-cyan/10 px-4 py-2 rounded-lg">
-                    تحديد كمقروءة
+                    Mark as Read
                   </button>
                 )}
                 <button onClick={() => handleDelete(msg.id)} className="text-red-400 hover:text-red-300 text-sm font-bold transition-colors bg-red-400/10 px-4 py-2 rounded-lg">
-                  حذف
+                  Delete
                 </button>
               </div>
             </li>
           ))}
         </ul>
-        {messages.length === 0 && <div className="p-6 text-center text-gray-500">لا توجد رسائل واردة.</div>}
+        {messages.length === 0 && <div className="p-6 text-center text-gray-500">No incoming messages found.</div>}
       </div>
     </div>
   );

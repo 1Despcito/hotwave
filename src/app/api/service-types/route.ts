@@ -35,6 +35,8 @@ export async function POST(req: Request) {
       durationEn, 
       includes, 
       includesEn,
+      notIncludes,
+      notIncludesEn,
       featured 
     } = body;
 
@@ -55,6 +57,8 @@ export async function POST(req: Request) {
         durationEn,
         includes,
         includesEn,
+        notIncludes,
+        notIncludesEn,
         featured: featured || false,
       },
     });

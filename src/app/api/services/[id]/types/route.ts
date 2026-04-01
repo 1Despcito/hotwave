@@ -14,7 +14,7 @@ export async function POST(
     }
 
     const { id: serviceId } = await params;
-    const { name, nameEn, description, descriptionEn, price, imageUrl, duration, durationEn, includes, includesEn } = await req.json();
+    const { name, nameEn, description, descriptionEn, price, imageUrl, duration, durationEn, includes, includesEn, notIncludes, notIncludesEn } = await req.json();
 
     const serviceType = await prisma.serviceType.create({
       data: {
@@ -29,6 +29,8 @@ export async function POST(
         durationEn: durationEn || null,
         includes: includes || null,
         includesEn: includesEn || null,
+        notIncludes: notIncludes || null,
+        notIncludesEn: notIncludesEn || null,
       },
     });
 

@@ -26,7 +26,7 @@ export default async function AdminDashboard() {
 
   const metrics = [
     { 
-      title: "إجمالي الحجوزات", 
+      title: "Total Bookings", 
       value: bookingsCount, 
       icon: CreditCard, 
       color: "text-brand-orange", 
@@ -34,7 +34,7 @@ export default async function AdminDashboard() {
       border: "hover:border-brand-orange/50" 
     },
     { 
-      title: "رسائل غير مقروءة", 
+      title: "Unread Messages", 
       value: messagesCount, 
       icon: MessageSquareDot, 
       color: "text-red-500", 
@@ -43,7 +43,7 @@ export default async function AdminDashboard() {
       alert: messagesCount > 0 
     },
     { 
-      title: "البرامج السياحية", 
+      title: "Tour Programs", 
       value: servicesCount, 
       icon: Ship, 
       color: "text-brand-cyan", 
@@ -51,7 +51,7 @@ export default async function AdminDashboard() {
       border: "hover:border-brand-cyan/50" 
     },
     { 
-      title: "آراء العملاء", 
+      title: "Testimonials", 
       value: testimonialsCount, 
       icon: Star, 
       color: "text-yellow-500", 
@@ -64,12 +64,12 @@ export default async function AdminDashboard() {
     <div>
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white font-heading tracking-wide">نظرة عامة</h1>
-          <p className="text-gray-400 text-sm mt-1">تابع إحصائيات موقعك وحجوزاتك بشكل لحظي</p>
+          <h1 className="text-3xl font-bold text-white font-heading tracking-wide">Dashboard Overview</h1>
+          <p className="text-gray-400 text-sm mt-1">Track your site statistics and bookings in real-time</p>
         </div>
         <div className="bg-[#111] border border-gray-800 px-4 py-2 rounded-xl text-sm text-gray-400 shadow-inner inline-flex items-center gap-2 w-fit">
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          النظام متصل ويعمل بسلاسة
+          System Connected & Live
         </div>
       </div>
       
@@ -108,10 +108,10 @@ export default async function AdminDashboard() {
 
       <div className="mt-10">
         <div className="flex items-center justify-between mb-6 px-2">
-          <h2 className="text-2xl font-bold text-white font-heading">أحدث طلبات الحجز</h2>
-          <Link href="/ar/admin/bookings" className="text-brand-cyan hover:text-white transition-colors flex items-center gap-2 text-sm font-medium bg-brand-cyan/10 hover:bg-brand-cyan/20 px-4 py-2 rounded-full">
-            عرض القائمة الكاملة
-            <ArrowLeft className="w-4 h-4 rtl:mr-1" />
+          <h2 className="text-2xl font-bold text-white font-heading">Recent Booking Requests</h2>
+          <Link href="/en/admin/bookings" className="text-brand-cyan hover:text-white transition-colors flex items-center gap-2 text-sm font-medium bg-brand-cyan/10 hover:bg-brand-cyan/20 px-4 py-2 rounded-full">
+            View All
+            <ArrowLeft className="w-4 h-4 rotate-180" />
           </Link>
         </div>
 
@@ -121,25 +121,25 @@ export default async function AdminDashboard() {
               <div className="w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center mb-4 text-gray-700">
                 <InboxIcon className="w-8 h-8" />
               </div>
-              <p className="text-gray-400">لا توجد حجوزات حديثة حتى الآن.</p>
+              <p className="text-gray-400">No recent bookings found yet.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-right text-sm text-gray-300">
+              <table className="w-full text-left text-sm text-gray-300">
                 <thead className="bg-[#111111] text-gray-400 uppercase font-semibold text-xs border-b border-gray-800">
                   <tr>
-                    <th className="px-6 py-5 rounded-tr-3xl">العميل</th>
-                    <th className="px-6 py-5">البرنامج السياحي</th>
-                    <th className="px-6 py-5">المجموعة/الباقة</th>
-                    <th className="px-6 py-5">موعد التسجيل</th>
-                    <th className="px-6 py-5 rounded-tl-3xl">الحالة</th>
+                    <th className="px-6 py-5">Customer</th>
+                    <th className="px-6 py-5">Program</th>
+                    <th className="px-6 py-5">Group/Package</th>
+                    <th className="px-6 py-5">Request Date</th>
+                    <th className="px-6 py-5">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800/50">
                   {recentBookings.map((b) => (
                     <tr key={b.id} className="hover:bg-white/[0.02] transition-colors group">
                       <td className="px-6 py-4">
-                        <div className="font-bold text-white group-hover:text-brand-orange transition-colors">{b.customerName || "غير معروف"}</div>
+                        <div className="font-bold text-white group-hover:text-brand-orange transition-colors">{b.customerName || "Unknown"}</div>
                         <div className="flex items-center gap-1.5 text-xs text-brand-cyan mt-1" dir="ltr"><Phone className="w-3 h-3" /> {b.phoneNumber}</div>
                       </td>
                       <td className="px-6 py-4 font-medium">{b.serviceName}</td>
@@ -155,7 +155,7 @@ export default async function AdminDashboard() {
                           {b.status === 'PENDING' && <Clock className="w-3.5 h-3.5" />}
                           {b.status === 'BOOKED' && <CheckCircle2 className="w-3.5 h-3.5" />}
                           {b.status === 'CANCELLED' && <XCircle className="w-3.5 h-3.5" />}
-                          {b.status === 'PENDING' ? 'قيد الانتظار' : b.status === 'BOOKED' ? 'مؤكد' : b.status === 'CANCELLED' ? 'ملغي' : 'تم التواصل'}
+                          {b.status === 'PENDING' ? 'Pending' : b.status === 'BOOKED' ? 'Booked' : b.status === 'CANCELLED' ? 'Cancelled' : 'Contacted'}
                         </span>
                       </td>
                     </tr>

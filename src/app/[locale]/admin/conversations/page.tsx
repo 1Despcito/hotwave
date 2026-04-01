@@ -49,7 +49,7 @@ export default function ConversationsAdminPage() {
   useEffect(() => { fetchConversations(); }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("حذف هذه المحادثة نهائياً؟")) return;
+    if (!confirm("Permanently delete this conversation?")) return;
     setDeleting(id);
     await fetch("/api/admin/conversations", {
       method: "DELETE",
@@ -61,12 +61,12 @@ export default function ConversationsAdminPage() {
   };
 
   const formatDate = (d: string) =>
-    new Date(d).toLocaleString("ar-EG", {
+    new Date(d).toLocaleString("en-US", {
       day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
     });
 
   return (
-    <div className="min-h-screen bg-[#050505] p-6 md:p-10" dir="rtl">
+    <div className="min-h-screen bg-[#050505] p-6 md:p-10" dir="ltr">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -74,10 +74,10 @@ export default function ConversationsAdminPage() {
             <span className="p-2 rounded-xl bg-orange-500/10 text-orange-400">
               <MessageSquare className="w-6 h-6" />
             </span>
-            محادثات العملاء
+            Customer Conversations
           </h1>
           <p className="text-gray-500 mt-1 text-sm">
-            {conversations.length} محادثة مسجلة
+            {conversations.length} recorded sessions
           </p>
         </div>
         <button
@@ -85,7 +85,7 @@ export default function ConversationsAdminPage() {
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-gray-800 text-gray-400 hover:text-white hover:border-orange-500/40 transition-all text-sm"
         >
           <RefreshCw className="w-4 h-4" />
-          تحديث
+          Refresh
         </button>
       </div>
 
@@ -99,8 +99,8 @@ export default function ConversationsAdminPage() {
       ) : conversations.length === 0 ? (
         <div className="text-center py-24">
           <MessageSquare className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-          <p className="text-gray-500">لا توجد محادثات بعد</p>
-          <p className="text-gray-600 text-sm mt-1">ستظهر هنا بمجرد تفاعل العملاء مع البوت</p>
+          <p className="text-gray-500">No conversations yet</p>
+          <p className="text-gray-600 text-sm mt-1">They will appear here once customers interact with the bot</p>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
@@ -134,7 +134,7 @@ export default function ConversationsAdminPage() {
                       </span>
                       <span className="text-xs text-gray-500 flex items-center gap-1">
                         <MessageSquare className="w-3 h-3" />
-                        {msgCount} رسالة
+                        {msgCount} messages
                       </span>
                       {conv.language && (
                         <span className="text-xs text-gray-500">
@@ -143,7 +143,7 @@ export default function ConversationsAdminPage() {
                       )}
                     </div>
                     <p className="text-gray-300 text-sm truncate">
-                      {firstUserMsg || <span className="text-gray-600 italic">لا توجد رسائل</span>}
+                      {firstUserMsg || <span className="text-gray-600 italic">No messages</span>}
                     </p>
                     <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-600">
                       <span className="flex items-center gap-1">
@@ -190,7 +190,7 @@ export default function ConversationsAdminPage() {
                         {Array.isArray(conv.messages) && conv.messages.map((msg, idx) => (
                           <div
                             key={msg.id || idx}
-                            className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                            className={`flex gap-3 ${msg.role === 'user' ? 'flex-row' : 'flex-row-reverse'}`}
                           >
                             <div className={`w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-xs font-bold
                               ${msg.role === 'user'

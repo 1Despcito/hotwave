@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import { useState } from "react";
+import GoogleTranslator from "@/components/GoogleTranslator";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -24,31 +25,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navGroups = [
     {
-      title: "نظرة عامة",
+      title: "Overview",
       items: [
-        { name: "لوحة القيادة", href: "/ar/admin", icon: LayoutDashboard },
+        { name: "Dashboard", href: "/en/admin", icon: LayoutDashboard },
       ]
     },
     {
-      title: "المبيعات والتواصل",
+      title: "Bookings & Chat",
       items: [
-        { name: "الحجوزات (Leads)", href: "/ar/admin/bookings", icon: CalendarCheck },
-        { name: "محادثات البوت", href: "/ar/admin/conversations", icon: MessageSquare },
-        { name: "صندوق الوارد", href: "/ar/admin/messages", icon: MessageSquare },
+        { name: "Leads", href: "/en/admin/bookings", icon: CalendarCheck },
+        { name: "Bot Chat", href: "/en/admin/conversations", icon: MessageSquare },
+        { name: "Inbox", href: "/en/admin/messages", icon: MessageSquare },
       ]
     },
     {
-      title: "إدارة المحتوى",
+      title: "Content",
       items: [
-        { name: "البرامج السياحية", href: "/ar/admin/services", icon: Briefcase },
-        { name: "الباقات والأقسام", href: "/ar/admin/packages", icon: Tag },
-        { name: "آراء العملاء", href: "/ar/admin/testimonials", icon: Star },
+        { name: "Programs", href: "/en/admin/services", icon: Briefcase },
+        { name: "Packages", href: "/en/admin/packages", icon: Tag },
+        { name: "Testimonials", href: "/en/admin/testimonials", icon: Star },
       ]
     },
     {
-      title: "النظام",
+      title: "System",
       items: [
-        { name: "إعدادات الموقع", href: "/ar/admin/settings", icon: Settings },
+        { name: "Site Settings", href: "/en/admin/settings", icon: Settings },
       ]
     }
   ];
@@ -68,6 +69,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </div>
 
+      {/* Translator in Admin */}
+      <div className="px-6 py-4 border-b border-gray-800/30 bg-white/5 mx-4 mt-4 rounded-xl flex justify-center">
+        <GoogleTranslator />
+      </div>
+
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-8">
         {navGroups.map((group, idx) => (
@@ -76,7 +82,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="space-y-1">
               {group.items.map((item) => {
                 const Icon = item.icon;
-                const isDashboard = item.href === '/ar/admin';
+                const isDashboard = item.href === '/en/admin';
                 const isActive = isDashboard ? pathname === item.href : pathname.startsWith(item.href);
                 
                 return (
@@ -90,7 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         : "text-gray-400 hover:bg-white/5 hover:text-white"
                     }`}
                   >
-                    <Icon className={`ml-3 h-5 w-5 transition-transform duration-300 ${isActive ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} />
+                    <Icon className={`mr-3 h-5 w-5 transition-transform duration-300 ${isActive ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} />
                     {item.name}
                   </Link>
                 );
@@ -106,15 +112,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           onClick={() => signOut({ callbackUrl: "/" })}
           className="w-full flex items-center justify-center px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-xl transition-all border border-transparent hover:border-red-500/20 font-medium"
         >
-          <LogOut className="ml-2 h-5 w-5" />
-          تسجيل الخروج
+          <LogOut className="mr-2 h-5 w-5" />
+          Sign Out
         </button>
       </div>
     </>
   );
 
   return (
-    <div className="min-h-screen bg-[#050505] text-gray-100 flex flex-col md:flex-row relative w-full overflow-x-hidden" dir="rtl">
+    <div className="min-h-screen bg-[#050505] text-gray-100 flex flex-col md:flex-row relative w-full overflow-x-hidden" dir="ltr">
       
       {/* Mobile Topbar */}
       <div className="md:hidden flex items-center justify-between p-4 bg-[#0a0a0a] border-b border-gray-800 sticky top-0 z-50">
@@ -135,8 +141,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       >
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
         <aside 
-          className={`absolute top-0 bottom-0 right-0 w-72 bg-[#0a0a0a] border-l border-gray-800 flex flex-col h-full overflow-y-auto shadow-2xl transition-transform duration-300 ease-in-out ${
-            isMobileOpen ? 'translate-x-0' : 'translate-x-[100%]'
+          className={`absolute top-0 bottom-0 left-0 w-72 bg-[#0a0a0a] border-r border-gray-800 flex flex-col h-full overflow-y-auto shadow-2xl transition-transform duration-300 ease-in-out ${
+            isMobileOpen ? 'translate-x-0' : 'translate-x-[-100%]'
           }`}
         >
           {renderSidebarContent()}
@@ -144,7 +150,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* Desktop Sidebar (Static) */}
-      <aside className="hidden md:flex static inset-y-0 w-72 flex-shrink-0 bg-[#0a0a0a] border-l border-gray-800 flex-col h-full overflow-y-auto z-40">
+      <aside className="hidden md:flex static inset-y-0 w-72 flex-shrink-0 bg-[#0a0a0a] border-r border-gray-800 flex-col h-full overflow-y-auto z-40">
         {renderSidebarContent()}
       </aside>
       
@@ -157,7 +163,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         
         <Toaster 
-          position="bottom-left" 
+          position="bottom-right" 
           toastOptions={{
             style: { 
               background: '#111', 

@@ -39,7 +39,7 @@ export async function PATCH(
     const body = await req.json();
     
     // Extract and sanitize data
-    const { name, nameEn, description, descriptionEn, price, imageUrl, duration, durationEn, includes, includesEn, featured } = body;
+    const { name, nameEn, description, descriptionEn, price, imageUrl, duration, durationEn, includes, includesEn, notIncludes, notIncludesEn, featured } = body;
 
     const updatedType = await prisma.serviceType.update({
       where: { id: typeId },
@@ -54,6 +54,8 @@ export async function PATCH(
         durationEn,
         includes,
         includesEn,
+        notIncludes,
+        notIncludesEn,
         featured,
       },
     });

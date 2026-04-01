@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
-import LanguageSwitcher from './LanguageSwitcher';
 import Link from 'next/link';
-import CurrencySelector from './CurrencySelector';
+import GoogleTranslator from './GoogleTranslator';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -51,23 +50,27 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6 rtl:gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="font-sans text-sm font-medium text-gray-300 hover:text-white transition-colors relative group"
-            >
-              {link.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-cyan transition-all group-hover:w-full" />
-            </Link>
-          ))}
+        {/* Desktop Navigation & Translator */}
+        <div className="flex items-center gap-4">
+          <nav className="hidden md:flex items-center gap-6">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className="font-sans text-sm font-medium text-gray-300 hover:text-white transition-colors relative group"
+              >
+                {link.name}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-cyan transition-all group-hover:w-full" />
+              </Link>
+            ))}
+          </nav>
           
-          <div className="flex items-center gap-3 w-px h-6 bg-gray-700 mx-1" />
+          <div className="hidden md:block w-px h-6 bg-gray-700" />
           
-          <LanguageSwitcher />
-          <CurrencySelector />
+          {/* Always visible Translator */}
+          <div className="scale-75 md:scale-100 origin-right">
+            <GoogleTranslator />
+          </div>
 
           <motion.a
             href="https://wa.me/201110626484"
@@ -75,18 +78,14 @@ export default function Navbar() {
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-5 py-2.5 bg-brand-orange text-white font-semibold rounded-full text-sm shadow-[0_0_15px_rgba(255,94,0,0.3)] hover:shadow-[0_0_20px_rgba(255,94,0,0.5)] transition-shadow"
+            className="hidden sm:inline-block px-5 py-2.5 bg-brand-orange text-white font-semibold rounded-full text-sm shadow-[0_0_15px_rgba(255,94,0,0.3)] hover:shadow-[0_0_20px_rgba(255,94,0,0.5)] transition-shadow"
           >
             {tHero('book')}
           </motion.a>
-        </nav>
 
-        {/* Mobile Menu Toggle & Language */}
-        <div className="flex items-center gap-3 md:hidden">
-          <CurrencySelector />
-          <LanguageSwitcher />
+          {/* Mobile Menu Toggle */}
           <button
-            className="text-gray-300 hover:text-white"
+            className="md:hidden text-gray-300 hover:text-white"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

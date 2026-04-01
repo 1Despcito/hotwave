@@ -20,7 +20,8 @@ export async function PATCH(
     const updateData: any = {};
     const fields = [
       'name', 'nameEn', 'description', 'descriptionEn', 'price', 
-      'images', 'duration', 'durationEn', 'includes', 'includesEn', 'featured', 'serviceId'
+      'images', 'duration', 'durationEn', 'includes', 'includesEn', 
+      'notIncludes', 'notIncludesEn', 'featured', 'serviceId'
     ];
     
     fields.forEach(field => {

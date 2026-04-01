@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
-import { ArrowRight, ArrowLeft, Clock, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { ImageGallery } from './ImageGallery';
 import { HeroSlider } from './HeroSlider';
@@ -135,6 +135,13 @@ export default async function DedicatedServicePage({
     pkgIncludes = serviceData.includes;
   }
 
+  // Not Includes Parsing
+  let pkgNotIncludes: string[] = [];
+  const dbNotIncludesStr = isArabic ? (serviceData.notIncludesAr || serviceData.notIncludes || serviceData.notIncludesEn) : (serviceData.notIncludesEn || serviceData.notIncludes);
+  if (dbNotIncludesStr && typeof dbNotIncludesStr === 'string') {
+    pkgNotIncludes = dbNotIncludesStr.split(',').map((item: string) => item.trim()).filter(Boolean);
+  }
+
   return (
     <main className="min-h-screen bg-[#050B14] pb-24 font-sans text-gray-200">
       <script
@@ -216,6 +223,23 @@ export default async function DedicatedServicePage({
                   </div>
                 ))}
               </div>
+
+              {pkgNotIncludes.length > 0 && (
+                <div className="mt-10">
+                  <h3 className="text-xl font-bold text-white mb-5 flex items-center gap-2">
+                    <span className="w-1.5 h-6 bg-red-500 rounded-full"></span>
+                    {isArabic ? 'ماذا لا تشمل الرحلة؟' : 'What is NOT Included?'}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {pkgNotIncludes.map((item: string, i: number) => (
+                      <div key={i} className="flex items-center gap-3 bg-red-500/5 p-4 rounded-xl border border-red-500/10 hover:bg-red-500/10 transition-colors">
+                        <XCircle className="w-5 h-5 text-red-400 shrink-0" />
+                        <span className="text-gray-400 font-medium">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Dynamic Image Gallery */}
               <ImageGallery 

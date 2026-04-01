@@ -74,16 +74,23 @@ export default function SettingsAdminPage() {
       const res = await fetch("/api/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          heroTitle: formData.heroTitleEn,
+          heroSubtitle: formData.heroSubtitleEn,
+          aboutUsText: formData.aboutUsTextEn,
+          privacyPolicy: formData.privacyPolicyEn,
+          termsAndConditions: formData.termsAndConditionsEn
+        }),
       });
 
       if (res.ok) {
-        toast.success("تم تحديث إعدادات الموقع بنجاح");
+        toast.success("Site settings updated successfully");
       } else {
-        toast.error("حدث خطأ أثناء حفظ الإعدادات");
+        toast.error("Error while saving settings");
       }
     } catch (error) {
-      toast.error("حدث خطأ في الاتصال بالخادم");
+      toast.error("Server connection error");
     } finally {
       setIsSaving(false);
     }
@@ -101,8 +108,8 @@ export default function SettingsAdminPage() {
     <div className="max-w-5xl mx-auto pb-12">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2 font-heading">إعدادات الموقع الشاملة ⚙️</h1>
-          <p className="text-gray-400">التحكم في النصوص الرئيسية، أرقام التواصل، وروابط منصات التواصل الاجتماعي.</p>
+          <h1 className="text-3xl font-bold text-white mb-2 font-heading">Global Site Settings ⚙️</h1>
+          <p className="text-gray-400">Control main texts, contact numbers, and social media links.</p>
         </div>
         <button
           onClick={handleSave}
@@ -110,30 +117,30 @@ export default function SettingsAdminPage() {
           className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-orange to-[#ff3300] px-6 py-3 font-bold text-white transition-all hover:shadow-[0_0_20px_rgba(255,107,0,0.4)] disabled:opacity-50"
         >
           {isSaving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
-          حفظ التغييرات
+          Save Changes
         </button>
       </div>
 
       <div className="grid gap-8">
         {/* Contact Info */}
         <section className="bg-[#0a0a0a] p-6 md:p-10 rounded-3xl border border-gray-800 shadow-xl">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2 border-b border-gray-800 pb-4"><Globe className="w-6 h-6 text-brand-cyan" /> روابط ومعلومات التواصل</h2>
+          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2 border-b border-gray-800 pb-4"><Globe className="w-6 h-6 text-brand-cyan" /> Contact Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2"><Phone className="w-4 h-4 text-green-400" /> رقم الواتساب (للحجوزات)</label>
+              <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2"><Phone className="w-4 h-4 text-green-400" /> WhatsApp Number (for bookings)</label>
               <input
                 type="text"
                 name="whatsappNumber"
                 value={formData.whatsappNumber}
                 onChange={handleChange}
                 className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
-                placeholder="مثال: 201110626484"
+                placeholder="Example: 201110626484"
                 dir="ltr"
               />
-              <p className="text-xs text-gray-500 mt-2 text-right">أدخل الرقم متضمناً كود الدولة (مثال: 20+، اكتبه 20 بدون زائد)</p>
+              <p className="text-xs text-gray-500 mt-2">Enter number with country code (e.g. 20 for Egypt, without +)</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2"><Mail className="w-4 h-4 text-blue-400" /> البريد الإلكتروني (للتواصل)</label>
+              <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2"><Mail className="w-4 h-4 text-blue-400" /> Contact Email</label>
               <input
                 type="email"
                 name="contactEmail"
@@ -144,7 +151,7 @@ export default function SettingsAdminPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2"><Facebook className="w-4 h-4 text-blue-600" /> رابط فيسبوك (Facebook)</label>
+              <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2"><Facebook className="w-4 h-4 text-blue-600" /> Facebook Page URL</label>
               <input
                 type="url"
                 name="facebookUrl"
@@ -155,7 +162,7 @@ export default function SettingsAdminPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2"><Instagram className="w-4 h-4 text-pink-500" /> رابط انستجرام (Instagram)</label>
+              <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2"><Instagram className="w-4 h-4 text-pink-500" /> Instagram Profile URL</label>
               <input
                 type="url"
                 name="instagramUrl"
@@ -168,7 +175,7 @@ export default function SettingsAdminPage() {
             <div>
               <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
                 <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 15.68a6.34 6.34 0 006.27 6.36 6.33 6.33 0 006.25-6.36V7.94a8.09 8.09 0 005.66 2.13V6.62a5.44 5.44 0 01-3.59-1.93z" /></svg>
-                رابط تيك توك (TikTok)
+                TikTok Profile URL
               </label>
               <input
                 type="url"
@@ -187,7 +194,7 @@ export default function SettingsAdminPage() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/5 blur-3xl -translate-y-1/2 translate-x-1/2 rounded-full" />
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2 border-b border-gray-800 pb-4">
              <span className="p-1.5 rounded-lg bg-brand-orange/10 text-brand-orange"><Globe className="w-5 h-5" /></span>
-             أدوات التحليل والتتبع (Analytics)
+             Marketing & Analytics
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
             <div>
@@ -204,7 +211,7 @@ export default function SettingsAdminPage() {
                 placeholder="G-XXXXXXXXXX"
                 dir="ltr"
               />
-              <p className="text-[10px] text-gray-500 mt-2">معرف التتبع الخاص بجوجل أناليتكس (يبدأ بـ G-)</p>
+              <p className="text-[10px] text-gray-500 mt-2">Google Analytics measurement ID (starts with G-)</p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
@@ -220,59 +227,34 @@ export default function SettingsAdminPage() {
                 placeholder="1234567890..."
                 dir="ltr"
               />
-              <p className="text-[10px] text-gray-500 mt-2">معرف البيكسل الخاص بفيسبوك (أرقام فقط)</p>
+              <p className="text-[10px] text-gray-500 mt-2">Facebook Pixel tracking ID (numbers only)</p>
             </div>
           </div>
         </section>
 
         {/* Hero Info */}
         <section className="bg-[#0a0a0a] p-6 md:p-10 rounded-3xl border border-gray-800 shadow-xl">
-          <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-800 pb-4">واجهة الترحيب (Hero Section)</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-800 pb-4">Hero Section Content</h2>
+          <div className="grid grid-cols-1 gap-10">
             <div className="space-y-6">
-              <h3 className="font-bold text-lg text-brand-orange bg-brand-orange/10 w-fit px-4 py-1.5 rounded-lg">النسخة العربية</h3>
               <div>
-                <label className="text-sm font-medium text-gray-300 mb-2 block">العنوان الرئيسي</label>
-                <input
-                  type="text"
-                  name="heroTitle"
-                  value={formData.heroTitle}
-                  onChange={handleChange}
-                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-300 mb-2 block">النص الفرعي (الوصف)</label>
-                <textarea
-                  name="heroSubtitle"
-                  value={formData.heroSubtitle}
-                  onChange={handleChange}
-                  rows={4}
-                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-6" dir="ltr">
-              <h3 className="font-bold text-lg text-brand-cyan bg-brand-cyan/10 w-fit px-4 py-1.5 rounded-lg text-right" dir="rtl">النسخة الإنجليزية</h3>
-              <div>
-                <label className="text-sm font-medium text-gray-300 mb-2 block">Main Title</label>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">Hero Main Title</label>
                 <input
                   type="text"
                   name="heroTitleEn"
                   value={formData.heroTitleEn}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan/50 transition-colors"
+                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300 mb-2 block">Subtitle</label>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">Hero Subtitle</label>
                 <textarea
                   name="heroSubtitleEn"
                   value={formData.heroSubtitleEn}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan/50 transition-colors"
+                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
                 />
               </div>
             </div>
@@ -283,47 +265,10 @@ export default function SettingsAdminPage() {
         <section className="bg-[#0a0a0a] p-6 md:p-10 rounded-3xl border border-gray-800 shadow-xl">
           <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-800 pb-4 flex items-center gap-2">
             <Globe className="w-6 h-6 text-green-500" />
-            الصفحات القانونية والتعريفية (Legal & Pages)
+            Static Pages Content (About, Privacy, Terms)
           </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {/* Arabic Pages */}
+          <div className="grid grid-cols-1 gap-10">
             <div className="space-y-6">
-              <h3 className="font-bold text-lg text-brand-orange bg-brand-orange/10 w-fit px-4 py-1.5 rounded-lg">النسخة العربية</h3>
-              <div>
-                <label className="text-sm font-medium text-gray-300 mb-2 block">صفحة "من نحن" (About Us)</label>
-                <textarea
-                  name="aboutUsText"
-                  value={formData.aboutUsText}
-                  onChange={handleChange}
-                  rows={6}
-                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-300 mb-2 block">سياسة الخصوصية (Privacy Policy)</label>
-                <textarea
-                  name="privacyPolicy"
-                  value={formData.privacyPolicy}
-                  onChange={handleChange}
-                  rows={6}
-                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-300 mb-2 block">الشروط والأحكام (Terms & Conditions)</label>
-                <textarea
-                  name="termsAndConditions"
-                  value={formData.termsAndConditions}
-                  onChange={handleChange}
-                  rows={6}
-                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
-                />
-              </div>
-            </div>
-            
-            {/* English Pages */}
-            <div className="space-y-6" dir="ltr">
-              <h3 className="font-bold text-lg text-brand-cyan bg-brand-cyan/10 w-fit px-4 py-1.5 rounded-lg text-right" dir="rtl">النسخة الإنجليزية</h3>
               <div>
                 <label className="text-sm font-medium text-gray-300 mb-2 block">About Us Content</label>
                 <textarea
@@ -331,27 +276,27 @@ export default function SettingsAdminPage() {
                   value={formData.aboutUsTextEn}
                   onChange={handleChange}
                   rows={6}
-                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan/50 transition-colors"
+                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300 mb-2 block">Privacy Policy</label>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">Privacy Policy Content</label>
                 <textarea
                   name="privacyPolicyEn"
                   value={formData.privacyPolicyEn}
                   onChange={handleChange}
                   rows={6}
-                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan/50 transition-colors"
+                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300 mb-2 block">Terms & Conditions</label>
+                <label className="text-sm font-medium text-gray-300 mb-2 block">Terms & Conditions Content</label>
                 <textarea
                   name="termsAndConditionsEn"
                   value={formData.termsAndConditionsEn}
                   onChange={handleChange}
                   rows={6}
-                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan/50 transition-colors"
+                  className="w-full rounded-xl border border-gray-700 bg-black p-3.5 text-white focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange/50 transition-colors"
                 />
               </div>
             </div>

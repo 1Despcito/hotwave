@@ -29,3 +29,54 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-orange to-brand-cyan;
   }
 }
+
+/* Google Translate Branding Styles */
+#google_translate_element select {
+  background-color: #0b0e14 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(0, 163, 255, 0.3) !important;
+  border-radius: 12px !important;
+  padding: 8px 12px !important;
+  font-family: var(--font-outfit), sans-serif !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  outline: none !important;
+  transition: all 0.3s ease !important;
+}
+
+#google_translate_element select:hover {
+  border-color: #00A3FF !important;
+  box-shadow: 0 0 10px rgba(0, 163, 255, 0.2) !important;
+}
+
+.goog-te-gadget {
+  font-family: var(--font-outfit), sans-serif !important;
+  color: transparent !important;
+}
+
+.goog-te-gadget span {
+  display: none !important;
+}
+
+/* Hide Google Translate Banner and tooltips */
+.goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+}
+
+.goog-tooltip {
+  display: none !important;
+}
+
+.goog-tooltip:hover {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}

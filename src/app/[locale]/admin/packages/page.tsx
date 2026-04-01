@@ -26,6 +26,8 @@ type Package = {
   durationEn?: string | null;
   includes?: string | null;
   includesEn?: string | null;
+  notIncludes?: string | null;
+  notIncludesEn?: string | null;
   featured: boolean;
 };
 
@@ -41,6 +43,8 @@ const emptyForm = {
   durationEn: "",
   includes: "",
   includesEn: "",
+  notIncludes: "",
+  notIncludesEn: "",
   featured: false
 };
 
@@ -77,15 +81,22 @@ export default function PackagesAdminPage() {
     const res = await fetch("/api/service-types", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        ...formData,
+        name: formData.nameEn,
+        description: formData.descriptionEn,
+        duration: formData.durationEn,
+        includes: formData.includesEn,
+        notIncludes: formData.notIncludesEn
+      }),
     });
     if (res.ok) {
-      toast.success("تمت إضافة الباقة بنجاح");
+      toast.success("Package added successfully");
       setIsAdding(false);
       setFormData(emptyForm);
       fetchData();
     } else {
-      toast.error("فشل الإضافة");
+      toast.error("Failed to add");
     }
     setIsSaving(false);
   };
@@ -97,14 +108,21 @@ export default function PackagesAdminPage() {
     const res = await fetch(`/api/service-types/${editingPackage.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editingPackage),
+      body: JSON.stringify({
+        ...editingPackage,
+        name: editingPackage.nameEn,
+        description: editingPackage.descriptionEn,
+        duration: editingPackage.durationEn,
+        includes: editingPackage.includesEn,
+        notIncludes: editingPackage.notIncludesEn
+      }),
     });
     if (res.ok) {
-      toast.success("تم التحديث بنجاح");
+      toast.success("Updated successfully");
       setEditingPackage(null);
       fetchData();
     } else {
-      toast.error("فشل التحديث");
+      toast.error("Update failed");
     }
     setIsSaving(false);
   };
@@ -130,30 +148,30 @@ export default function PackagesAdminPage() {
   if (isLoading) return <div className="text-white flex items-center justify-center min-h-[400px]"><Loader2 className="animate-spin mr-2" /> جاري التحميل...</div>;
 
   return (
-    <div dir="rtl" className="pb-20">
+    <div className="pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white font-heading">إدارة الباقات والأقسام 🏝️</h1>
-          <p className="text-gray-400 mt-1">إدارة الخدمات الفرعية والباقات بشكل مستقل.</p>
+          <h1 className="text-3xl font-bold text-white font-heading">Packages Management 🏝️</h1>
+          <p className="text-gray-400 mt-1">Manage sub-services and packages independently.</p>
         </div>
         <button 
           onClick={() => setIsAdding(true)} 
           className="bg-brand-orange text-white px-6 py-3 rounded-xl hover:bg-brand-orange/90 transition-all font-bold flex items-center gap-2 shadow-lg shadow-brand-orange/20"
         >
-          <Plus size={20} /> إضافة باقة جديدة
+          <Plus size={20} /> Add New Package
         </button>
       </div>
 
       {/* Search & Filter Bar */}
       <div className="flex flex-col md:flex-row gap-4 mb-8">
         <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
           <input 
             type="text" 
-            placeholder="بحث عن باقة..." 
+            placeholder="Search for a package..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[#111] border border-gray-800 text-white py-3 pr-10 pl-4 rounded-xl focus:border-brand-cyan/50 outline-none transition-all"
+            className="w-full bg-[#111] border border-gray-800 text-white py-3 pl-10 pr-4 rounded-xl focus:border-brand-cyan/50 outline-none transition-all"
           />
         </div>
         <div className="relative md:w-64">
@@ -215,77 +233,75 @@ export default function PackagesAdminPage() {
       </div>
 
       {/* Add Package Modal */}
-      <Modal isOpen={isAdding} onClose={() => setIsAdding(false)} title="إضافة باقة / قسم جديد">
+      <Modal isOpen={isAdding} onClose={() => setIsAdding(false)} title="Add New Package">
         <form onSubmit={handleAdd} className="space-y-4 max-h-[80vh] overflow-y-auto px-1">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-gray-500 mb-1.5 mr-2">المجموعة الأساسية</label>
+                <label className="block text-xs font-bold text-gray-500 mb-1.5 ml-2">Base Group</label>
                 <select 
                     value={formData.serviceId} 
                     onChange={e => setFormData({...formData, serviceId: e.target.value})}
                     className="w-full bg-[#111] border border-gray-800 text-white p-3 rounded-xl focus:border-brand-cyan outline-none"
                 >
-                    <option value="">اختار المجموعة التابعة لها...</option>
-                    {services.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+                    <option value="">Select Parent Group...</option>
+                    {services.map(s => <option key={s.id} value={s.id}>{s.titleEn}</option>)}
                 </select>
             </div>
-            <InputField label="اسم الباقة (ع)" value={formData.name} onChange={v => setFormData({...formData, name: v})} dir="rtl" required />
-            <InputField label="اسم الباقة (En)" value={formData.nameEn} onChange={v => setFormData({...formData, nameEn: v})} dir="ltr" />
-            <TextareaField label="وصف الباقة (ع)" value={formData.description} onChange={v => setFormData({...formData, description: v})} dir="rtl" />
-            <TextareaField label="وصف الباقة (En)" value={formData.descriptionEn} onChange={v => setFormData({...formData, descriptionEn: v})} dir="ltr" />
-            <InputField label="السعر (ج.م)" type="number" value={formData.price} onChange={v => setFormData({...formData, price: v})} />
-            <InputField label="المدة" value={formData.duration} onChange={v => setFormData({...formData, duration: v})} />
+            <InputField label="Package Name" value={formData.nameEn} onChange={v => setFormData({...formData, nameEn: v})} dir="ltr" required />
+            <TextareaField label="Description" value={formData.descriptionEn} onChange={v => setFormData({...formData, descriptionEn: v})} dir="ltr" />
+            <InputField label="Price (€)" type="number" value={formData.price} onChange={v => setFormData({...formData, price: v})} />
+            <InputField label="Duration" value={formData.durationEn} onChange={v => setFormData({...formData, durationEn: v})} dir="ltr" />
             <div className="md:col-span-2">
-                <MultiImageUpload label="صور الباقة" value={formData.images} onChange={urls => setFormData({...formData, images: urls})} />
+                <MultiImageUpload label="Package Images" value={formData.images} onChange={urls => setFormData({...formData, images: urls})} />
             </div>
-            <div className="md:col-span-2">
-                <InputField label="ماذا تشمل؟" value={formData.includes} onChange={v => setFormData({...formData, includes: v})} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:col-span-2">
+                <InputField label="What's Included?" value={formData.includesEn} onChange={v => setFormData({...formData, includesEn: v})} dir="ltr" />
+                <InputField label="What's Not Included?" value={formData.notIncludesEn} onChange={v => setFormData({...formData, notIncludesEn: v})} dir="ltr" />
             </div>
             <div className="md:col-span-2 flex items-center gap-2 p-3 bg-brand-orange/10 rounded-xl border border-brand-orange/20">
                 <input type="checkbox" id="add-featured" checked={formData.featured} onChange={e => setFormData({...formData, featured: e.target.checked})} className="w-5 h-5 accent-brand-orange" />
-                <label htmlFor="add-featured" className="text-white text-sm font-bold cursor-pointer">تمييز في الصفحة الرئيسية</label>
+                <label htmlFor="add-featured" className="text-white text-sm font-bold cursor-pointer">Featured on Homepage</label>
             </div>
           </div>
           <button disabled={isSaving} className="w-full bg-brand-orange text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-brand-orange/20 mt-6 transition-all hover:scale-[1.01]">
-            {isSaving ? <Loader2 className="animate-spin" size={20}/> : <Save size={20}/>} إضافة الباقة الآن
+            {isSaving ? <Loader2 className="animate-spin" size={20}/> : <Save size={20}/>} Add Package Now
           </button>
         </form>
       </Modal>
 
       {/* Edit Package Modal */}
-      <Modal isOpen={!!editingPackage} onClose={() => setEditingPackage(null)} title={`تعديل: ${editingPackage?.name}`}>
+      <Modal isOpen={!!editingPackage} onClose={() => setEditingPackage(null)} title={`Edit: ${editingPackage?.nameEn}`}>
         {editingPackage && (
           <form onSubmit={handleUpdate} className="space-y-4 max-h-[80vh] overflow-y-auto px-1">
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                    <label className="block text-xs font-bold text-gray-500 mb-1.5 mr-2">تغيير المجموعة</label>
+                    <label className="block text-xs font-bold text-gray-500 mb-1.5 ml-2">Change Parent Group</label>
                     <select 
                         value={editingPackage.serviceId} 
                         onChange={e => setEditingPackage({...editingPackage, serviceId: e.target.value})}
                         className="w-full bg-[#111] border border-gray-800 text-white p-3 rounded-xl focus:border-brand-cyan outline-none"
                     >
-                        {services.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+                        {services.map(s => <option key={s.id} value={s.id}>{s.titleEn}</option>)}
                     </select>
                 </div>
-                <InputField label="اسم الباقة (ع)" value={editingPackage.name} onChange={v => setEditingPackage({...editingPackage, name: v})} dir="rtl" />
-                <InputField label="اسم الباقة (En)" value={editingPackage.nameEn} onChange={v => setEditingPackage({...editingPackage, nameEn: v})} dir="ltr" />
-                <TextareaField label="وصف الباقة (ع)" value={editingPackage.description} onChange={v => setEditingPackage({...editingPackage, description: v})} dir="rtl" />
-                <TextareaField label="وصف الباقة (En)" value={editingPackage.descriptionEn} onChange={v => setEditingPackage({...editingPackage, descriptionEn: v})} dir="ltr" />
-                <InputField label="السعر (ج.م)" type="number" value={String(editingPackage.price || "")} onChange={v => setEditingPackage({...editingPackage, price: v ? parseFloat(v) : null})} />
-                <InputField label="المدة" value={editingPackage.duration || ""} onChange={v => setEditingPackage({...editingPackage, duration: v})} />
+                <InputField label="Package Name" value={editingPackage.nameEn} onChange={v => setEditingPackage({...editingPackage, nameEn: v})} dir="ltr" required />
+                <TextareaField label="Description" value={editingPackage.descriptionEn} onChange={v => setEditingPackage({...editingPackage, descriptionEn: v})} dir="ltr" />
+                <InputField label="Price (€)" type="number" value={String(editingPackage.price || "")} onChange={v => setEditingPackage({...editingPackage, price: v ? parseFloat(v) : null})} />
+                <InputField label="Duration" value={editingPackage.durationEn || ""} onChange={v => setEditingPackage({...editingPackage, durationEn: v})} dir="ltr" />
                 <div className="md:col-span-2">
-                    <MultiImageUpload label="تعديل الصور" value={editingPackage.images} onChange={urls => setEditingPackage({...editingPackage, images: urls})} />
+                    <MultiImageUpload label="Edit Images" value={editingPackage.images} onChange={urls => setEditingPackage({...editingPackage, images: urls})} />
                 </div>
-                <div className="md:col-span-2">
-                    <InputField label="ماذا تشمل؟" value={editingPackage.includes || ""} onChange={v => setEditingPackage({...editingPackage, includes: v})} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:col-span-2">
+                    <InputField label="What's Included?" value={editingPackage.includesEn || ""} onChange={v => setEditingPackage({...editingPackage, includesEn: v})} dir="ltr" />
+                    <InputField label="What's Not Included?" value={editingPackage.notIncludesEn || ""} onChange={v => setEditingPackage({...editingPackage, notIncludesEn: v})} dir="ltr" />
                 </div>
                 <div className="md:col-span-2 flex items-center gap-2 p-3 bg-brand-cyan/10 rounded-xl border border-brand-cyan/20">
                     <input type="checkbox" id="edit-featured" checked={editingPackage.featured} onChange={e => setEditingPackage({...editingPackage, featured: e.target.checked})} className="w-5 h-5 accent-brand-cyan" />
-                    <label htmlFor="edit-featured" className="text-white text-sm font-bold cursor-pointer">مميز في الصفحة الرئيسية</label>
+                    <label htmlFor="edit-featured" className="text-white text-sm font-bold cursor-pointer">Featured on Homepage</label>
                 </div>
              </div>
              <button disabled={isSaving} className="w-full bg-brand-cyan text-brand-navy py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-brand-cyan/20 mt-6 transition-all hover:scale-[1.01]">
-                {isSaving ? <Loader2 className="animate-spin" size={20}/> : <Save size={20}/>} حفظ التغييرات
+                {isSaving ? <Loader2 className="animate-spin" size={20}/> : <Save size={20}/>} Save Changes
              </button>
           </form>
         )}
