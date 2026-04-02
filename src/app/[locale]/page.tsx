@@ -14,7 +14,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     prisma.siteSettings.findFirst(),
     prisma.service.findMany({ orderBy: { createdAt: 'asc' }, include: { types: { orderBy: { createdAt: 'asc' } } } }),
     prisma.testimonial.findMany({ orderBy: { createdAt: 'desc' } }),
-    prisma.serviceType.findMany({ where: { featured: true }, take: 6 })
+    prisma.serviceType.findMany({ 
+      where: { featured: true }, 
+      take: 6,
+      include: { service: true }
+    })
   ]);
 
   const heroTitle = locale === 'ar' ? settings?.heroTitle : settings?.heroTitleEn;

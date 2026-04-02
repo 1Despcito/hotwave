@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Script from 'next/script';
+import { Languages } from 'lucide-react';
 
 declare global {
   interface Window {
@@ -43,9 +44,12 @@ export default function GoogleTranslator() {
         src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
         strategy="afterInteractive"
       />
-      <div className="flex items-center gap-2">
-        <span className="text-[10px] text-gray-500 uppercase tracking-widest hidden lg:block">Translate</span>
-        <div id="google_translate_element" className="google-translate-container min-h-[40px] min-w-[140px]" />
+      <div className="flex items-center gap-3">
+        <div className="flex flex-col items-center gap-0.5 group">
+          <Languages className="w-4 h-4 text-brand-cyan group-hover:text-brand-orange transition-colors duration-300" />
+          <span className="text-[8px] text-gray-500 uppercase tracking-tighter hidden lg:block group-hover:text-white transition-colors">Translate</span>
+        </div>
+        <div id="google_translate_element" className="google-translate-container min-h-[32px] min-w-[130px] border-l border-gray-800 pl-3" />
       </div>
     </>
   );
