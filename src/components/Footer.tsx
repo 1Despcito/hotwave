@@ -57,7 +57,7 @@ export default function Footer({ settings, services = [] }: { settings?: any, se
               {services.map((service) => (
                 <li key={service.id}>
                   <Link href={`/${locale}/services/${service.id}`} className="hover:text-brand-orange transition-colors">
-                    {locale === 'ar' ? service.title : service.titleEn || service.title}
+                    {service.titleEn && service.titleEn.trim() !== "" ? service.titleEn : (service.title || "Adventure")}
                   </Link>
                 </li>
               ))}

@@ -9,10 +9,9 @@ import { motion, AnimatePresence } from "framer-motion";
 interface ImageGalleryProps {
   images: string[];
   title: string;
-  isArabic: boolean;
 }
 
-export function ImageGallery({ images, title, isArabic }: ImageGalleryProps) {
+export function ImageGallery({ images, title }: ImageGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -56,7 +55,7 @@ export function ImageGallery({ images, title, isArabic }: ImageGalleryProps) {
     <div className="mt-12">
       <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
         <span className="w-1.5 h-6 bg-brand-orange rounded-full"></span>
-        {isArabic ? "معرض الصور" : "Photo Gallery"}
+        Photo Gallery
       </h3>
 
       <div className="flex overflow-x-auto gap-4 pb-6 snap-x snap-mandatory hide-scrollbar rtl:space-x-reverse" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -152,9 +151,8 @@ export function ImageGallery({ images, title, isArabic }: ImageGalleryProps) {
                       dragElastic={0.2}
                       onDragEnd={(e, { offset, velocity }) => {
                         const swipe = Math.abs(offset.x) * velocity.x;
-                        const rtlDir = isArabic ? -1 : 1;
-                        if (swipe < -10000 || offset.x < -50) rtlDir === 1 ? handleNext() : handlePrev();
-                        else if (swipe > 10000 || offset.x > 50) rtlDir === 1 ? handlePrev() : handleNext();
+                        if (swipe < -10000 || offset.x < -50) handleNext();
+                        else if (swipe > 10000 || offset.x > 50) handlePrev();
                       }}
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}

@@ -7,10 +7,9 @@ import Image from "next/image";
 interface HeroSliderProps {
   images: string[];
   title: string;
-  isArabic: boolean;
 }
 
-export function HeroSlider({ images, title, isArabic }: HeroSliderProps) {
+export function HeroSlider({ images, title }: HeroSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Auto-play interval
@@ -47,9 +46,8 @@ export function HeroSlider({ images, title, isArabic }: HeroSliderProps) {
           dragElastic={0.2}
           onDragEnd={(e, { offset, velocity }) => {
             const swipe = Math.abs(offset.x) * velocity.x;
-            const rtlDir = isArabic ? -1 : 1;
-            if (swipe < -5000 || offset.x < -50) rtlDir === 1 ? handleNext() : handlePrev();
-            else if (swipe > 5000 || offset.x > 50) rtlDir === 1 ? handlePrev() : handleNext();
+            if (swipe < -5000 || offset.x < -50) handleNext();
+            else if (swipe > 5000 || offset.x > 50) handlePrev();
           }}
         >
           <Image

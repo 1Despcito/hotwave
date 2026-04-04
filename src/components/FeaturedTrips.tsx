@@ -25,20 +25,18 @@ export default function FeaturedTrips({ trips }: FeaturedTripsProps) {
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div className="max-w-2xl">
             <h2 className="text-4xl md:text-5xl font-bold text-white font-heading mb-4">
-              {locale === "ar" ? "أكثر الرحلات طلباً 🔥" : "Most Requested Trips 🔥"}
+              Most Requested Trips 🔥
             </h2>
             <p className="text-gray-400 text-lg">
-              {locale === "ar" 
-                ? "اخترنا لك أفضل تجاربنا التي نالت إعجاب آلاف العملاء. استعد للمغامرة!" 
-                : "Hand-picked experiences loved by thousands of our guests. Get ready for adventure!"}
+              Hand-picked experiences loved by thousands of our guests. Get ready for adventure!
             </p>
           </div>
           <Link 
             href={`/${locale}/services`} 
             className="text-brand-cyan font-bold flex items-center gap-2 hover:gap-3 transition-all group"
           >
-            {locale === "ar" ? "عرض جميع الرحلات" : "View All Trips"}
-            {locale === "ar" ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            View All Trips
+            <ChevronRight className="w-5 h-5" />
           </Link>
         </div>
 
@@ -54,6 +52,10 @@ export default function FeaturedTrips({ trips }: FeaturedTripsProps) {
               ? tripImages[0] 
               : (serviceImages.length > 0 ? serviceImages[0] : "/placeholder-trip.jpg");
             
+            const tripName = trip.nameEn && trip.nameEn.trim() !== "" ? trip.nameEn : "Adventurous Trip";
+            const tripDesc = trip.descriptionEn && trip.descriptionEn.trim() !== "" ? trip.descriptionEn : "Discover the magic of Hurghada with us.";
+            const tripDur = trip.durationEn && trip.durationEn.trim() !== "" ? trip.durationEn : (trip.duration || "-");
+
             return (
               <motion.div
                 key={trip.id}
@@ -64,26 +66,26 @@ export default function FeaturedTrips({ trips }: FeaturedTripsProps) {
                 className="group relative bg-brand-navy-light/30 border border-gray-800 rounded-[2rem] overflow-hidden hover:border-brand-orange/40 transition-all duration-500 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] flex flex-col"
               >
                 {/* Full Card Link Overlay */}
-                <Link href={tripUrl} className="absolute inset-0 z-20" aria-label={trip.name} />
+                <Link href={tripUrl} className="absolute inset-0 z-20" aria-label={tripName} />
 
                 {/* Image Container */}
                 <div className="relative h-72 overflow-hidden">
                   <img 
                     src={displayImage} 
-                    alt={trip.name} 
+                    alt={tripName} 
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-transparent to-transparent opacity-60" />
                   
                   {/* Price Tag */}
                   {trip.price && (
-                    <div className="absolute top-4 rtl:left-4 ltr:right-4 bg-brand-orange text-white px-4 py-1.5 rounded-full font-bold text-sm shadow-xl z-30">
-                      {trip.price} <span className="text-[10px] font-normal opacity-80">{locale === "ar" ? "ج.م" : "EGP"}</span>
+                    <div className="absolute top-4 right-4 bg-brand-orange text-white px-4 py-1.5 rounded-full font-bold text-sm shadow-xl z-30">
+                      {trip.price} <span className="text-[10px] font-normal opacity-80">EGP</span>
                     </div>
                   )}
 
                   {/* Badge */}
-                  <div className="absolute bottom-4 rtl:right-4 ltr:left-4 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 z-30">
+                  <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 z-30">
                      <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
                      <span className="text-white text-xs font-bold">4.9</span>
                   </div>
@@ -92,26 +94,26 @@ export default function FeaturedTrips({ trips }: FeaturedTripsProps) {
                 {/* Content */}
                 <div className="p-6 flex-grow flex flex-col">
                   <h3 className="text-xl font-bold text-white mb-2 group-hover:text-brand-orange transition-colors">
-                    {locale === "ar" ? trip.name : trip.nameEn || trip.name}
+                    {tripName}
                   </h3>
                   
                   <p className="text-gray-400 text-sm mb-6 line-clamp-2 min-h-[40px]">
-                    {locale === "ar" ? trip.description : trip.descriptionEn || trip.description}
+                    {tripDesc}
                   </p>
 
                   <div className="flex items-center justify-between pt-4 border-t border-gray-800 mt-auto">
                     <div className="flex items-center gap-4">
-                      {trip.duration && (
+                      {tripDur && (
                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
                            <Clock className="w-3.5 h-3.5 text-brand-cyan" />
-                           <span>{locale === "ar" ? trip.duration : trip.durationEn || trip.duration}</span>
+                           <span>{tripDur}</span>
                          </div>
                       )}
                     </div>
                     <div 
                       className="bg-white/5 group-hover:bg-brand-cyan group-hover:text-brand-navy p-2.5 rounded-xl transition-all border border-white/5 relative z-10"
                     >
-                      {locale === "ar" ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+                      <ChevronRight size={20} />
                     </div>
                   </div>
                 </div>

@@ -50,11 +50,11 @@ export default async function RootLayout({
   const topServices = await prisma.service.findMany({ select: { id: true, title: true, titleEn: true }, take: 4 });
 
   return (
-    <html lang={locale} dir="ltr">
+    <html lang="en" dir="ltr">
       <body
         className={`${inter.variable} ${outfit.variable} font-sans antialiased`}
       >
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={messages} locale="en">
           <NextAuthProvider>
             <CurrencyProvider>
               <ConditionalNavbar />

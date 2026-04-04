@@ -1,8 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Script from 'next/script';
-import { Languages } from 'lucide-react';
+import { useEffect } from 'react';
 
 declare global {
   interface Window {
@@ -12,46 +10,88 @@ declare global {
 }
 
 export default function GoogleTranslator() {
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
-    
-    // Prepare the init function ON THE WINDOW before script loads
+    // Only run if we are in the browser
+    if (typeof window === 'undefined') return;
+
     window.googleTranslateElementInit = () => {
-      // Robust check for the constructor
-      if (typeof window.google?.translate?.TranslateElement === 'function') {
-        new window.google.translate.TranslateElement({
-          pageLanguage: 'en',
-          layout: window.google.translate.InlineLayout?.SIMPLE || 0,
-          multilanguagePage: true,
-          autoDisplay: false
-        }, 'google_translate_element');
-      } else {
-        // If not ready, wait and retry
-        setTimeout(() => {
-          if (window.googleTranslateElementInit) window.googleTranslateElementInit();
-        }, 100);
+      if (window.google && window.google.translate) {
+        new window.google.translate.TranslateElement(
+          {
+            pageLanguage: 'en',
+            includedLanguages: 'en,ar,ru,de,fr,it,es,pl',
+            layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
+          'google_translate_element'
+        );
       }
+    };
+
+    // Add CSS to hide the Google Translate top bar and improve styling
+    const style = document.createElement('style');
+    style.innerHTML = `
+      #google_translate_element {
+        display: inline-block;
+      }
+      .goog-te-gadget-simple {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        padding: 4px 8px !important;
+        border-radius: 9999px !important;
+        font-family: inherit !important;
+        display: flex !important;
+        align-items: center !important;
+        transition: all 0.2s ease-in-out !important;
+      }
+      .goog-te-gadget-simple:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border-color: rgba(255, 94, 0, 0.4) !important;
+      }
+      .goog-te-gadget-icon {
+        display: none !important;
+      }
+      .goog-te-menu-value {
+        color: #e5e7eb !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        display: flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+      }
+      .goog-te-menu-value span {
+        color: #e5e7eb !important;
+      }
+      .goog-te-menu-value:before {
+        content: '🌐';
+        margin-right: 6px;
+        font-size: 14px;
+      }
+      .skiptranslate.goog-te-gadget {
+        margin-top: 4px;
+      }
+      iframe.goog-te-banner-frame {
+        display: none !important;
+      }
+      body {
+        top: 0 !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    const script = document.createElement('script');
+    script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup if needed
     };
   }, []);
 
-  if (!mounted) return null;
-
   return (
-    <>
-      <Script
-        src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
-        strategy="afterInteractive"
-      />
-      <div className="flex items-center gap-3">
-        <div className="flex flex-col items-center gap-0.5 group">
-          <Languages className="w-4 h-4 text-brand-cyan group-hover:text-brand-orange transition-colors duration-300" />
-          <span className="text-[8px] text-gray-500 uppercase tracking-tighter hidden lg:block group-hover:text-white transition-colors">Translate</span>
-        </div>
-        <div id="google_translate_element" className="google-translate-container min-h-[32px] min-w-[130px] border-l border-gray-800 pl-3" />
-      </div>
-    </>
+    <div className="google-translate-container">
+      <div id="google_translate_element"></div>
+    </div>
   );
 }
-

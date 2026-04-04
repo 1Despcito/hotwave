@@ -9,7 +9,6 @@ interface ServicePackageCardProps {
   serviceTitle: string; // The Collection title
   collectionId: string;
   whatsappNumber: string;
-  isArabic: boolean;
 }
 
 export default function ServicePackageCard({
@@ -17,33 +16,30 @@ export default function ServicePackageCard({
   serviceTitle,
   collectionId,
   whatsappNumber,
-  isArabic,
 }: ServicePackageCardProps) {
 
-  const pkgName = isArabic ? (pkg.nameAr || pkg.name || pkg.nameEn) : (pkg.nameEn || pkg.name);
+  const pkgName = pkg.nameEn && pkg.nameEn.trim() !== "" ? pkg.nameEn : "Adventurous Package";
   const pkgPrice = pkg.price;
   
   let pkgIncludes = [];
-  const dbIncludesStr = isArabic ? (pkg.includesAr || pkg.includes || pkg.includesEn) : (pkg.includesEn || pkg.includes);
-  if (dbIncludesStr && typeof dbIncludesStr === 'string') {
+  const dbIncludesStr = pkg.includesEn || pkg.includes;
+  if (dbIncludesStr && typeof dbIncludesStr === 'string' && !/[\u0600-\u06FF]/.test(dbIncludesStr)) {
     pkgIncludes = dbIncludesStr.split(',').map((item: string) => item.trim()).filter(Boolean);
   } else if (Array.isArray(pkg.includes)) {
-    pkgIncludes = pkg.includes;
+    pkgIncludes = pkg.includes.filter((item: any) => typeof item === 'string' && !/[\u0600-\u06FF]/.test(item));
   }
   
-  // Default includes if none provided
+  // Default includes if none provided or if they were only in Arabic
   if (pkgIncludes.length === 0) {
-    pkgIncludes = isArabic ? ['مرشد سياحي', 'انتقالات', 'مشروبات'] : ['Guide', 'Transfer', 'Drinks'];
+    pkgIncludes = ['Guide', 'Transfer', 'Drinks'];
   }
 
-  const pkgDuration = isArabic ? (pkg.durationAr || pkg.duration || pkg.durationEn) : (pkg.durationEn || pkg.duration);
+  const pkgDuration = pkg.durationEn && pkg.durationEn.trim() !== "" ? pkg.durationEn : (pkg.duration && !/[\u0600-\u06FF]/.test(pkg.duration) ? pkg.duration : "Full Day");
   const pkgImage = (pkg.images && pkg.images.length > 0) ? pkg.images[0] : (pkg.imageUrl || null);
-  const pkgDesc = isArabic ? (pkg.descriptionAr || pkg.description || pkg.descriptionEn) : (pkg.descriptionEn || pkg.description);
+  const pkgDesc = pkg.descriptionEn && pkg.descriptionEn.trim() !== "" ? pkg.descriptionEn : "Experience the best of Hurghada with this curated adventure.";
 
   // WhatsApp message
-  const waMessage = isArabic
-    ? `أهلاً، أرغب في حجز خدمة "${pkgName}" من مجموعة ${serviceTitle}.`
-    : `Hello, I want to book the "${pkgName}" service from the ${serviceTitle} collection.`;
+  const waMessage = `Hello, I want to book the "${pkgName}" service from the ${serviceTitle} collection.`;
 
   const handleWhatsApp = () => {
     window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(waMessage)}`, "_blank");
@@ -52,7 +48,7 @@ export default function ServicePackageCard({
   return (
     <div className="group bg-brand-navy border border-gray-700/50 rounded-[2rem] overflow-hidden hover:border-brand-orange/50 hover:shadow-[0_20px_50px_rgba(255,107,0,0.15)] transition-all duration-500 flex flex-col h-full relative">
       {/* Invisible Overlay Link for the entire card */}
-      <Link href={`/${isArabic ? 'ar' : 'en'}/services/${collectionId}/${pkg.id}`} className="absolute inset-0 z-10" aria-label={`View details for ${pkgName}`} />
+      <Link href={`/en/services/${collectionId}/${pkg.id}`} className="absolute inset-0 z-10" aria-label={`View details for ${pkgName}`} />
 
       {/* Top Image (if available) */}
       {pkgImage && (
@@ -98,7 +94,7 @@ export default function ServicePackageCard({
 
         <div className="flex-grow">
           <h4 className="text-[10px] text-gray-500 mb-4 uppercase tracking-[0.2em] font-bold border-b border-white/5 pb-2">
-            {isArabic ? 'تشمل الرحلة:' : 'What\'s Included:'}
+            What's Included:
           </h4>
           <ul className="space-y-3 mb-8">
             {pkgIncludes.map((item: string, i: number) => (
@@ -112,12 +108,11 @@ export default function ServicePackageCard({
 
         <div className="mt-auto flex flex-col gap-3 pt-4 border-t border-white/5 relative z-20">
           <Link
-            href={`/${isArabic ? 'ar' : 'en'}/services/${collectionId}/${pkg.id}`}
+            href={`/en/services/${collectionId}/${pkg.id}`}
             className="w-full py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl border border-white/10 flex items-center justify-center gap-2 transition-all active:scale-95 text-center group/link"
           >
-            {isArabic ? 'استكشف التفاصيل' : 'View Full Details'}
-            <ArrowRight className="w-4 h-4 rtl:hidden group-hover/link:translate-x-1 transition-transform" />
-            <ArrowRight className="w-4 h-4 hidden rtl:block rotate-180 group-hover/link:-translate-x-1 transition-transform" />
+            View Full Details
+            <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
           </Link>
           
           <button
@@ -125,7 +120,7 @@ export default function ServicePackageCard({
             className="w-full py-4 bg-gradient-to-r from-brand-orange to-[#ff4500] text-white font-bold rounded-2xl shadow-[0_10px_20px_rgba(255,107,0,0.2)] hover:shadow-[0_15px_30px_rgba(255,107,0,0.3)] flex items-center justify-center gap-3 transition-all active:scale-95"
           >
             <MessageCircle className="w-5 h-5" />
-            {isArabic ? 'حجز عبر واتساب' : 'Book on WhatsApp'}
+            Book on WhatsApp
           </button>
         </div>
       </div>

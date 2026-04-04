@@ -53,10 +53,10 @@ export default function Hero({ title, subtitle, imageUrl, whatsappNumber = "2011
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="pt-10 flex flex-col items-center w-full"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-orange/10 border border-brand-orange/30 backdrop-blur-sm mb-8 rtl:flex-row-reverse w-fit shadow-[0_0_15px_rgba(255,94,0,0.15)]">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-orange/10 border border-brand-orange/30 backdrop-blur-sm mb-8 w-fit shadow-[0_0_15px_rgba(255,94,0,0.15)]">
               <span className="w-2 h-2 rounded-full bg-brand-orange animate-pulse" />
-              <span className="text-sm font-bold text-brand-orange tracking-wide uppercase rtl:tracking-normal">
-                {locale === 'ar' ? '🔥 احجز الآن واحصل على خصم 20%' : '🔥 Book now and get up to 20% off!'}
+              <span className="text-sm font-bold text-brand-orange tracking-wide uppercase">
+                🔥 Book now and get up to 20% off!
               </span>
             </div>
 
@@ -70,7 +70,6 @@ export default function Hero({ title, subtitle, imageUrl, whatsappNumber = "2011
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 w-full">
               <AIChatWidget 
-                locale={locale} 
                 customTrigger={(toggle, isOpen) => (
                   <motion.button
                     onClick={(e: React.MouseEvent) => { e.preventDefault(); toggle(); }}
@@ -83,8 +82,8 @@ export default function Hero({ title, subtitle, imageUrl, whatsappNumber = "2011
                       <img src="/hotwave-bot.png" alt="" style={{width:'32px',height:'32px',objectFit:'cover',objectPosition:'top center'}} />
                     </div>
                     <div className="flex flex-col items-start leading-tight">
-                      <span className="text-xs font-medium opacity-90">{locale === 'ar' ? 'اسأل مساعد الذكاء الاصطناعي' : 'Ask our AI Assistant'}</span>
-                      <span className="text-sm">{locale === 'ar' ? 'متاح 24/7 لمساعدتك' : 'Available 24/7 to help'}</span>
+                      <span className="text-xs font-medium opacity-90">Ask our AI Assistant</span>
+                      <span className="text-sm">Available 24/7 to help</span>
                     </div>
                   </motion.button>
                 )} 
@@ -104,15 +103,15 @@ export default function Hero({ title, subtitle, imageUrl, whatsappNumber = "2011
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm font-medium text-gray-300 mb-8 w-full">
                <div className="flex items-center gap-1.5">
                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                 <span>{locale === 'ar' ? 'تأكيد فوري' : 'Instant Confirmation'}</span>
+                 <span>Instant Confirmation</span>
                </div>
                <div className="flex items-center gap-1.5">
                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                 <span>{locale === 'ar' ? 'بدون رسوم خفية' : 'No Hidden Fees'}</span>
+                 <span>No Hidden Fees</span>
                </div>
                <div className="flex items-center gap-1.5">
                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                 <span>{locale === 'ar' ? 'إلغاء مجاني' : 'Free Cancellation'}</span>
+                 <span>Free Cancellation</span>
                </div>
             </div>
 
@@ -142,15 +141,15 @@ export default function Hero({ title, subtitle, imageUrl, whatsappNumber = "2011
             >
               <div className="flex items-center gap-3">
                 <div className="text-4xl">☀️</div>
-                <div className="flex flex-col text-left rtl:text-right">
+                <div className="flex flex-col text-left">
                   <span className="text-white font-bold text-xl leading-none">28°C</span>
-                  <span className="text-brand-orange text-xs font-medium uppercase tracking-wider">{locale === 'ar' ? 'الغردقة اليوم' : 'Hurghada Today'}</span>
+                  <span className="text-brand-orange text-xs font-medium uppercase tracking-wider">Hurghada Today</span>
                 </div>
               </div>
               <div className="w-px h-10 bg-white/10" />
-              <div className="flex flex-col text-left rtl:text-right">
-                <span className="text-brand-cyan font-bold text-sm">{locale === 'ar' ? 'حالة البحر' : 'Sea State'}</span>
-                <span className="text-xs text-gray-300">{locale === 'ar' ? 'مثالي للسباحة والغوص 🌊' : 'Perfect for snorkeling 🌊'}</span>
+              <div className="flex flex-col text-left">
+                <span className="text-brand-cyan font-bold text-sm">Sea State</span>
+                <span className="text-xs text-gray-300">Perfect for snorkeling 🌊</span>
               </div>
             </motion.div>
           </motion.div>

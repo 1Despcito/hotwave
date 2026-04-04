@@ -21,9 +21,10 @@ function getSessionId() {
   return sid;
 }
 
-export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?: string, customTrigger?: (toggle: () => void, isOpen: boolean) => React.ReactNode }) {
+export default function AIChatWidget({ customTrigger }: { customTrigger?: (toggle: () => void, isOpen: boolean) => React.ReactNode }) {
   const t = useTranslations('Chat');
   const [isOpen, setIsOpen] = useState(false);
+  const locale = 'en';
 
   // Get sessionId via ref — evaluated on client render only
   const sidRef = useRef('');
@@ -91,7 +92,7 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
 
       {/* Toggle Button */}
       {customTrigger ? customTrigger(() => setIsOpen(!isOpen), isOpen) : (
-        <div className="fixed bottom-6 rtl:right-6 rtl:left-auto ltr:left-6 ltr:right-auto z-50">
+        <div className="fixed bottom-6 left-6 z-50">
           <div className="relative">
             {/* Pulse Rings (only when closed) */}
             {!isOpen && (
@@ -108,7 +109,7 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
                 border: 'none',
                 padding: 0,
               }}
-              aria-label="مساعد الذكاء الاصطناعي"
+              aria-label="AI Assistant"
             >
               <AnimatePresence mode="wait">
                 {isOpen ? (
@@ -156,14 +157,14 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.92 }}
             transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-            className="fixed bottom-24 rtl:right-6 rtl:left-auto ltr:left-6 ltr:right-auto w-[340px] sm:w-[390px] h-[550px] max-h-[80vh] rounded-3xl overflow-hidden z-50 flex flex-col"
+            className="fixed bottom-24 left-6 w-[340px] sm:w-[390px] h-[550px] max-h-[80vh] rounded-3xl overflow-hidden z-50 flex flex-col"
             style={{
               background: 'rgba(10, 8, 5, 0.95)',
               border: '1px solid rgba(255, 107, 0, 0.25)',
               boxShadow: '0 25px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,107,0,0.1)',
               backdropFilter: 'blur(20px)',
             }}
-            dir={locale === 'ar' ? 'rtl' : 'ltr'}
+            dir="ltr"
           >
             {/* Decorative background */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -191,11 +192,11 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
                   </div>
                   <div>
                     <h3 className="font-bold text-white text-base leading-tight tracking-wide">
-                      {t('title')}
+                      {t('title') || "Wavey Assistant"}
                     </h3>
                     <p className="text-orange-100 text-[11px] mt-0.5 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 bg-green-400 rounded-full inline-block animate-pulse" />
-                      {t('subtitle')}
+                      {t('subtitle') || "Always here to help"}
                     </p>
                   </div>
                 </div>
@@ -227,12 +228,12 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
                     />
                   </div>
                   <div>
-                    <p className="text-orange-300 font-semibold text-sm mb-1">{t('welcome')}</p>
-                    <p className="text-gray-500 text-xs max-w-[200px] leading-relaxed">{t('welcome_sub')}</p>
+                    <p className="text-orange-300 font-semibold text-sm mb-1">{t('welcome') || "Hello, I'm Wavey!"}</p>
+                    <p className="text-gray-500 text-xs max-w-[200px] leading-relaxed">{t('welcome_sub') || "Ready for your Hurghada adventure?"}</p>
                   </div>
                   {/* Quick Suggestions */}
                   <div className="flex flex-wrap gap-2 justify-center mt-2">
-                    {['🌊 رحلات بحرية', '🏜️ سفاري', '🐴 ركوب خيل'].map((s) => (
+                    {['🌊 Sea Trips', '🏜️ Safari', '🐴 Horseback'].map((s) => (
                       <button
                         key={s}
                         onClick={() => {
@@ -253,13 +254,11 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
                   animate={{ opacity: 1, x: 0, y: 0 }}
                   key={m.id}
                   className={`max-w-[85%] text-sm leading-relaxed ${
-                    m.role === "user"
-                    ? (locale === 'ar' ? "self-start" : "self-end")
-                    : (locale === 'ar' ? "self-end" : "self-start")
+                    m.role === "user" ? "self-end" : "self-start"
                   }`}
                 >
                   {m.role === 'assistant' && (
-                    <div className={`flex items-end gap-2 ${locale === 'ar' ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <div className="flex items-end gap-2 flex-row">
                       <div className="w-7 h-7 shrink-0 rounded-full overflow-hidden border border-orange-500/40" style={{minWidth:'28px',minHeight:'28px',maxWidth:'28px',maxHeight:'28px'}}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src="/hotwave-bot.png" alt="" style={{width:'28px',height:'28px',objectFit:'cover',objectPosition:'top center'}} />
@@ -284,7 +283,7 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
               ))}
 
               {isLoading && !error && (
-                <div className="self-end flex items-end gap-2 flex-row-reverse">
+                <div className="self-start flex items-end gap-2 flex-row">
                   <div className="w-7 h-7 shrink-0 rounded-full overflow-hidden border border-orange-500/40" style={{minWidth:'28px',minHeight:'28px',maxWidth:'28px',maxHeight:'28px'}}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/hotwave-bot.png" alt="" style={{width:'28px',height:'28px',objectFit:'cover',objectPosition:'top center'}} />
@@ -307,7 +306,7 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
 
               {error && (
                 <div className="text-red-400 text-xs p-3 rounded-xl border border-red-500/20 bg-red-500/10">
-                  خطأ في الخادم: {error?.message || String(error)}
+                  Server Error: {error?.message || String(error)}
                 </div>
               )}
               <div ref={messagesEndRef} />
@@ -332,7 +331,7 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
                   name="prompt"
                   value={localInput}
                   onChange={(e) => setLocalInput(e.target.value)}
-                  placeholder={t('placeholder')}
+                  placeholder={t('placeholder') || "Ask me anything..."}
                   className="flex-1 rounded-full px-4 py-2.5 text-sm text-white outline-none transition-all"
                   style={{
                     background: 'rgba(255,255,255,0.06)',
@@ -358,11 +357,11 @@ export default function AIChatWidget({ locale = 'ar', customTrigger }: { locale?
                     boxShadow: localInput.trim() ? '0 4px 15px rgba(255,98,0,0.4)' : 'none'
                   }}
                 >
-                  <Send size={16} className={`text-white transition-transform ${locale === 'ar' ? 'rotate-180 -ml-0.5' : '-mr-0.5'}`} />
+                  <Send size={16} className="text-white transition-transform -mr-0.5" />
                 </motion.button>
               </form>
               <p className="text-center text-[10px] text-gray-600 mt-2">
-                مدعوم بالذكاء الاصطناعي · Hot Wave 🔥
+                Powered by AI · Hot Wave 🔥
               </p>
             </div>
           </motion.div>

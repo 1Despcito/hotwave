@@ -20,7 +20,7 @@ export default function Navbar() {
     { name: t('services'), href: `/${locale}/services` },
     { name: t('about'), href: `/${locale}/about` },
     { name: t('testimonials'), href: `/${locale}/#testimonials` },
-    { name: locale === 'ar' ? 'تواصل معنا' : 'Contact Us', href: `/${locale}/contact` }
+    { name: 'Contact Us', href: `/${locale}/contact` }
   ];
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Desktop Navigation & Translator */}
+        {/* Desktop Navigation */}
         <div className="flex items-center gap-4">
           <nav className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
@@ -66,8 +66,8 @@ export default function Navbar() {
           </nav>
           
           <div className="hidden md:block w-px h-6 bg-gray-700" />
-          
-          {/* Always visible Translator */}
+
+          {/* Re-added Google Translator */}
           <div className="scale-75 md:scale-100 origin-right">
             <GoogleTranslator />
           </div>
