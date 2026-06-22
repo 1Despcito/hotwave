@@ -1,0 +1,178 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// NextAuth Models
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("USER") // ADMIN or USER
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// App Models
+model Message {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+  read      Boolean  @default(false)
+}
+
+model Service {
+  id            String        @id @default(cuid())
+  title         String
+  titleEn       String        @default("")
+  description   String
+  descriptionEn String        @default("")
+  icon          String?
+  imageUrl      String?
+  images        String[]      @default([])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  types         ServiceType[]
+}
+
+model ServiceType {
+  id            String   @id @default(cuid())
+  serviceId     String
+  service       Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  name          String
+  nameEn        String   @default("")
+  description   String   @default("")
+  descriptionEn String   @default("")
+  price         Float?
+  imageUrl      String?
+  images        String[]      @default([])
+  duration      String?
+  durationEn    String?
+  includes      String?
+  includesEn    String?
+  notIncludes   String?
+  notIncludesEn String?
+  featured      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  reviews       Review[]
+}
+
+model Review {
+  id            String      @id @default(cuid())
+  rating        Int         @default(5)
+  comment       String?     @db.Text
+  authorName    String
+  serviceTypeId String
+  serviceType   ServiceType @relation(fields: [serviceTypeId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  isApproved    Boolean     @default(true) // Currently defaulting to true so it shows up immediately
+}
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  nameEn    String   @default("")
+  role      String
+  roleEn    String   @default("")
+  content   String
+  contentEn String   @default("")
+  avatarUrl String?
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  id             String   @id @default(cuid())
+  heroTitle      String
+  heroTitleEn    String   @default("")
+  heroSubtitle   String
+  heroSubtitleEn String   @default("")
+  heroImageUrl   String?
+  whatsappNumber String?  @default("201110626484")
+  facebookUrl    String?
+  instagramUrl   String?
+  tiktokUrl      String?
+  contactEmail   String?
+  googleAnalyticsId String?
+  facebookPixelId   String?
+  aboutUsText       String?  @db.Text
+  aboutUsTextEn     String?  @db.Text
+  privacyPolicy     String?  @db.Text
+  privacyPolicyEn   String?  @db.Text
+  termsAndConditions String? @db.Text
+  termsAndConditionsEn String? @db.Text
+  updatedAt         DateTime @updatedAt
+}
+
+model Booking {
+  id            String    @id @default(cuid())
+  customerName  String?
+  phoneNumber   String?
+  customerEmail String?
+  serviceName   String
+  packageName   String?
+  hotelName     String?
+  adults        Int       @default(1)
+  children      Int       @default(0)
+  bookingDate   DateTime?
+  status        String    @default("PENDING") // PENDING, CONTACTED, BOOKED, CANCELLED
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model ChatConversation {
+  id          String   @id @default(cuid())
+  sessionId   String   @unique
+  messages    Json     @default("[]")
+  language    String?
+  pageUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
