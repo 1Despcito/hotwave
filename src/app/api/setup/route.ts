@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 export async function GET(req: Request) {
   try {
     const adminExists = await prisma.user.findFirst({
-      where: { email: "ahmed@hotwavetour.com" },
+      where: { email: "hotwavetour" },
     });
 
     if (adminExists) {
@@ -18,8 +18,8 @@ export async function GET(req: Request) {
     const hashedPassword = await bcrypt.hash("01018429139Aa", 10);
     const admin = await prisma.user.create({
       data: {
-        name: "Admin",
-        email: "ahmed@hotwavetour.com",
+        name: "hotwavetour",
+        email: "hotwavetour",
         password: hashedPassword,
         role: "ADMIN",
       },
