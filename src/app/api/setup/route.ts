@@ -15,7 +15,7 @@ export async function GET(req: Request) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash("01018429139Aa", 10);
+    const hashedPassword = await bcrypt.hash("hotwave100100", 10);
     const admin = await prisma.user.create({
       data: {
         name: "hotwavetour",
